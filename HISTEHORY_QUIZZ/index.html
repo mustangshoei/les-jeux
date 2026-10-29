@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Histehory Quizz</title>
+  <!-- Commun à tous les jeux (dossier ../COMMUN) : sélecteur « Changer de jeu ». S'il manque, le jeu marche sans. -->
+  <link rel="stylesheet" href="../COMMUN/jeux.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-ecran="screen-menu">
+<noscript>Cette application nécessite JavaScript.</noscript>
+
+<!-- Changer de jeu (en haut à droite) : rempli par ../COMMUN/jeux.js -->
+<div class="jeux-coin" data-jeux-selecteur="histehory"></div>
+
+<!-- Bouton de compte (en haut à gauche) et fenêtre du compte : js/compte.js -->
+<button id="compte-bouton" type="button" class="compte-bouton" aria-haspopup="dialog"></button>
+
+<dialog id="compte-dialogue" class="dialogue" aria-labelledby="compte-titre">
+  <div class="dialogue-tete">
+    <h2 id="compte-titre">Compte</h2>
+    <button type="button" class="dialogue-fermer" data-fermer aria-label="Fermer">✕</button>
+  </div>
+  <p id="compte-aide" class="dialogue-aide"></p>
+  <!-- Rempli par js/compte.js : connexion / création de compte, ou gestion du compte connecté -->
+  <div id="compte-corps"></div>
+</dialog>
+
+<!-- ===================== ACCUEIL ===================== -->
+<section id="screen-menu" class="screen page">
+  <header class="hero">
+    <div class="logo" aria-hidden="true">📜</div>
+    <h1>Histehory Quizz</h1>
+    <p>Apprenez l'histoire en vous amusant.</p>
+  </header>
+
+  <h2 class="accueil-titre">Modes de jeu</h2>
+  <!-- Une carte par mode de jeu : remplies par js/menu.js -->
+  <div id="menu-modes" class="cards" role="group" aria-label="Modes de jeu"></div>
+</section>
+
+<!-- Écrans des modes de jeu : un <section class="screen hidden"> par mode (aucun pour l'instant) -->
+
+<!-- 0. Commun à tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et sélecteur.
+        Facultatifs : s'ils manquent, Histehory Quizz se joue en invité, sans sélecteur. -->
+<script src="../COMMUN/comptes.js"></script>
+<script src="../COMMUN/jeux.js"></script>
+
+<!-- 1. Noyau, compte du joueur et fenêtre du compte (dans cet ordre) -->
+<script src="js/core.js"></script>
+<script src="js/profils.js"></script>
+<script src="js/compte.js"></script>
+
+<!-- 2. Modes de jeu : un fichier par mode, dans js/modes/ (aucun pour l'instant) -->
+
+<!-- 3. Accueil (en dernier : il affiche les modes chargés ci-dessus) -->
+<script src="js/menu.js"></script>
+</body>
+</html>

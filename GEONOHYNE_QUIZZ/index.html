@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GéoNohyne Quizz</title>
+  <!-- Commun à tous les jeux (dossier ../COMMUN) : sélecteur « Changer de jeu ». S'il manque, le jeu marche sans. -->
+  <link rel="stylesheet" href="../COMMUN/jeux.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- En premier : reprend les réglages enregistrés sous l'ancien nom du jeu (GéoQuiz) -->
+  <script src="js/ancien-nom.js"></script>
+</head>
+<body data-ecran="screen-menu">
+<noscript>Cette application nécessite JavaScript.</noscript>
+
+<!-- Changer de jeu (en haut à droite) : rempli par ../COMMUN/jeux.js -->
+<div class="jeux-coin" data-jeux-selecteur="geonohyne"></div>
+
+<!-- Compte (en haut à gauche, sauf pendant les parties) : bouton et menu déroulant, sur le modèle du
+     menu « Jeux » (à droite) ; js/compte.js -->
+<div class="compte-coin">
+  <button id="compte-bouton" type="button" class="compte-bouton" aria-haspopup="dialog" aria-expanded="false" aria-controls="compte-menu"></button>
+  <div id="compte-menu" class="compte-menu" role="dialog" aria-labelledby="compte-titre" hidden>
+    <p id="compte-titre" class="compte-menu__titre">Compte</p>
+    <!-- Rempli par js/compte.js : connexion / création de compte, ou gestion du compte connecté -->
+    <div id="compte-corps"></div>
+    <p id="compte-aide" class="compte-menu__note"></p>
+  </div>
+</div>
+
+<!-- ===================== MENU PRINCIPAL ===================== -->
+<section id="screen-menu" class="screen menu">
+  <p class="menu-edition" aria-hidden="true">Atlas · édition France &amp; Monde</p>
+
+  <div class="menu-hero">
+    <div class="menu-intro">
+      <p class="surtitre">Quiz · Jeux · Cartes</p>
+      <h1 class="menu-titre">GéoNohyne<br><span>Quizz</span></h1>
+      <p class="menu-sous-titre">Apprenez la géographie en vous amusant.</p>
+      <!-- Chapitres (grandes catégories) : remplis par js/menu.js, qui décrit aussi les cartes de chacun -->
+      <nav id="menu-chapitres" class="chapitres" aria-label="Chapitres"></nav>
+    </div>
+
+    <!-- L'image du chapitre : une carte en relief (régions, monde, fleuves, votre réussite), dessinée par
+         js/menu.js à partir des données -->
+    <figure id="menu-atlas" class="menu-atlas">
+      <div id="menu-relief" class="relief-cadre"></div>
+      <svg class="boussole" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="44" class="boussole-cercle"/>
+        <circle cx="50" cy="50" r="36" class="boussole-graduation"/>
+        <path d="M50 8 L57 50 L50 92 L43 50 Z" class="boussole-axe"/>
+        <path d="M8 50 L50 43 L92 50 L50 57 Z" class="boussole-axe boussole-axe--est"/>
+        <path d="M50 8 L57 50 L43 50 Z" class="boussole-nord"/>
+        <circle cx="50" cy="50" r="3.5" class="boussole-centre"/>
+      </svg>
+      <figcaption id="menu-legende" class="menu-legende"></figcaption>
+    </figure>
+  </div>
+
+  <!-- Le chapitre choisi et ses cartes : js/menu.js -->
+  <section id="menu-chapitre" class="chapitre" aria-labelledby="chapitre-titre">
+    <div class="chapitre-tete">
+      <div>
+        <p id="chapitre-numero" class="surtitre">Chapitre 01</p>
+        <h2 id="chapitre-titre">—</h2>
+        <p id="chapitre-desc" class="chapitre-desc"></p>
+      </div>
+      <p id="chapitre-compte" class="chapitre-compte"></p>
+    </div>
+    <div id="menu-cartes" class="cartes" aria-live="polite"></div>
+  </section>
+
+  <footer class="menu-pied">
+    <span>Cartes : IGN Admin Express et INSEE (Licence Ouverte) · OpenStreetMap (ODbL) · Natural Earth (domaine public)</span>
+    <!-- Version du jeu (lue dans ../COMMUN/jeux.js) : js/menu.js -->
+    <span id="menu-version"></span>
+  </footer>
+</section>
+
+<!-- ===================== APPRENDRE (EXPLORATION) ===================== -->
+<section id="screen-learn" class="screen game game--learn hidden">
+  <div class="game-side">
+    <div class="game-top">
+      <button type="button" data-action="menu" data-menu-categorie="apprendre" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+      <div class="pill">📚 <span id="learn-titre">—</span></div>
+    </div>
+
+    <div class="recherche" role="search">
+      <label for="learn-search" class="sr-only">Rechercher</label>
+      <input id="learn-search" type="search" autocomplete="off" spellcheck="false"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="learn-suggestions">
+      <ul id="learn-suggestions" class="suggestions hidden" role="listbox" aria-label="Résultats de la recherche"></ul>
+    </div>
+
+    <!-- Choix des éléments affichés (ex. mers, fleuves, rivières) : rempli par js/core.js si le module le prévoit -->
+    <div id="learn-filtres" class="filtres hidden" role="group" aria-label="Éléments affichés sur la carte"></div>
+
+    <div id="learn-fiche" class="fiche" aria-live="polite"></div>
+    <p id="learn-credit" class="fiche-credit"></p>
+
+    <div class="legend">
+      <span><i class="dot dot--sel"></i>sélectionné</span>
+      <span><i class="dot dot--voisin"></i><span id="learn-legende-liens">frontalier</span></span>
+      <span class="legende-points"><i class="dot dot--point"></i>point : petite zone, cliquez dessus</span>
+      <span>Molette : zoom · Glisser : déplacer</span>
+    </div>
+  </div>
+  <!-- La carte (#map-wrap) est déplacée ici par js/core.js -->
+</section>
+
+<!-- ===================== JEU : LE GRAND CHEMIN ===================== -->
+<section id="screen-chemin" class="screen game game--learn hidden">
+  <div class="game-side">
+    <div class="game-top">
+      <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+      <div class="stats">
+        <div class="pill" title="Départements proposés">Proposés <b id="chemin-nb">0</b></div>
+        <div class="pill" title="Nombre minimal de départements à proposer">Minimum <span id="chemin-min">0</span></div>
+      </div>
+    </div>
+
+    <div class="target">
+      <p class="eyebrow">Reliez en passant de voisin en voisin</p>
+      <p class="chemin-trajet">
+        <span id="chemin-a" class="chemin-dep chemin-dep--a">—</span>
+        <span class="chemin-fleche" aria-hidden="true">→</span>
+        <span id="chemin-b" class="chemin-dep chemin-dep--b">—</span>
+      </p>
+    </div>
+
+    <div class="recherche" role="search">
+      <label for="chemin-search" class="sr-only">Proposer un département</label>
+      <input id="chemin-search" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Tapez le nom d'un département…"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="chemin-suggestions">
+      <ul id="chemin-suggestions" class="suggestions hidden" role="listbox" aria-label="Départements proposés"></ul>
+    </div>
+
+    <div id="chemin-feedback" class="fb fb-idle" aria-live="polite"><span>—</span></div>
+
+    <div id="chemin-fin" class="chemin-fin hidden" aria-live="polite"></div>
+
+    <div id="chemin-liste" class="chemin-liste" aria-label="Vos propositions"></div>
+
+    <label class="checkbox-row chemin-option">
+      <input id="chemin-aide" type="checkbox">
+      <span>Aide : indiquer si chaque département fait partie d'un chemin parfait</span>
+    </label>
+
+    <div class="chemin-actions">
+      <button id="chemin-abandon" type="button" class="btn btn-soft">Voir la solution</button>
+      <button id="chemin-nouveau" type="button" class="btn btn-primary">Nouvelle partie</button>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot dot--depart"></i>départ</span>
+      <span><i class="dot dot--arrivee"></i>arrivée</span>
+      <span class="legende-aide"><i class="dot dot--ok"></i>chemin parfait</span>
+      <span class="legende-aide"><i class="dot dot--ko"></i>hors chemin parfait</span>
+      <span class="legende-sans-aide"><i class="dot dot--propose"></i>proposé</span>
+    </div>
+  </div>
+  <!-- La carte (#map-wrap) est déplacée ici par js/core.js -->
+</section>
+
+<!-- ===================== JEU : MORPION DES DÉPARTEMENTS ===================== -->
+<section id="screen-morpion" class="screen page hidden">
+
+  <!-- Étape 1 : options de la partie -->
+  <div id="morpion-options">
+    <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+
+    <div class="panel morpion">
+      <h2>Morpion des Départements</h2>
+      <p class="lead">Chaque case croise le critère de sa ligne et celui de sa colonne : choisissez une case,
+        puis tapez un département qui remplit les deux. Un département ne sert qu'une fois par grille.</p>
+
+      <div class="morpion-reglages">
+        <p class="morpion-reglages__titre">Mode de jeu</p>
+        <div class="mode-switch" role="group" aria-label="Mode de jeu">
+          <button type="button" class="mode-btn is-active" data-morpion-mode="solo" aria-pressed="true">Solo</button>
+          <button type="button" class="mode-btn" data-morpion-mode="duel" aria-pressed="false">Duel (2 joueurs)</button>
+        </div>
+        <p id="morpion-mode-aide" class="morpion-mode-aide"></p>
+
+        <label id="morpion-vies-wrap" class="morpion-option">
+          Erreurs autorisées
+          <select id="morpion-vies">
+            <option value="3" selected>3</option>
+            <option value="5">5</option>
+            <option value="9">9</option>
+          </select>
+        </label>
+
+        <label id="morpion-pillage-wrap" class="checkbox-row morpion-option hidden">
+          <input id="morpion-pillage" type="checkbox">
+          <span><b>Mode pillage</b> : on peut aussi viser une case de l'adversaire et la lui prendre en donnant
+            un autre département valide. Les parties sont plus longues et plus tactiques.</span>
+        </label>
+      </div>
+
+      <button id="morpion-lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
+    </div>
+  </div>
+
+  <!-- Étape 2 : la partie, grille au centre -->
+  <div id="morpion-jeu" class="morpion-jeu hidden">
+    <div class="morpion-barre">
+      <button id="morpion-retour" type="button" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Options</button>
+      <button id="morpion-nouvelle" type="button" class="btn btn-soft">Nouvelle grille</button>
+    </div>
+
+    <div class="morpion-statut">
+      <div id="morpion-tour" class="morpion-tour"></div>
+      <div id="morpion-compteur" class="pill"></div>
+    </div>
+
+    <div class="morpion-grille-wrap">
+      <div id="morpion-grille" class="morpion-grille" role="grid" aria-label="Grille du morpion"></div>
+    </div>
+
+    <div class="morpion-saisie">
+      <p id="morpion-case" class="morpion-case">Choisissez une case de la grille.</p>
+      <div class="recherche" role="search">
+        <label for="morpion-search" class="sr-only">Département</label>
+        <input id="morpion-search" type="search" autocomplete="off" spellcheck="false" disabled
+               placeholder="Tapez le nom d'un département…"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="morpion-suggestions">
+        <ul id="morpion-suggestions" class="suggestions hidden" role="listbox" aria-label="Départements"></ul>
+      </div>
+      <button id="morpion-passer" type="button" class="btn btn-soft hidden">Passer mon tour</button>
+    </div>
+
+    <div id="morpion-feedback" class="fb fb-idle" aria-live="polite"><span>—</span></div>
+
+    <div id="morpion-reponses" class="morpion-reponses hidden" aria-live="polite"></div>
+  </div>
+
+  <!-- Fin de partie (gagnée, perdue ou nulle) : js/france/morpion.js -->
+  <dialog id="morpion-fin" class="dialogue dialogue--fin" aria-labelledby="morpion-fin-titre">
+    <div id="morpion-fin-emoji" class="big-emoji" aria-hidden="true"></div>
+    <h2 id="morpion-fin-titre"></h2>
+    <p id="morpion-fin-texte" class="lead"></p>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" data-fin="rejouer">Recommencer</button>
+      <button type="button" class="btn btn-soft" data-fin="grille">Afficher la grille</button>
+      <button type="button" class="btn btn-soft" data-action="menu">Menu</button>
+    </div>
+  </dialog>
+</section>
+
+<!-- ===================== JEU : LA LISTE DES DÉPARTEMENTS ===================== -->
+<section id="screen-liste" class="screen page hidden">
+
+  <!-- Étape 1 : quoi deviner, le périmètre (toute la France ou une seule région), le tri, la carte -->
+  <div id="liste-options" class="liste-options">
+    <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+
+    <div class="panel liste-panel">
+      <h2>La Liste des Départements</h2>
+      <p class="lead">Citez tous les noms de la liste, le plus vite possible. Tapez un nom puis Entrée : il se
+        place tout seul sur sa ligne, inutile de dire à quel département va une préfecture. Majuscules, accents,
+        espaces, tirets et apostrophes ne comptent pas.</p>
+
+      <div class="liste-ordre">
+        <p class="liste-ordre__titre">À deviner</p>
+        <div class="mode-switch liste-deviner" role="group" aria-label="À deviner">
+          <button type="button" class="mode-btn is-active" data-liste-deviner="tout" aria-pressed="true">Départements et préfectures</button>
+          <button type="button" class="mode-btn" data-liste-deviner="dep" aria-pressed="false">Départements</button>
+          <button type="button" class="mode-btn" data-liste-deviner="pref" aria-pressed="false">Préfectures</button>
+        </div>
+        <p id="liste-deviner-aide" class="setup-aide liste-deviner-aide"></p>
+      </div>
+
+      <div class="groupes">
+        <div class="groupes-head"><span>Périmètre</span></div>
+        <div id="liste-perimetres" class="groupes-liste" role="radiogroup" aria-label="Périmètre"></div>
+      </div>
+
+      <!-- Tri : seulement pour toute la France (une seule région se trie forcément par code) -->
+      <div id="liste-ordre-wrap" class="liste-ordre">
+        <p class="liste-ordre__titre">Ordre de la liste</p>
+        <div class="mode-switch" role="group" aria-label="Ordre de la liste">
+          <button type="button" class="mode-btn is-active" data-liste-ordre="code" aria-pressed="true">Par code</button>
+          <button type="button" class="mode-btn" data-liste-ordre="region" aria-pressed="false">Par région, puis par code</button>
+        </div>
+      </div>
+
+      <label class="checkbox-row liste-option-carte">
+        <input id="liste-carte-option" type="checkbox">
+        <span><b>Afficher une carte</b> à côté de la liste : chaque département passe au vert quand tout ce qui le
+          concerne est trouvé (hachuré à moitié). Ni noms ni clic : à vous de savoir lequel c'est.</span>
+      </label>
+
+      <button id="liste-lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
+    </div>
+  </div>
+
+  <!-- Étape 2 : la liste à compléter -->
+  <div id="liste-jeu" class="liste-jeu hidden">
+    <div class="liste-barre">
+      <button id="liste-retour" type="button" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Options</button>
+      <div class="liste-barre__actions">
+        <button id="liste-recommencer" type="button" class="btn btn-soft">Recommencer</button>
+        <button id="liste-abandon" type="button" class="btn btn-soft">Abandonner</button>
+      </div>
+    </div>
+
+    <div class="liste-entete">
+      <h2 id="liste-titre" class="liste-titre">—</h2>
+      <div class="liste-entete__droite">
+        <div id="liste-tri" class="liste-tri">
+          <span class="liste-tri__titre" aria-hidden="true">Trier par</span>
+          <div class="mode-switch" role="group" aria-label="Trier la liste par">
+            <button type="button" class="mode-btn is-active" data-liste-ordre="code" aria-pressed="true">Code</button>
+            <button type="button" class="mode-btn" data-liste-ordre="region" aria-pressed="false">Région</button>
+          </div>
+        </div>
+        <div class="pill" title="Temps écoulé">⏱ <span id="liste-chrono">00:00</span></div>
+      </div>
+    </div>
+
+    <form id="liste-form" class="liste-form" autocomplete="off">
+      <label for="liste-saisie" class="sr-only">Département ou préfecture</label>
+      <input id="liste-saisie" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="Un département ou une préfecture, puis Entrée…">
+      <button id="liste-valider" type="submit" class="btn btn-primary">Valider</button>
+    </form>
+
+    <div id="liste-feedback" class="fb fb-idle" aria-live="polite"><span>—</span></div>
+
+    <!-- La liste et, en option, la carte (à droite ; au-dessus sur petit écran) -->
+    <div id="liste-zone" class="liste-zone">
+    <!-- Carte : #map-wrap y est déplacée par js/france/liste.js -->
+    <div id="liste-carte" class="liste-carte hidden">
+      <div class="liste-legende" aria-hidden="true">
+        <span><i class="liste-legende__idle"></i>à trouver</span>
+        <span id="liste-legende-moitie"><i class="liste-legende__moitie"></i>à moitié</span>
+        <span><i class="liste-legende__ok"></i>trouvé</span>
+      </div>
+    </div>
+
+    <!-- En-tête : nombre de noms trouvés et indices de chaque colonne ; corps : rempli par js/france/liste.js.
+         data-col : colonnes masquées ou sans indices selon ce qu'il faut deviner (data-deviner, css) -->
+    <div id="liste-tableau" class="liste-tableau">
+      <table class="liste-table">
+        <thead>
+          <tr>
+            <th scope="col">Code <span class="liste-region-titre">(Région)</span></th>
+            <th scope="col" data-col="dep">Départements <span class="liste-compte"><b id="liste-nb-dep">0</b>/<span id="liste-total-dep">0</span></span></th>
+            <th scope="col" data-col="pref">Préfectures <span class="liste-compte"><b id="liste-nb-pref">0</b>/<span id="liste-total-pref">0</span></span></th>
+          </tr>
+          <tr class="liste-indices">
+            <td><span class="liste-indices__titre">💡 Indices</span></td>
+            <td data-col="dep">
+              <button type="button" class="liste-indice" data-champ="dep" data-indice="initiale"
+                      title="Montrer l'initiale d'un département au hasard">A…<span class="liste-indice__texte"> Initiale</span></button>
+              <button type="button" class="liste-indice liste-indice--reveler" data-champ="dep" data-indice="reveler"
+                      title="Écrire en entier un département au hasard (compté comme non trouvé)">👁<span class="liste-indice__texte"> Révéler</span></button>
+            </td>
+            <td data-col="pref">
+              <button type="button" class="liste-indice" data-champ="pref" data-indice="initiale"
+                      title="Montrer l'initiale d'une préfecture au hasard">A…<span class="liste-indice__texte"> Initiale</span></button>
+              <button type="button" class="liste-indice liste-indice--reveler" data-champ="pref" data-indice="reveler"
+                      title="Écrire en entier une préfecture au hasard (comptée comme non trouvée)">👁<span class="liste-indice__texte"> Révéler</span></button>
+            </td>
+          </tr>
+        </thead>
+        <tbody id="liste-corps"></tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+
+  <!-- Fin de partie : liste complète ou abandonnée -->
+  <dialog id="liste-fin" class="dialogue dialogue--fin" aria-labelledby="liste-fin-titre">
+    <div id="liste-fin-emoji" class="big-emoji" aria-hidden="true"></div>
+    <h2 id="liste-fin-titre"></h2>
+    <p id="liste-fin-texte" class="lead"></p>
+    <div class="tiles">
+      <div class="tile tile--green">
+        <div id="liste-fin-trouves" class="tile__value">0</div>
+        <div id="liste-fin-trouves-label" class="tile__label">Trouvés</div>
+      </div>
+      <div class="tile tile--grey">
+        <div id="liste-fin-reveles" class="tile__value">0</div>
+        <div class="tile__label">Révélés</div>
+      </div>
+      <div class="tile tile--blue">
+        <div id="liste-fin-temps" class="tile__value">00:00</div>
+        <div class="tile__label">Temps</div>
+      </div>
+    </div>
+    <p id="liste-fin-indices" class="dialogue-aide"></p>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" data-fin="rejouer">Recommencer</button>
+      <button type="button" class="btn btn-soft" data-fin="liste">Afficher la liste</button>
+      <button type="button" class="btn btn-soft" data-action="menu">Menu</button>
+    </div>
+  </dialog>
+</section>
+
+<!-- ===================== JEU : CODAGE – ENCODAGE ===================== -->
+<section id="screen-codage" class="screen page hidden">
+
+  <!-- Étape 1 : mode, régions, nombre de départements, temps par question -->
+  <div id="codage-options" class="codage-options">
+    <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+
+    <div class="panel codage-panel">
+      <h2>Codage – Encodage</h2>
+      <p class="lead">Le numéro d'un département à partir de son nom, ou l'inverse, avant la fin du chrono.
+        Un seul essai par département.</p>
+
+      <div class="mode-switch" role="group" aria-label="Mode de jeu">
+        <button type="button" class="mode-btn is-active" data-codage-mode="codage" aria-pressed="true">🔢 Codage : nom → numéro</button>
+        <button type="button" class="mode-btn" data-codage-mode="encodage" aria-pressed="false">🏷️ Encodage : numéro → nom</button>
+      </div>
+      <p id="codage-mode-aide" class="setup-aide codage-mode-aide"></p>
+
+      <div class="groupes">
+        <div class="groupes-head">
+          <span>Régions à inclure</span>
+          <span>
+            <button type="button" class="btn-link" data-codage-regions="tout">Tout</button>
+            <button type="button" class="btn-link" data-codage-regions="rien">Aucun</button>
+          </span>
+        </div>
+        <div id="codage-regions" class="groupes-liste" role="group" aria-label="Régions à inclure"></div>
+      </div>
+
+      <div class="count-picker">
+        <div class="count-head">
+          <label for="codage-nombre">Nombre de départements</label>
+          <input id="codage-nombre" type="number" min="1" max="101" step="1" value="20" inputmode="numeric">
+        </div>
+        <input id="codage-nombre-curseur" class="codage-curseur" type="range" min="1" max="101" step="1" value="20" aria-label="Nombre de départements">
+        <div class="count-scale"><span>1</span><span id="codage-nombre-max">101</span></div>
+      </div>
+
+      <!-- Temps par question : le curseur ne s'arrête que sur 3, 5, 10, 15, 20, 25 et 30 s -->
+      <div class="count-picker">
+        <div class="count-head">
+          <label for="codage-temps">Temps par question</label>
+          <output id="codage-temps-valeur" for="codage-temps" class="codage-temps-valeur">10 s</output>
+        </div>
+        <input id="codage-temps" class="codage-curseur" type="range" min="0" max="6" step="1" value="2">
+        <div class="codage-graduations" aria-hidden="true">
+          <span>3</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span>
+        </div>
+      </div>
+
+      <button id="codage-lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
+      <p id="codage-statut" class="status status-error" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Étape 2 : la partie, un département à la fois au milieu de l'écran -->
+  <div id="codage-jeu" class="codage-jeu hidden">
+    <div class="codage-barre">
+      <button id="codage-retour" type="button" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Options</button>
+      <button id="codage-recommencer" type="button" class="btn btn-soft">Recommencer</button>
+    </div>
+
+    <div class="codage-statut">
+      <div class="pill">Question <b id="codage-numero">0</b> / <span id="codage-total">0</span></div>
+      <div class="pill">Score <b id="codage-score">0</b></div>
+    </div>
+
+    <div id="codage-carte" class="codage-carte">
+      <p id="codage-consigne" class="eyebrow">—</p>
+      <h2 id="codage-question" class="codage-question" aria-live="polite">—</h2>
+      <div id="codage-chrono" class="codage-chrono" aria-hidden="true"><div id="codage-chrono-barre"></div></div>
+      <p id="codage-chrono-texte" class="codage-chrono-texte">—</p>
+    </div>
+
+    <form id="codage-form" class="codage-form" autocomplete="off">
+      <label for="codage-saisie" class="sr-only">Votre réponse</label>
+      <input id="codage-saisie" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button type="submit" class="btn btn-primary">Valider</button>
+    </form>
+
+    <div id="codage-feedback" class="fb fb-idle" aria-live="polite"><span>—</span></div>
+  </div>
+
+  <!-- Fin de partie : le bilan -->
+  <dialog id="codage-fin" class="dialogue dialogue--fin" aria-labelledby="codage-fin-titre">
+    <div id="codage-fin-emoji" class="big-emoji" aria-hidden="true"></div>
+    <h2 id="codage-fin-titre">Partie terminée</h2>
+    <p id="codage-fin-texte" class="lead"></p>
+    <div class="tiles">
+      <div class="tile tile--green">
+        <div id="codage-fin-score" class="tile__value">0</div>
+        <div id="codage-fin-score-label" class="tile__label">Bonnes réponses</div>
+      </div>
+      <div class="tile tile--blue">
+        <div id="codage-fin-pourcent" class="tile__value">0 %</div>
+        <div class="tile__label">Réussite</div>
+      </div>
+      <div class="tile tile--grey">
+        <div id="codage-fin-moyenne" class="tile__value">—</div>
+        <div class="tile__label">Temps moyen</div>
+      </div>
+    </div>
+    <div id="codage-fin-rates" class="codage-rates hidden">
+      <h3>À revoir</h3>
+      <div id="codage-fin-liste" class="chips"></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" data-fin="rejouer">Recommencer</button>
+      <button type="button" class="btn btn-soft" data-fin="options">Options</button>
+      <button type="button" class="btn btn-soft" data-action="menu">Menu</button>
+    </div>
+  </dialog>
+</section>
+
+<!-- ===================== JEU : L'ENTONNOIR ===================== -->
+<section id="screen-entonnoir" class="screen page hidden">
+
+  <!-- Étape 1 : options de la partie -->
+  <div id="entonnoir-options" class="entonnoir-options">
+    <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+
+    <div class="panel entonnoir-panel">
+      <h2>L'Entonnoir</h2>
+      <p class="lead">Citez un département qui vérifie le critère affiché. Un nouveau critère s'ajoute alors et
+        les possibilités se réduisent… jusqu'à ce qu'un seul département vérifie tout : à vous de le trouver.
+        Le même département peut resservir d'une étape à l'autre.</p>
+      <ul class="entonnoir-aide">
+        <li>Critères : mers, cours d'eau, voisins, pays frontaliers, régions, position par rapport à Paris,
+          préfecture, superficie, population, densité, altitude, nom… (plus rarement : code INSEE, lettres).</li>
+        <li>Position par rapport à Paris : d'après le centre du département, en métropole.</li>
+        <li>Cas limites : un département trop proche de Paris, ou d'un seuil (à 2 % près pour la superficie, la
+          population, la densité, l'altitude : les chiffres varient selon les sources), est accepté s'il est proposé,
+          mais ne sert jamais à départager.</li>
+      </ul>
+
+      <label class="morpion-option entonnoir-option">
+        Erreurs autorisées
+        <select id="entonnoir-vies">
+          <option value="3" selected>3</option>
+          <option value="5">5</option>
+          <option value="9">9</option>
+        </select>
+      </label>
+
+      <button id="entonnoir-lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
+    </div>
+  </div>
+
+  <!-- Étape 2 : la partie, les critères empilés en entonnoir -->
+  <div id="entonnoir-jeu" class="entonnoir-jeu hidden">
+    <div class="entonnoir-barre">
+      <button id="entonnoir-retour" type="button" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Options</button>
+      <button id="entonnoir-nouvelle" type="button" class="btn btn-soft">Nouvelle partie</button>
+    </div>
+
+    <div class="entonnoir-statut">
+      <div class="pill">Étape <b id="entonnoir-numero">1</b> / <span id="entonnoir-total">0</span></div>
+      <div id="entonnoir-erreurs" class="pill"></div>
+    </div>
+
+    <ol id="entonnoir-etapes" class="entonnoir-etapes" aria-label="Critères"></ol>
+
+    <p id="entonnoir-consigne" class="entonnoir-consigne"></p>
+
+    <div class="recherche" role="search">
+      <label for="entonnoir-search" class="sr-only">Département</label>
+      <input id="entonnoir-search" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Tapez le nom d'un département…"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="entonnoir-suggestions">
+      <ul id="entonnoir-suggestions" class="suggestions hidden" role="listbox" aria-label="Départements"></ul>
+    </div>
+
+    <div id="entonnoir-feedback" class="fb fb-idle" aria-live="polite"><span>—</span></div>
+  </div>
+
+  <!-- Fin de partie : trouvé ou perdu -->
+  <dialog id="entonnoir-fin" class="dialogue dialogue--fin" aria-labelledby="entonnoir-fin-titre">
+    <div id="entonnoir-fin-emoji" class="big-emoji" aria-hidden="true"></div>
+    <h2 id="entonnoir-fin-titre"></h2>
+    <p id="entonnoir-fin-texte" class="lead"></p>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" data-fin="rejouer">Recommencer</button>
+      <button type="button" class="btn btn-soft" data-fin="parcours">Afficher le parcours</button>
+      <button type="button" class="btn btn-soft" data-action="menu">Menu</button>
+    </div>
+  </dialog>
+</section>
+
+<!-- ===================== CHOIX DE LA PARTIE ===================== -->
+<section id="screen-setup" class="screen page page--narrow hidden">
+  <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+
+  <div class="panel" style="margin-top:1.5rem">
+    <h2 id="setup-titre">—</h2>
+    <p id="setup-consigne" class="lead"></p>
+
+    <!-- Façon de jouer (ciblage / nommage) et mode (occasionnel / record) -->
+    <div class="setup-choix">
+      <div class="mode-switch" role="group" aria-label="Façon de jouer">
+        <button type="button" class="mode-btn is-active" data-jeu-type="ciblage" aria-pressed="true">🎯 Ciblage</button>
+        <button type="button" class="mode-btn" data-jeu-type="nommage" aria-pressed="false">⌨️ Nommage</button>
+      </div>
+      <div class="mode-switch" role="group" aria-label="Mode">
+        <button type="button" class="mode-btn is-active" data-partie="occasionnel" aria-pressed="true">Occasionnel</button>
+        <button type="button" class="mode-btn" data-partie="record" aria-pressed="false">🏆 Record</button>
+      </div>
+      <p id="setup-aide" class="setup-aide"></p>
+    </div>
+
+    <!-- Mode record : périmètre fixe (toutes les zones, ou un seul groupe) et records à battre -->
+    <div id="partie-record" class="hidden">
+      <div class="groupes">
+        <div class="groupes-head"><span>Périmètre</span></div>
+        <div id="record-perimetres" class="groupes-liste" role="radiogroup" aria-label="Périmètre du record"></div>
+      </div>
+      <div id="record-scores" class="record-scores" aria-live="polite"></div>
+    </div>
+
+    <!-- Mode occasionnel : nombre de questions ou groupes, options -->
+    <div id="partie-occasionnelle">
+
+    <!-- Mode de sélection : visible seulement si la catégorie définit des groupes (régions) -->
+    <div id="mode-wrap" class="mode-switch hidden" role="group" aria-label="Mode de sélection">
+      <button type="button" class="mode-btn is-active" data-mode="nombre" aria-pressed="true">Par nombre</button>
+      <button type="button" class="mode-btn" data-mode="groupes" aria-pressed="false">Par <span id="mode-groupes-nom">groupes</span></button>
+    </div>
+
+    <div id="mode-nombre">
+      <!-- Zones optionnelles (ex. Outre-Mer) : visible seulement si la catégorie en définit -->
+      <label id="opt-extras-wrap" class="checkbox-row hidden">
+        <input id="opt-extras" type="checkbox" disabled>
+        <span id="opt-extras-label"></span>
+      </label>
+
+      <div class="count-picker">
+        <div class="count-head">
+          <label for="count-input">Nombre de <span id="count-unit">zones</span></label>
+          <input id="count-input" type="number" min="10" max="96" step="1" value="20" inputmode="numeric" disabled>
+        </div>
+        <input id="count-range" type="range" min="10" max="96" step="1" value="20" disabled aria-label="Nombre de questions">
+        <div class="count-scale"><span id="count-min">10</span><span id="count-max">96</span></div>
+      </div>
+    </div>
+
+    <div id="mode-groupes" class="groupes hidden">
+      <div class="groupes-head">
+        <span id="groupes-titre">Groupes à inclure</span>
+        <span>
+          <button type="button" class="btn-link" data-groupes="tout">Tout</button>
+          <button type="button" class="btn-link" data-groupes="rien">Aucun</button>
+        </span>
+      </div>
+      <div id="groupes-liste" class="groupes-liste"></div>
+    </div>
+
+    <label id="opt-ordre-wrap" class="checkbox-row hidden">
+      <input id="opt-ordre" type="checkbox">
+      <span id="opt-ordre-label"></span>
+    </label>
+
+    <label id="opt-indice-wrap" class="checkbox-row hidden">
+      <input id="opt-indice" type="checkbox">
+      <span id="opt-indice-label">Afficher un indice</span>
+    </label>
+
+    <label class="checkbox-row">
+      <input id="opt-rattrapage" type="checkbox" checked>
+      <span>Rattrapage des erreurs en fin de partie</span>
+    </label>
+    </div>
+
+    <button id="btn-start" type="button" class="btn btn-primary btn-start" disabled>Lancer la partie</button>
+
+    <p id="setup-status" class="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- ===================== PARTIE ===================== -->
+<section id="screen-game" class="screen game hidden">
+  <div class="game-side">
+    <div class="game-top">
+      <button id="btn-quit" type="button" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Quitter</button>
+      <p id="partie-titre" class="partie-titre"></p>
+    </div>
+
+    <div class="target">
+      <p id="question-label" class="eyebrow">Où se trouve…</p>
+      <h2 id="target-name" class="target-name">—</h2>
+      <p id="target-hint" class="hint"></p>
+      <!-- Le parcours : une étape par question (trouvée, ratée, en cours, à venir), une barre au-delà de 30 -->
+      <div id="parcours" class="parcours" aria-hidden="true"></div>
+      <p class="progress-text" id="stat-progress">Étape 0 / 0</p>
+      <!-- Mode record : le record du profil sur ce périmètre -->
+      <p id="record-en-jeu" class="record-en-jeu hidden"></p>
+    </div>
+
+    <div class="compteurs">
+      <div class="compteur compteur--ok"><p id="stat-label">Trouvés</p><b id="stat-score">0</b></div>
+      <div class="compteur compteur--ko"><p>Ratés</p><b id="stat-rates">0</b></div>
+      <div class="compteur compteur--temps"><p>Temps</p><b id="stat-time">00:00</b></div>
+    </div>
+
+    <!-- Nommage : la zone en surbrillance se nomme ici (suggestions en mode occasionnel seulement) -->
+    <form id="nommage" class="nommage hidden" autocomplete="off">
+      <div class="recherche">
+        <label for="nommage-saisie" class="sr-only">Nom de la zone en surbrillance</label>
+        <input id="nommage-saisie" type="text" autocomplete="off" spellcheck="false" placeholder="Tapez le nom…"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="nommage-suggestions">
+        <ul id="nommage-suggestions" class="suggestions hidden" role="listbox" aria-label="Noms proposés"></ul>
+      </div>
+      <button type="submit" class="btn btn-primary">Valider</button>
+    </form>
+
+    <div class="fb-row">
+      <div class="fb-ligne">
+        <div id="feedback" class="fb fb-idle" aria-live="polite"><span>Cliquez sur la carte pour répondre.</span></div>
+        <!-- Série de bonnes réponses d'affilée (affichée à partir de 2) -->
+        <span id="serie" class="serie hidden" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2.5c.8 3.6 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.6-4.2 2-6.6 1.6 1 2.6 2.6 2.6 4.6 1.3-2.2 1.2-5.6.9-9z"/></svg>
+          <b id="serie-nb">×2</b>
+        </span>
+      </div>
+      <button id="btn-action" type="button" class="btn btn-action btn-dark">Passer</button>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot dot--ok"></i>trouvé</span>
+      <span><i class="dot dot--ko"></i>raté</span>
+      <span class="legende-points"><i class="dot dot--point"></i>point : petite zone, cliquez dessus</span>
+      <span>Molette : zoom · Glisser : déplacer</span>
+    </div>
+  </div>
+
+  <!-- Carte partagée par le quiz et le mode « Apprendre » (déplacée d'un écran à l'autre) -->
+  <div id="map-wrap" class="map-wrap">
+    <svg id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Carte"></svg>
+    <svg class="boussole boussole--carte" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="44" class="boussole-cercle"/>
+      <path d="M50 10 L58 50 L50 90 L42 50 Z" class="boussole-axe"/>
+      <path d="M50 10 L58 50 L42 50 Z" class="boussole-nord"/>
+    </svg>
+    <div class="zoom">
+      <button type="button" data-zoom="in" aria-label="Zoomer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button type="button" data-zoom="out" aria-label="Dézoomer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+      <button type="button" data-zoom="reset" aria-label="Recentrer la carte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+    <!-- Facteur de zoom : js/core.js -->
+    <p id="carte-zoom" class="carte-zoom" aria-hidden="true">Zoom ×1,0</p>
+  </div>
+</section>
+
+<!-- ===================== FIN DE PARTIE ===================== -->
+<section id="screen-end" class="screen page page--small hidden">
+  <div class="panel panel--center">
+    <div id="end-emoji" class="big-emoji">🎉</div>
+    <h2>Partie terminée !</h2>
+    <p id="end-message" class="lead"></p>
+    <p id="end-rattrapage" class="lead hidden"></p>
+    <!-- Mode record : nouveau record, record à battre, place parmi les profils -->
+    <div id="end-record" class="end-record hidden" aria-live="polite"></div>
+
+    <div class="tiles">
+      <div class="tile tile--green">
+        <div id="end-score" class="tile__value">0</div>
+        <div class="tile__label">Bonnes réponses</div>
+      </div>
+      <div class="tile tile--blue">
+        <div id="end-percent" class="tile__value">0 %</div>
+        <div class="tile__label">Réussite</div>
+      </div>
+      <div class="tile tile--grey">
+        <div id="end-time" class="tile__value">00:00</div>
+        <div class="tile__label">Temps</div>
+      </div>
+    </div>
+
+    <div id="end-missed-block" class="missed hidden">
+      <h3>À revoir</h3>
+      <div id="end-missed" class="chips"></div>
+    </div>
+
+    <div class="actions">
+      <button type="button" data-action="replay" class="btn btn-primary">Rejouer</button>
+      <button type="button" data-action="setup" class="btn btn-soft">Changer de mode</button>
+      <button type="button" data-action="menu" class="btn btn-soft">Menu</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATISTIQUES (js/compte.js) ===================== -->
+<section id="screen-stats" class="screen page hidden">
+  <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+  <header class="stats-entete">
+    <span id="stats-avatar"></span>
+    <div>
+      <h1 id="stats-titre">Statistiques</h1>
+      <p class="lead">Profil enregistré dans ce navigateur. Changer de profil : bouton en haut à gauche.</p>
+    </div>
+  </header>
+  <div id="stats-totaux" class="tiles stats-tuiles"></div>
+  <div id="stats-onglets" class="onglets" role="tablist" aria-label="Statistiques">
+    <button type="button" role="tab" class="onglet" data-onglet="records">🏆 Records</button>
+    <button type="button" role="tab" class="onglet" data-onglet="classements">🥇 Classements</button>
+    <button type="button" role="tab" class="onglet" data-onglet="historique">🗓️ Historique</button>
+    <button type="button" role="tab" class="onglet" data-onglet="revoir">🔁 À revoir</button>
+    <button type="button" role="tab" class="onglet" data-onglet="sauvegarde">💾 Exports</button>
+  </div>
+  <div id="stats-contenu" class="panel stats-panel" role="tabpanel"></div>
+</section>
+
+<!-- 0. Commun à tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et sélecteur.
+        Facultatifs : s'ils manquent, GéoNohyne Quizz se joue en invité, sans sélecteur. -->
+<script src="../COMMUN/comptes.js"></script>
+<script src="../COMMUN/jeux.js"></script>
+
+<!-- 1. Moteur de cartes, noyau et profils (dans cet ordre) -->
+<script src="js/carte.js"></script>
+<script src="js/core.js"></script>
+<script src="js/profils.js"></script>
+
+<!-- 2. Cartes et informations : une ligne par fichier de data/ -->
+<script src="data/france/carte-departements.js"></script>
+<script src="data/france/infos-departements.js"></script>
+<script src="data/france/carte-hydrographie.js"></script>
+<script src="data/france/infos-hydrographie.js"></script>
+<script src="data/monde/carte-pays.js"></script>
+<script src="data/monde/infos-pays.js"></script>
+<script src="data/monde/carte-mers.js"></script>
+<script src="data/monde/infos-mers.js"></script>
+
+<!-- 3. « La France et sa géographie » : quiz et jeux -->
+<script src="js/france/quiz-departements.js"></script>
+<script src="js/france/quiz-fleuves.js"></script>
+<script src="js/france/grand-chemin.js"></script>
+<script src="js/france/morpion.js"></script>
+<script src="js/france/liste.js"></script>
+<script src="js/france/codage.js"></script>
+<script src="js/france/entonnoir.js"></script>
+
+<!-- 4. « Le monde et ses pays » : quiz et jeux -->
+<script src="js/monde/quiz-pays.js"></script>
+<script src="js/monde/quiz-oceans-mers.js"></script>
+
+<!-- 5. « Apprendre » : modules d'exploration -->
+<script src="js/apprendre/departements.js"></script>
+<script src="js/apprendre/fleuves-oceans.js"></script>
+<script src="js/apprendre/pays.js"></script>
+<script src="js/apprendre/mers-monde.js"></script>
+
+<!-- 6. Profils et statistiques : bouton de compte, écran des statistiques, pages du menu -->
+<script src="js/compte.js"></script>
+
+<!-- 7. Menu : grandes catégories et cartes (en dernier : il affiche les modules chargés ci-dessus) -->
+<script src="js/menu.js"></script>
+</body>
+</html>

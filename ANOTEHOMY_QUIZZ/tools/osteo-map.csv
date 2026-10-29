@@ -1,0 +1,53 @@
+bone;side;label;bp3d
+clavicula;R;;right clavicle
+scapula;R;;right scapula
+humerus;R;;right humerus
+radius;R;;right radius
+ulna;R;;right ulna
+os_scaphoideum;R;;right scaphoid
+os_lunatum;R;;right lunate
+os_triquetrum;R;;right triquetral
+os_pisiforme;R;;right pisiform
+os_trapezium;R;;right trapezium
+os_trapezoideum;R;;right trapezoid
+os_capitatum;R;;right capitate
+os_hamatum;R;;right hamate
+ossa_metacarpi;R;metacarpien I;right first metacarpal bone
+ossa_metacarpi;R;metacarpien III;right third metacarpal bone
+phalanx_proximalis_manus;R;doigt III;proximal phalanx of right middle finger
+os_coxae;R;;right hip bone
+femur;R;;right femur
+patella;R;;right patella
+tibia;R;;right tibia
+fibula;R;;right fibula
+talus;R;;right talus
+calcaneus;R;;right calcaneus
+os_naviculare;R;;navicular bone of right foot
+os_cuboideum;R;;right cuboid bone
+os_cuneiforme_mediale;R;;right medial cuneiform bone
+ossa_metatarsi;R;metatarsien I;right first metatarsal bone
+ossa_metatarsi;R;metatarsien V;right fifth metatarsal bone
+atlas;;C1;atlas
+axis;;C2;axis
+vertebra_cervicalis;;C4;fourth cervical vertebra
+vertebra_cervicalis;;C7;seventh cervical vertebra
+vertebra_thoracica;;T6;sixth thoracic vertebra
+vertebra_lumbalis;;L3;third lumbar vertebra
+sacrum;;;sacrum
+sternum;;;sternum
+costa;R;cote 6;right sixth rib
+os_hyoideum;;;hyoid bone
+mandibula;;;mandible
+maxilla;R;;right maxilla
+os_frontale;;;frontal bone
+os_parietale;R;;right parietal bone
+os_temporale;R;;right temporal bone
+os_occipitale;;;occipital bone
+os_sphenoidale;;;sphenoid bone
+os_ethmoidale;;;ethmoid
+os_zygomaticum;R;;right zygomatic bone
+os_nasale;R;;right nasal bone
+os_lacrimale;R;;right lacrimal bone
+os_palatinum;R;;right palatine bone
+vomer;;;vomer
+concha_nasalis_inferior;R;;right inferior nasal concha

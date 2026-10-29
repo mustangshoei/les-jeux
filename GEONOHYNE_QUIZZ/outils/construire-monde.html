@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GéoNohyne Quizz : cartes du monde</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<main class="page page--narrow">
+  <a class="btn-link" href="../index.html">← Retour au jeu</a>
+
+  <div class="panel" style="margin-top:1.5rem">
+    <h1 class="tool-title">Cartes du monde</h1>
+    <p class="lead">
+      Fabrique <code>data/monde/carte-pays.js</code> et <code>data/monde/carte-mers.js</code> à partir des données
+      Natural Earth (domaine public). Tout se passe dans votre navigateur : aucun fichier n'est envoyé nulle part.
+      La liste des pays, des mers et leurs niveaux de difficulté se règlent au début de <code>outils/construire-monde.js</code>.
+    </p>
+
+    <div class="tool-step">
+      <label class="field field--wide">
+        1. Pays : <code>ne_10m_admin_0_countries_fra.geojson</code>
+        <input id="fichier-pays" type="file" accept=".geojson,.json">
+      </label>
+    </div>
+    <div class="tool-step">
+      <label class="field field--wide">
+        2. Mers : <code>ne_10m_geography_marine_polys.geojson</code>
+        <input id="fichier-mers" type="file" accept=".geojson,.json">
+      </label>
+      <p class="status">Téléchargement : dépôt <code>nvkelso/natural-earth-vector</code> sur GitHub, dossier <code>geojson/</code>.</p>
+      <p id="erreur" class="tool-error" role="alert"></p>
+    </div>
+
+    <div class="tool-step">
+      <button id="construire" type="button" class="btn btn-primary" disabled>3. Construire les cartes</button>
+      <p id="resume" class="status" aria-live="polite"></p>
+    </div>
+
+    <div id="resultat" class="hidden">
+      <div class="tool-step">
+        Aperçu
+        <div id="apercu-pays" class="tool-preview" aria-label="Aperçu de la carte des pays"></div>
+        <div id="apercu-mers" class="tool-preview" aria-label="Aperçu de la carte des mers"></div>
+      </div>
+      <div class="tool-step">
+        <button type="button" class="btn btn-primary" data-telecharger="pays">Télécharger carte-pays.js</button>
+        <button type="button" class="btn btn-primary" data-telecharger="mers">Télécharger carte-mers.js</button>
+        <button type="button" class="btn btn-soft" data-telecharger="rapport">Télécharger le rapport</button>
+      </div>
+      <div class="tool-next">
+        <strong>Ensuite</strong>
+        <ol>
+          <li>Remplacez les deux fichiers de <code>data/monde/</code> par ceux téléchargés.</li>
+          <li>Le rapport liste les voisins terrestres, les territoires rattachés, les pays riverains et les mers voisines
+            calculés sur la carte : comparez-les avec <code>data/monde/infos-pays.js</code> et
+            <code>data/monde/infos-mers.js</code>, qui se modifient à la main (une ligne par pays ou par mer).</li>
+          <li>Une nouvelle mer doit aussi recevoir sa ligne dans <code>infos-mers.js</code>.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../js/carte.js"></script>
+<script src="construire-monde.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const $ = (s) => document.querySelector(s);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const textes = { pays: null, mers: null };
+  let resultat = null;
+
+  function lire(input, cle) {
+    const f = input.files && input.files[0];
+    if (!f) return;
+    const lecteur = new FileReader();
+    lecteur.onload = () => { textes[cle] = String(lecteur.result); $('#construire').disabled = !(textes.pays && textes.mers); };
+    lecteur.onerror = () => { $('#erreur').textContent = 'Impossible de lire ' + f.name + '.'; };
+    lecteur.readAsText(f);
+  }
+
+  function apercu(boite, carte, fond) {
+    boite.innerHTML = '';
+    const v = carte.vue;
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', v.x + ' ' + v.y + ' ' + v.w + ' ' + v.h);
+    const ajouter = (d, couleur) => {
+      if (!d) return;
+      const p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', d);
+      p.style.fill = couleur;
+      svg.appendChild(p);
+    };
+    carte.elements.forEach((e) => ajouter(e.d, fond ? ['', '#93c5fd', '#a5b4fc', '#c4b5fd', '#f0abfc'][e.niveau] : ''));
+    if (fond) fond.elements.forEach((e) => ajouter(e.d, '#e2e8f0'));
+    boite.appendChild(svg);
+  }
+
+  function construire() {
+    $('#erreur').textContent = '';
+    $('#resume').textContent = 'Construction en cours…';
+    setTimeout(() => {
+      try {
+        const r = ConstruireMonde.construire(JSON.parse(textes.pays), JSON.parse(textes.mers));
+        resultat = {
+          pays: ConstruireMonde.versScript('monde-pays', r.cartePays),
+          mers: ConstruireMonde.versScript('monde-mers', r.carteMers),
+          rapport: JSON.stringify(r.rapport, null, 1)
+        };
+        const s = r.rapport.stats;
+        $('#resume').textContent = s.pays + ' pays (' + s.paysPoints.length + ' signalés par un point) · ' + s.mers +
+          ' mers et détroits (niveaux 1 à 4 : ' + s.mersParNiveau.join(', ') + ') · ' +
+          Math.round(resultat.pays.length / 1024) + ' Ko + ' + Math.round(resultat.mers.length / 1024) + ' Ko' +
+          (r.rapport.manquants.length ? ' · pays introuvables : ' + r.rapport.manquants.join(', ') : '') +
+          (r.rapport.mersIntrouvables.length ? ' · mers introuvables : ' + r.rapport.mersIntrouvables.join(', ') : '');
+        apercu($('#apercu-pays'), r.cartePays);
+        apercu($('#apercu-mers'), r.carteMers, r.cartePays);
+        $('#resultat').classList.remove('hidden');
+      } catch (e) {
+        $('#resume').textContent = '';
+        $('#erreur').textContent = 'Erreur : ' + e.message;
+      }
+    }, 30);
+  }
+
+  function telecharger(cle) {
+    if (!resultat) return;
+    const noms = { pays: 'carte-pays.js', mers: 'carte-mers.js', rapport: 'rapport-monde.json' };
+    const blob = new Blob([resultat[cle]], { type: cle === 'rapport' ? 'application/json' : 'text/javascript' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = noms[cle];
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  $('#fichier-pays').addEventListener('change', (e) => lire(e.target, 'pays'));
+  $('#fichier-mers').addEventListener('change', (e) => lire(e.target, 'mers'));
+  $('#construire').addEventListener('click', construire);
+  document.querySelectorAll('[data-telecharger]').forEach((b) => b.addEventListener('click', () => telecharger(b.dataset.telecharger)));
+})();
+</script>
+</body>
+</html>

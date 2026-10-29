@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les jeux</title>
+  <!-- Page d'accueil : choix du jeu, bouton du compte (en haut à gauche) et, pour l'administrateur,
+       le tableau de bord. La liste des jeux vient de COMMUN/jeux.js ; les liens écrits ci-dessous ne
+       servent que si ce fichier manque. Apparence et scripts : dossier ACCUEIL/. -->
+  <link rel="stylesheet" href="ACCUEIL/accueil.css">
+</head>
+<body data-vue="jeux">
+
+<div class="compte-coin" hidden>
+  <button id="compte-bouton" type="button" class="compte-bouton" aria-haspopup="dialog" aria-expanded="false" aria-controls="compte-menu"></button>
+  <div id="compte-menu" class="compte-menu" role="dialog" aria-labelledby="compte-titre" hidden>
+    <p id="compte-titre" class="menu-titre">Compte</p>
+    <div id="compte-corps"></div>
+    <p id="compte-note" class="menu-note"></p>
+  </div>
+</div>
+
+<main id="vue-jeux" class="accueil">
+  <h1>Les jeux</h1>
+  <p class="lead">Choisissez un jeu. Un seul compte pour tous : vous restez connecté d'un jeu à l'autre.</p>
+
+  <div id="jeux" class="jeux">
+    <a class="jeu" href="GEONOHYNE_QUIZZ/index.html"><span class="jeu__nom">GéoNohyne Quizz</span><span class="jeu__aller">Jouer →</span></a>
+    <a class="jeu" href="ANOTEHOMY_QUIZZ/index.html"><span class="jeu__nom">Anotehomy Quizz</span><span class="jeu__aller">Jouer →</span></a>
+    <a class="jeu" href="HISTEHORY_QUIZZ/index.html"><span class="jeu__nom">Histehory Quizz</span><span class="jeu__aller">Jouer →</span></a>
+  </div>
+
+  <footer>Chaque jeu fonctionne aussi seul : ouvrez directement son <code>index.html</code>.<br>
+    <span id="version"></span></footer>
+</main>
+
+<main id="vue-admin" class="admin" aria-labelledby="admin-titre" hidden>
+  <header class="admin-tete">
+    <p class="surtitre">Administration</p>
+    <h1 id="admin-titre">Tableau de bord</h1>
+    <p class="lead">Les comptes des joueurs et les défis de la semaine, pour tous les jeux.</p>
+  </header>
+  <div id="admin-chiffres" class="chiffres"></div>
+
+  <div class="onglets-admin" role="tablist" aria-label="Sections du tableau de bord">
+    <button type="button" role="tab" id="onglet-comptes" aria-controls="panneau-comptes" aria-selected="true">Comptes</button>
+    <button type="button" role="tab" id="onglet-defis" aria-controls="panneau-defis" aria-selected="false" tabindex="-1">Défi de la semaine</button>
+  </div>
+
+  <section id="panneau-comptes" role="tabpanel" aria-labelledby="onglet-comptes">
+    <div class="barre">
+      <label class="recherche">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="comptes-recherche" type="search" placeholder="Rechercher un joueur" aria-label="Rechercher un joueur" autocomplete="off" spellcheck="false">
+      </label>
+      <button type="button" id="comptes-actualiser" class="btn btn--doux">Actualiser</button>
+    </div>
+    <p id="comptes-message" class="message" role="status"></p>
+    <div id="comptes-liste" class="table"></div>
+  </section>
+
+  <section id="panneau-defis" role="tabpanel" aria-labelledby="onglet-defis" hidden>
+    <p class="defis-intro">Préparez un défi par mode de jeu et par semaine (du lundi au dimanche). Les jeux ne les
+      affichent pas encore : ce qui est préparé ici est enregistré sur le serveur et attend leur arrivée.</p>
+    <div class="semaine">
+      <button type="button" id="semaine-avant" class="semaine__fleche" aria-label="Semaine précédente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+      <div class="semaine__texte" aria-live="polite"><b id="semaine-titre"></b><small id="semaine-dates"></small></div>
+      <button type="button" id="semaine-apres" class="semaine__fleche" aria-label="Semaine suivante">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      <button type="button" id="semaine-avenir" class="btn btn--doux btn--petit">Semaine à venir</button>
+    </div>
+    <p id="defis-message" class="message" role="status"></p>
+    <div id="defis-jeux"></div>
+  </section>
+
+  <footer><span id="admin-version"></span></footer>
+</main>
+
+<dialog id="defi-dialogue" class="dialogue" aria-labelledby="defi-dialogue-titre">
+  <form id="defi-form" class="dialogue__form" novalidate>
+    <header class="dialogue__tete">
+      <p id="defi-contexte" class="surtitre"></p>
+      <h2 id="defi-dialogue-titre"></h2>
+      <p id="defi-dates" class="dialogue__dates"></p>
+      <button type="button" class="dialogue__fermer" data-defi-action="annuler" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="dialogue__corps">
+      <div class="dialogue__champs">
+        <label class="champ">Titre du défi
+          <input name="titre" type="text" maxlength="80" required placeholder="Ex. : Sans faute en moins de 3 minutes"></label>
+        <label class="champ">Consigne pour les joueurs
+          <textarea name="consigne" rows="4" maxlength="600" placeholder="Ce qu'il faut faire pour réussir le défi."></textarea></label>
+        <div class="dialogue__ligne">
+          <label class="champ" id="defi-variante">Façon de jouer
+            <select name="variante"></select></label>
+          <label class="champ">Nombre de questions
+            <input name="questions" type="number" min="1" max="200" inputmode="numeric" placeholder="Libre"></label>
+          <label class="champ">Difficulté
+            <select name="difficulte">
+              <option value="">Non précisée</option>
+              <option value="facile">Facile</option>
+              <option value="moyen">Moyen</option>
+              <option value="difficile">Difficile</option>
+            </select></label>
+        </div>
+        <fieldset class="statut">
+          <legend>Statut</legend>
+          <label><input type="radio" name="statut" value="brouillon"><span><b>Brouillon</b><small>En préparation</small></span></label>
+          <label><input type="radio" name="statut" value="pret"><span><b>Prêt</b><small>À publier quand les jeux sauront l'afficher</small></span></label>
+        </fieldset>
+        <p id="defi-erreur" class="message message--erreur" role="alert"></p>
+      </div>
+      <aside class="apercu" aria-label="Aperçu pour les joueurs">
+        <p class="apercu__titre-zone">Aperçu pour les joueurs</p>
+        <div id="defi-apercu"></div>
+      </aside>
+    </div>
+    <footer class="dialogue__pied">
+      <button type="button" class="btn btn--lien-danger" data-defi-action="effacer">Effacer ce défi</button>
+      <span class="dialogue__espace"></span>
+      <button type="button" class="btn btn--doux" data-defi-action="annuler">Annuler</button>
+      <button type="submit" class="btn btn--plein">Enregistrer</button>
+    </footer>
+  </form>
+</dialog>
+
+<script src="COMMUN/comptes.js"></script>
+<script src="COMMUN/jeux.js"></script>
+<script src="ACCUEIL/admin.js"></script>
+<script src="ACCUEIL/accueil.js"></script>
+</body>
+</html>

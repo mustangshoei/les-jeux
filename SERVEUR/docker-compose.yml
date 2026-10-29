@@ -1,0 +1,16 @@
+# Les jeux sur un NAS (Synology Container Manager, QNAP Container Station, Unraid, TrueNAS…)
+# Image Python officielle, rien à construire : le dossier des jeux est monté tel quel.
+# Depuis ce dossier (SERVEUR/) :  docker compose up -d
+# Puis : http://<adresse-du-NAS>:8080  (page d'accueil : choix du jeu)
+services:
+  jeux:
+    image: python:3.12-alpine
+    container_name: jeux
+    working_dir: /app
+    command: python SERVEUR/serveur.py --port 8080
+    volumes:
+      - ..:/app:ro                          # tous les jeux, en lecture seule
+      - ./donnees:/app/SERVEUR/donnees      # les comptes (seul dossier écrit)
+    ports:
+      - "8080:8080"                         # port du NAS : port du conteneur
+    restart: unless-stopped

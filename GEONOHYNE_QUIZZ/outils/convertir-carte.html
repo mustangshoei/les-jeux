@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GéoNohyne Quizz : convertir une carte</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<main class="page page--narrow">
+  <a class="btn-link" href="../index.html">← Retour au jeu</a>
+
+  <div class="panel" style="margin-top:1.5rem">
+    <h1 class="tool-title">Convertir une carte</h1>
+    <p class="lead">
+      Transforme un fichier GeoJSON (pays, régions, départements, provinces…) en carte utilisable par GéoNohyne Quizz.
+      Tout se passe dans votre navigateur : aucun fichier n'est envoyé nulle part.
+    </p>
+
+    <div class="tool-step">
+      <label class="field field--wide">
+        1. Choisissez un fichier GeoJSON
+        <input id="fichier" type="file" accept=".geojson,.json,application/geo+json,application/json">
+      </label>
+      <p id="erreur" class="tool-error" role="alert"></p>
+    </div>
+
+    <div id="reglages" class="hidden">
+      <div class="tool-step">
+        <div class="field-grid">
+          <label class="field">
+            Propriété qui contient le code
+            <select id="champ-code"></select>
+          </label>
+          <label class="field">
+            Propriété qui contient le nom
+            <select id="champ-nom"></select>
+          </label>
+          <label class="field">
+            Identifiant de la carte
+            <input id="id" type="text" placeholder="espagne-provinces" autocomplete="off">
+          </label>
+          <label class="field">
+            Codes à exclure (facultatif)
+            <input id="exclure" type="text" placeholder="^97" autocomplete="off">
+          </label>
+          <label class="field field--wide">
+            Nom de la carte
+            <input id="nom" type="text" placeholder="Espagne : les provinces" autocomplete="off">
+          </label>
+          <label class="field field--wide">
+            Crédit et licence des données
+            <input id="credit" type="text" placeholder="Contours : … Licence …" autocomplete="off">
+          </label>
+        </div>
+      </div>
+
+      <div class="tool-step">
+        2. Aperçu
+        <div id="apercu" class="tool-preview" aria-label="Aperçu de la carte"></div>
+        <p id="resume" class="status"></p>
+      </div>
+
+      <div class="tool-step">
+        <button id="telecharger" type="button" class="btn btn-primary" disabled>3. Télécharger le fichier de carte</button>
+      </div>
+
+      <div class="tool-next">
+        <strong>Ensuite</strong>
+        <ol>
+          <li>Placez le fichier téléchargé dans le sous-dossier de <code>data/</code> qui convient
+            (<code>data/france/</code>, <code>data/monde/</code>…).</li>
+          <li>Dans <code>index.html</code>, ajoutez sous « Cartes » la ligne
+            <code>&lt;script src="data/monde/carte-<span id="ex-id">identifiant</span>.js"&gt;&lt;/script&gt;</code>
+            (avec le bon sous-dossier).</li>
+          <li>Dans un fichier de quiz (copie de <code>js/france/quiz-departements.js</code>),
+            indiquez <code>carte: '<span id="ex-id2">identifiant</span>'</code>,
+            ajoutez la ligne <code>&lt;script&gt;</code> de ce quiz dans <code>index.html</code>
+            et sa carte <code>{ quiz: '…' }</code> dans <code>js/menu.js</code>.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../js/carte.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const $ = (s) => document.querySelector(s);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const CLES_CODE = ['code', 'code_insee', 'INSEE_DEP', 'CODE_DEPT', 'insee', 'iso_3166_2', 'adm1_code', 'id'];
+  const CLES_NOM = ['nom', 'NOM', 'NOM_DEPT', 'name', 'NAME', 'NAME_1', 'name_fr'];
+  const TAILLE_CONSEILLEE = 1500 * 1024;   // au-delà, le jeu devient moins fluide
+
+  let geojson = null;
+  let carte = null;
+  let nomFichier = '';
+
+  function erreur(msg) { $('#erreur').textContent = msg || ''; }
+
+  function slug(s) {
+    return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
+  function remplirListe(select, cles, preferees) {
+    select.innerHTML = '';
+    cles.forEach((k) => {
+      const o = document.createElement('option');
+      o.value = k; o.textContent = k;
+      select.appendChild(o);
+    });
+    const choix = preferees.find((k) => cles.includes(k)) || cles[0];
+    if (choix) select.value = choix;
+  }
+
+  function charger(texte, nom) {
+    geojson = null; carte = null;
+    $('#reglages').classList.add('hidden');
+    erreur('');
+
+    let data;
+    try { data = JSON.parse(texte); }
+    catch (e) { return erreur('Ce fichier n\'est pas du JSON valide.'); }
+
+    if (data && data.type === 'Topology') {
+      return erreur('Ce fichier est au format TopoJSON. Convertissez-le d\'abord en GeoJSON (par exemple sur mapshaper.org : Export → GeoJSON).');
+    }
+    if (data && data.type === 'Feature') data = { type: 'FeatureCollection', features: [data] };
+    if (!data || !Array.isArray(data.features) || data.features.length === 0) {
+      return erreur('Aucune zone trouvée : le fichier doit être un GeoJSON de type FeatureCollection.');
+    }
+
+    const cles = [];
+    data.features.slice(0, 300).forEach((f) => {
+      Object.keys(f.properties || {}).forEach((k) => { if (!cles.includes(k)) cles.push(k); });
+    });
+    if (cles.length === 0) return erreur('Les zones de ce fichier n\'ont aucune propriété (ni code ni nom).');
+
+    geojson = data;
+    nomFichier = nom.replace(/\.(geo)?json$/i, '');
+    remplirListe($('#champ-code'), cles, CLES_CODE);
+    remplirListe($('#champ-nom'), cles, CLES_NOM);
+    $('#id').value = slug(nomFichier);
+    $('#nom').value = nomFichier;
+    $('#credit').value = '';
+    $('#reglages').classList.remove('hidden');
+    recalculer();
+  }
+
+  function recalculer() {
+    if (!geojson) return;
+    erreur('');
+    $('#telecharger').disabled = true;
+    $('#apercu').innerHTML = '';
+    $('#resume').textContent = '';
+    carte = null;
+
+    try {
+      carte = GeoCarte.construire(geojson, {
+        champCode: $('#champ-code').value,
+        champNom: $('#champ-nom').value,
+        exclure: $('#exclure').value.trim(),
+        nom: $('#nom').value.trim(),
+        credit: $('#credit').value.trim()
+      });
+    } catch (e) {
+      return erreur(e.message);
+    }
+
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + carte.largeur + ' ' + carte.hauteur);
+    carte.elements.forEach((el) => {
+      const p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', el.d);
+      svg.appendChild(p);
+    });
+    $('#apercu').appendChild(svg);
+    majResume();
+  }
+
+  function majResume() {
+    if (!carte) return;
+    const id = slug($('#id').value);
+    const octets = GeoCarte.versScript(id || 'carte', carte).length;
+    let t = carte.elements.length + ' zones · ' + Math.round(octets / 1024) + ' Ko';
+    if (octets > TAILLE_CONSEILLEE) {
+      t += ' · fichier lourd : simplifiez d\'abord le GeoJSON (mapshaper.org, « Simplify », 5 à 10 %).';
+    }
+    $('#resume').textContent = t;
+    $('#telecharger').disabled = !id;
+    $('#ex-id').textContent = id || 'identifiant';
+    $('#ex-id2').textContent = id || 'identifiant';
+  }
+
+  function telecharger() {
+    const id = slug($('#id').value);
+    if (!carte || !id) return;
+    carte.nom = $('#nom').value.trim();
+    carte.credit = $('#credit').value.trim();
+    const blob = new Blob([GeoCarte.versScript(id, carte)], { type: 'text/javascript' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'carte-' + id + '.js';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  $('#fichier').addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const lecteur = new FileReader();
+    lecteur.onload = () => charger(String(lecteur.result), f.name);
+    lecteur.onerror = () => erreur('Impossible de lire ce fichier.');
+    lecteur.readAsText(f);
+  });
+
+  ['#champ-code', '#champ-nom', '#exclure'].forEach((s) => $(s).addEventListener('change', recalculer));
+  $('#exclure').addEventListener('input', recalculer);
+  ['#nom', '#credit'].forEach((s) => $(s).addEventListener('input', () => {
+    if (carte) { carte.nom = $('#nom').value.trim(); carte.credit = $('#credit').value.trim(); majResume(); }
+  }));
+  $('#id').addEventListener('input', majResume);
+  $('#telecharger').addEventListener('click', telecharger);
+})();
+</script>
+</body>
+</html>

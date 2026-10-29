@@ -1,0 +1,71 @@
+/* ==========================================================================
+   Anotehomy Quizz - home.css
+   Ecran d'accueil : categories (Muscles, Os, Vaisseaux sanguins), jeux d'une
+   categorie, et fil d'Ariane (aussi utilise par la configuration).
+   ========================================================================== */
+.home-card{max-width:980px}
+.home-hero{margin-bottom:6px}
+.home-hero h1{font-size:32px}
+.home-h{font-size:12.5px;margin:26px 0 12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
+.home-view{animation:viewIn .3s ease}
+.home-msg{min-height:20px;margin:12px 0 0;font-size:13px;color:var(--warn)}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- Icones de categorie ---------- */
+.cat-ico{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;flex:none;color:#fff;
+  background:linear-gradient(135deg,#334155,#1e293b);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.cat-ico svg{width:32px;height:32px}
+.cat-ico svg.st,.cat-foot svg,.game-play svg,.crumbs svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cat-os .cat-ico,.cat-ico-os{background:linear-gradient(135deg,#1f9e93,#3b5bdb)}
+.cat-muscles .cat-ico,.cat-ico-muscles{background:linear-gradient(135deg,#9f1239,#f87171)}
+.cat-vaisseaux .cat-ico,.cat-ico-vaisseaux{background:linear-gradient(135deg,#be123c,#2563eb)}
+
+/* ---------- Cartes de categorie ---------- */
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.cat{display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;padding:22px;min-height:220px;
+  border-radius:18px;border:1.5px solid var(--line);background:linear-gradient(180deg,#141f37,#0f1729);
+  color:inherit;font:inherit;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
+.cat:hover:not(.locked),.cat:focus-visible:not(.locked){transform:translateY(-3px);border-color:rgba(79,209,197,.65);box-shadow:0 14px 34px rgba(0,0,0,.4);outline:none}
+.cat-name{font-size:20px;font-weight:750;margin-top:4px}
+.cat-desc{font-size:13px;color:var(--muted);flex:1}
+.cat-foot{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:650;color:var(--accent)}
+.cat-foot svg{width:16px;height:16px}
+.cat:hover:not(.locked) .cat-foot svg{transform:translateX(3px);transition:transform .2s}
+.cat.locked{cursor:not-allowed;background:#0d1426}
+.cat.locked .cat-ico{filter:grayscale(1);opacity:.45}
+.cat.locked .cat-name,.cat.locked .cat-desc{opacity:.55}
+.cat.locked .cat-foot{color:var(--muted)}
+.cat.nudge{animation:shake .35s}
+
+/* ---------- Fil d'Ariane ---------- */
+.crumbs{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:13px;margin-bottom:16px}
+.crumb{background:none;border:0;padding:3px 6px;border-radius:7px;color:var(--accent);cursor:pointer;font:inherit;font-weight:600}
+.crumb:hover{background:rgba(79,209,197,.1)}
+.crumb-sep{color:#3a4870}
+.crumb-cur{color:var(--muted);padding:3px 2px}
+
+/* ---------- En-tete de categorie ---------- */
+.cat-head{display:flex;align-items:center;gap:16px}
+.cat-head h2{margin:0;font-size:26px}
+.cat-head p{margin:2px 0 0;color:var(--muted)}
+
+/* ---------- Cartes de jeu ---------- */
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.game{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:18px;border:1.5px solid var(--line);
+  background:linear-gradient(180deg,#141f37,#0f1729);transition:border-color .2s,box-shadow .2s}
+.game:not(.locked){cursor:pointer}
+.game:not(.locked):hover{border-color:rgba(79,209,197,.65);box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.game-top{display:flex;align-items:center;justify-content:space-between}
+.game-num{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent2)}
+.game-status{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:99px}
+.game-status.ok{color:#a7f3d0;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4)}
+.game-status.soon{color:var(--muted);background:#18223b;border:1px solid var(--line)}
+.game h3{margin:4px 0 0;font-size:21px}
+.game-tag{margin:0;font-weight:600;color:#dfe6f5}
+.game-desc{margin:0;font-size:13px;color:var(--muted);flex:1}
+.game-meta{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;padding:0}
+.game-meta li{font-size:12px;padding:4px 10px;border-radius:99px;background:#101a30;border:1px solid var(--line);color:#cdd6ea}
+.game-play{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;padding:12px 18px}
+.game-play svg{width:17px;height:17px}
+.game.locked{background:#0d1426}
+.game.locked h3,.game.locked .game-tag,.game.locked .game-desc,.game.locked .game-meta{opacity:.6}

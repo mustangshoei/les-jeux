@@ -1,0 +1,8 @@
+# Jamais dans le dépôt (public) :
+# les comptes des joueurs et leurs sauvegardes (mots de passe hachés, statistiques)
+SERVEUR/donnees/
+# les notes personnelles
+IGNORED_BY_CLAUDE/
+# fichiers produits par Python
+__pycache__/
+*.pyc

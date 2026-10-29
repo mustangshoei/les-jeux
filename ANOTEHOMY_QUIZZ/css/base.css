@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Anotehomy Quizz - base.css
+   Variables, remise a zero et composants generiques (logo, boutons, puces).
+   ========================================================================== */
+:root{
+  --bg:#0b1020; --panel2:#18223b; --line:#26324f;
+  --text:#e8edf7; --muted:#93a0bd; --accent:#4fd1c5; --accent2:#7c9cff;
+  --ok:#34d399; --ko:#ff5a5a; --warn:#fbbf24;
+  --bone:#ece2cb; --bone-edge:#7d6f57; --hole:#0a0f1d; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+[hidden]{display:none!important}
+
+/* ---------- Logo ---------- */
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#1f9e93,#3b5bdb);color:#fff;box-shadow:0 6px 18px rgba(79,209,197,.25);flex:none}
+.logo svg{width:26px;height:26px}
+/* icones au trait (categorie "Les muscles"...) */
+.logo svg.st{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Boutons ---------- */
+.btn{border:1px solid var(--line);background:#18223b;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600;transition:background .2s,transform .1s,border-color .2s}
+.btn:hover{background:#202d4d}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,#22b3a6,#4263eb);border-color:transparent;color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.grow{flex:1}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* ---------- Petits elements ---------- */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 10px;border-radius:99px;background:#18223b;border:1px solid var(--line);color:var(--muted)}
+.kbd{font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:var(--muted);margin-left:4px}
+.latin{color:var(--muted);font-style:italic;font-size:13px;margin-top:6px}
+.credits{font-size:11px;color:#6f7c99;margin:0}
+.card .credits{margin-top:18px;text-align:right}

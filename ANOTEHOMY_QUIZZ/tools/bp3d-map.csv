@@ -1,0 +1,215 @@
+bone;side;label;bp3d
+clavicula;R;;right clavicle
+clavicula;L;;left clavicle
+scapula;R;;right scapula
+scapula;L;;left scapula
+humerus;R;;right humerus
+humerus;L;;left humerus
+radius;R;;right radius
+radius;L;;left radius
+ulna;R;;right ulna
+ulna;L;;left ulna
+os_scaphoideum;R;;right scaphoid
+os_scaphoideum;L;;left scaphoid
+os_lunatum;R;;right lunate
+os_lunatum;L;;left lunate
+os_triquetrum;R;;right triquetral
+os_triquetrum;L;;left triquetral
+os_pisiforme;R;;right pisiform
+os_pisiforme;L;;left pisiform
+os_trapezium;R;;right trapezium
+os_trapezium;L;;left trapezium
+os_trapezoideum;R;;right trapezoid
+os_trapezoideum;L;;left trapezoid
+os_capitatum;R;;right capitate
+os_capitatum;L;;left capitate
+os_hamatum;R;;right hamate
+os_hamatum;L;;left hamate
+ossa_metacarpi;R;metacarpien I;right first metacarpal bone
+ossa_metacarpi;L;metacarpien I;left first metacarpal bone
+ossa_metacarpi;R;metacarpien II;right second metacarpal bone
+ossa_metacarpi;L;metacarpien II;left second metacarpal bone
+ossa_metacarpi;R;metacarpien III;right third metacarpal bone
+ossa_metacarpi;L;metacarpien III;left third metacarpal bone
+ossa_metacarpi;R;metacarpien IV;right fourth metacarpal bone
+ossa_metacarpi;L;metacarpien IV;left fourth metacarpal bone
+ossa_metacarpi;R;metacarpien V;right fifth metacarpal bone
+ossa_metacarpi;L;metacarpien V;left fifth metacarpal bone
+phalanx_proximalis_manus;R;doigt I;proximal phalanx of right thumb
+phalanx_proximalis_manus;L;doigt I;proximal phalanx of left thumb
+phalanx_distalis_manus;R;doigt I;distal phalanx of right thumb
+phalanx_distalis_manus;L;doigt I;distal phalanx of left thumb
+phalanx_proximalis_manus;R;doigt II;proximal phalanx of right index finger
+phalanx_proximalis_manus;L;doigt II;proximal phalanx of left index finger
+phalanx_media_manus;R;doigt II;middle phalanx of right index finger
+phalanx_media_manus;L;doigt II;middle phalanx of left index finger
+phalanx_distalis_manus;R;doigt II;distal phalanx of right index finger
+phalanx_distalis_manus;L;doigt II;distal phalanx of left index finger
+phalanx_proximalis_manus;R;doigt III;proximal phalanx of right middle finger
+phalanx_proximalis_manus;L;doigt III;proximal phalanx of left middle finger
+phalanx_media_manus;R;doigt III;middle phalanx of right middle finger
+phalanx_media_manus;L;doigt III;middle phalanx of left middle finger
+phalanx_distalis_manus;R;doigt III;distal phalanx of right middle finger
+phalanx_distalis_manus;L;doigt III;distal phalanx of left middle finger
+phalanx_proximalis_manus;R;doigt IV;proximal phalanx of right ring finger
+phalanx_proximalis_manus;L;doigt IV;proximal phalanx of left ring finger
+phalanx_media_manus;R;doigt IV;middle phalanx of right ring finger
+phalanx_media_manus;L;doigt IV;middle phalanx of left ring finger
+phalanx_distalis_manus;R;doigt IV;distal phalanx of right ring finger
+phalanx_distalis_manus;L;doigt IV;distal phalanx of left ring finger
+phalanx_proximalis_manus;R;doigt V;proximal phalanx of right little finger
+phalanx_proximalis_manus;L;doigt V;proximal phalanx of left little finger
+phalanx_media_manus;R;doigt V;middle phalanx of right little finger
+phalanx_media_manus;L;doigt V;middle phalanx of left little finger
+phalanx_distalis_manus;R;doigt V;distal phalanx of right little finger
+phalanx_distalis_manus;L;doigt V;distal phalanx of left little finger
+femur;R;;right femur
+femur;L;;left femur
+patella;R;;right patella
+patella;L;;left patella
+tibia;R;;right tibia
+tibia;L;;left tibia
+fibula;R;;right fibula
+fibula;L;;left fibula
+talus;R;;right talus
+talus;L;;left talus
+calcaneus;R;;right calcaneus
+calcaneus;L;;left calcaneus
+os_naviculare;R;;navicular bone of right foot
+os_naviculare;L;;navicular bone of left foot
+os_cuboideum;R;;right cuboid bone
+os_cuboideum;L;;left cuboid bone
+os_cuneiforme_mediale;R;;right medial cuneiform bone
+os_cuneiforme_mediale;L;;left medial cuneiform bone
+os_cuneiforme_intermedium;R;;right intermediate cuneiform bone
+os_cuneiforme_intermedium;L;;left intermediate cuneiform bone
+os_cuneiforme_laterale;R;;right lateral cuneiform bone
+os_cuneiforme_laterale;L;;left lateral cuneiform bone
+ossa_metatarsi;R;metatarsien I;right first metatarsal bone
+ossa_metatarsi;L;metatarsien I;left first metatarsal bone
+ossa_metatarsi;R;metatarsien II;right second metatarsal bone
+ossa_metatarsi;L;metatarsien II;left second metatarsal bone
+ossa_metatarsi;R;metatarsien III;right third metatarsal bone
+ossa_metatarsi;L;metatarsien III;left third metatarsal bone
+ossa_metatarsi;R;metatarsien IV;right fourth metatarsal bone
+ossa_metatarsi;L;metatarsien IV;left fourth metatarsal bone
+ossa_metatarsi;R;metatarsien V;right fifth metatarsal bone
+ossa_metatarsi;L;metatarsien V;left fifth metatarsal bone
+phalanx_proximalis_pedis;R;orteil I;proximal phalanx of right big toe
+phalanx_proximalis_pedis;L;orteil I;proximal phalanx of left big toe
+phalanx_distalis_pedis;R;orteil I;distal phalanx of right big toe
+phalanx_distalis_pedis;L;orteil I;distal phalanx of left big toe
+phalanx_proximalis_pedis;R;orteil II;proximal phalanx of right second toe
+phalanx_proximalis_pedis;L;orteil II;proximal phalanx of left second toe
+phalanx_media_pedis;R;orteil II;middle phalanx of right second toe
+phalanx_media_pedis;L;orteil II;middle phalanx of left second toe
+phalanx_distalis_pedis;R;orteil II;distal phalanx of right second toe
+phalanx_distalis_pedis;L;orteil II;distal phalanx of left second toe
+phalanx_proximalis_pedis;R;orteil III;proximal phalanx of right third toe
+phalanx_proximalis_pedis;L;orteil III;proximal phalanx of left third toe
+phalanx_media_pedis;R;orteil III;middle phalanx of right third toe
+phalanx_media_pedis;L;orteil III;middle phalanx of left third toe
+phalanx_distalis_pedis;R;orteil III;distal phalanx of right third toe
+phalanx_distalis_pedis;L;orteil III;distal phalanx of left third toe
+phalanx_proximalis_pedis;R;orteil IV;proximal phalanx of right fourth toe
+phalanx_proximalis_pedis;L;orteil IV;proximal phalanx of left fourth toe
+phalanx_media_pedis;R;orteil IV;middle phalanx of right fourth toe
+phalanx_media_pedis;L;orteil IV;middle phalanx of left fourth toe
+phalanx_distalis_pedis;R;orteil IV;distal phalanx of right fourth toe
+phalanx_distalis_pedis;L;orteil IV;distal phalanx of left fourth toe
+phalanx_proximalis_pedis;R;orteil V;proximal phalanx of right little toe
+phalanx_proximalis_pedis;L;orteil V;proximal phalanx of left little toe
+phalanx_media_pedis;R;orteil V;middle phalanx of right little toe
+phalanx_media_pedis;L;orteil V;middle phalanx of left little toe
+phalanx_distalis_pedis;R;orteil V;distal phalanx of right little toe
+phalanx_distalis_pedis;L;orteil V;distal phalanx of left little toe
+atlas;;C1;atlas
+axis;;C2;axis
+vertebra_cervicalis;;C3;third cervical vertebra
+vertebra_cervicalis;;C4;fourth cervical vertebra
+vertebra_cervicalis;;C5;fifth cervical vertebra
+vertebra_cervicalis;;C6;sixth cervical vertebra
+vertebra_cervicalis;;C7;seventh cervical vertebra
+vertebra_thoracica;;T1;first thoracic vertebra
+vertebra_thoracica;;T2;second thoracic vertebra
+vertebra_thoracica;;T3;third thoracic vertebra
+vertebra_thoracica;;T4;fourth thoracic vertebra
+vertebra_thoracica;;T5;fifth thoracic vertebra
+vertebra_thoracica;;T6;sixth thoracic vertebra
+vertebra_thoracica;;T7;seventh thoracic vertebra
+vertebra_thoracica;;T8;eighth thoracic vertebra
+vertebra_thoracica;;T9;ninth thoracic vertebra
+vertebra_thoracica;;T10;tenth thoracic vertebra
+vertebra_thoracica;;T11;eleventh thoracic vertebra
+vertebra_thoracica;;T12;twelfth thoracic vertebra
+vertebra_lumbalis;;L1;first lumbar vertebra
+vertebra_lumbalis;;L2;second lumbar vertebra
+vertebra_lumbalis;;L3;third lumbar vertebra
+vertebra_lumbalis;;L4;fourth lumbar vertebra
+vertebra_lumbalis;;L5;fifth lumbar vertebra
+os_frontale;;;frontal bone
+os_parietale;R;;right parietal bone
+os_parietale;L;;left parietal bone
+os_temporale;R;;right temporal bone
+os_temporale;L;;left temporal bone
+os_occipitale;;;occipital bone
+os_sphenoidale;;;sphenoid bone
+os_ethmoidale;;;ethmoid
+os_nasale;R;;right nasal bone
+os_nasale;L;;left nasal bone
+os_lacrimale;R;;right lacrimal bone
+os_lacrimale;L;;left lacrimal bone
+os_zygomaticum;R;;right zygomatic bone
+os_zygomaticum;L;;left zygomatic bone
+maxilla;R;;right maxilla
+maxilla;L;;left maxilla
+os_palatinum;R;;right palatine bone
+os_palatinum;L;;left palatine bone
+mandibula;;;mandible
+vomer;;;vomer
+concha_nasalis_inferior;R;;right inferior nasal concha
+concha_nasalis_inferior;L;;left inferior nasal concha
+os_coxae;R;;right hip bone
+os_coxae;L;;left hip bone
+sacrum;;;sacrum
+sternum;;;sternum
+costa;R;cote 1;right first rib
+costa;L;cote 1;left first rib
+costa;R;cote 2;right second rib
+costa;L;cote 2;left second rib
+costa;R;cote 3;right third rib
+costa;L;cote 3;left third rib
+costa;R;cote 4;right fourth rib
+costa;L;cote 4;left fourth rib
+costa;R;cote 5;right fifth rib
+costa;L;cote 5;left fifth rib
+costa;R;cote 6;right sixth rib
+costa;L;cote 6;left sixth rib
+costa;R;cote 7;right seventh rib
+costa;L;cote 7;left seventh rib
+costa;R;cote 8;right eighth rib
+costa;L;cote 8;left eighth rib
+costa;R;cote 9;right ninth rib
+costa;L;cote 9;left ninth rib
+costa;R;cote 10;right tenth rib
+costa;L;cote 10;left tenth rib
+costa;R;cote 11;right eleventh rib
+costa;L;cote 11;left eleventh rib
+costa;R;cote 12;right twelfth rib
+costa;L;cote 12;left twelfth rib
+os_hyoideum;;;hyoid bone
+#cartilage;R;;right first costal cartilage
+#cartilage;L;;left first costal cartilage
+#cartilage;R;;right second costal cartilage
+#cartilage;L;;left second costal cartilage
+#cartilage;R;;right third costal cartilage
+#cartilage;L;;left third costal cartilage
+#cartilage;R;;right fourth costal cartilage
+#cartilage;L;;left fourth costal cartilage
+#cartilage;R;;right fifth costal cartilage
+#cartilage;L;;left fifth costal cartilage
+#cartilage;R;;right sixth costal cartilage
+#cartilage;L;;left sixth costal cartilage
+#cartilage;R;;right seventh costal cartilage
+#cartilage;L;;left seventh costal cartilage
+#dents;;;tooth

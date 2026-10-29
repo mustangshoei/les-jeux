@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Anotehomy Quizz - stage.css
+   Scene 3D et elements superposes :
+     haut      consigne de la question (bulle), avertissements, os masques
+     bas       barre de commandes unique (vues | zoom | aide) + carte d'aide
+   ========================================================================== */
+#stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#1d2846 0%,#0b1020 72%)}
+#stage::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+#view3d{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;outline:none}
+#view3d.pointing{cursor:pointer}
+#view3d.dragging{cursor:grabbing}
+
+/* surface "verre" commune aux elements superposes */
+.stage-prompt,.dock,.help-card,.hidden-chip,.tooltip{background:rgba(13,20,38,.86);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+
+/* ---------- Consigne en haut de la scene ---------- */
+.stage-prompt{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;max-width:calc(100% - 32px);
+  padding:9px 18px;border-radius:999px;font-size:14px;color:#dfe6f5;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  animation:promptIn .35s ease}
+.stage-prompt b{color:#fff;font-size:15px}
+.stage-prompt .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff4545;box-shadow:0 0 10px #ff4545;margin-right:8px;vertical-align:1px}
+.stage-prompt.ok{border-color:rgba(52,211,153,.6);color:#a7f3d0}
+.stage-prompt.ko{border-color:rgba(255,90,90,.6);color:#ffc4c4}
+.stage-prompt.review{border-color:rgba(79,209,197,.5)}
+@keyframes promptIn{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
+
+.notice{position:absolute;top:64px;left:50%;transform:translateX(-50%);background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.5);color:#fde68a;padding:8px 14px;border-radius:10px;font-size:13px;z-index:3;max-width:90%;text-align:center}
+/* osteologie : os etudie, en haut a gauche de la vue 3D (sous la consigne) */
+.stage-badge{position:absolute;left:14px;top:60px;z-index:3;padding:7px 12px;border-radius:10px;font-size:13px;color:#dfe6f5;background:rgba(13,20,38,.86);border:1px solid rgba(124,156,255,.45);border-left:3px solid var(--accent2);max-width:min(320px,40%)}
+.stage-badge b{color:#fff}
+/* objets masques (Maj + clic) : en bas a droite, au-dessus de la barre de commandes */
+.hidden-chip{position:absolute;right:14px;bottom:76px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:#cdd6ea;padding:5px 6px 5px 10px;border-radius:10px;z-index:3}
+.hidden-chip svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+
+/* ---------- Barre de commandes ---------- */
+.dock{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:6px;padding:6px;border-radius:16px;max-width:calc(100% - 24px)}
+.dock-sep{width:1px;align-self:stretch;margin:4px 2px;background:var(--line)}
+.views{display:flex;gap:2px;padding:2px;border-radius:11px;background:rgba(5,9,18,.45)}
+.views button{border:0;background:transparent;height:36px;padding:0 13px;border-radius:9px;cursor:pointer;color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap;transition:background .2s,color .2s}
+.views button:hover{color:#fff;background:rgba(255,255,255,.05)}
+.views button.on{background:linear-gradient(135deg,rgba(34,179,166,.9),rgba(66,99,235,.9));color:#fff;box-shadow:0 2px 10px rgba(66,99,235,.35)}
+.views .sm{display:none}
+.tools{display:flex;gap:2px}
+.ico{width:40px;height:40px;border:0;border-radius:10px;background:transparent;cursor:pointer;display:grid;place-items:center;color:#dfe6f5;transition:background .2s}
+.ico:hover{background:rgba(255,255,255,.08)}
+.ico[aria-expanded="true"]{background:#22304f}
+.ico[aria-pressed="true"]{background:linear-gradient(135deg,rgba(34,179,166,.9),rgba(66,99,235,.9));color:#fff}
+.ico svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dock button:focus-visible,.help-card button:focus-visible,.hidden-chip button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* ---------- Carte d'aide ---------- */
+.help-card{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);z-index:4;width:min(400px,calc(100% - 24px));padding:12px 16px 14px;border-radius:14px;font-size:13px;animation:promptIn .25s ease}
+.help-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.sm-ico{width:30px;height:30px}
+.sm-ico svg{width:16px;height:16px}
+.help-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;align-items:center}
+.help-grid .hl{color:var(--muted)}
+.help-sec{grid-column:1 / -1;margin:8px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent)}
+
+/* ---------- Divers ---------- */
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;z-index:2;pointer-events:none}
+.tooltip{position:absolute;pointer-events:none;padding:6px 10px;border-radius:8px;font-size:13px;z-index:4;white-space:nowrap}
+.tooltip small{color:var(--muted);font-style:italic;margin-left:6px}

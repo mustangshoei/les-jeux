@@ -1,0 +1,89 @@
+/* ==========================================================================
+   COMMUN/jeux.css — Apparence du sélecteur « Changer de jeu » (COMMUN/jeux.js)
+
+   Classes préfixées jx- : rien ici ne touche au reste de la page d'un jeu.
+   Chaque jeu adapte les couleurs à son thème en définissant ces variables sur son
+   conteneur (.jeux-coin), dans sa propre feuille de style :
+     --jx-fond     fond du bouton et de la liste      --jx-texte   texte
+     --jx-doux     fond au survol                     --jx-attenue texte secondaire
+     --jx-bord     bordures                           --jx-accent  couleur d'accent
+     --jx-ombre    ombre du bouton                    --jx-ombre-menu  ombre de la liste
+   La position (en haut à droite) et la visibilité du conteneur sont choisies par le jeu.
+   ========================================================================== */
+.jx-selecteur { position: relative; font-size: .92rem; line-height: 1.3; }
+
+.jx-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  height: 2.5rem;
+  padding: 0 .9rem 0 .7rem;
+  border: 1px solid var(--jx-bord, #e2e8f0);
+  border-radius: 999px;
+  background: var(--jx-fond, #ffffff);
+  color: var(--jx-texte, #0f172a);
+  box-shadow: var(--jx-ombre, 0 1px 3px rgba(15, 23, 42, .12));
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.jx-bouton:hover, .is-ouvert .jx-bouton { border-color: var(--jx-accent, #2563eb); }
+.jx-bouton:focus-visible { outline: 2px solid var(--jx-accent, #2563eb); outline-offset: 2px; }
+.jx-bouton svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; }
+
+.jx-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  width: min(21rem, calc(100vw - 24px));
+  padding: .6rem;
+  border: 1px solid var(--jx-bord, #e2e8f0);
+  border-radius: 16px;
+  background: var(--jx-fond, #ffffff);
+  color: var(--jx-texte, #0f172a);
+  box-shadow: var(--jx-ombre-menu, 0 12px 32px rgba(15, 23, 42, .18));
+  text-align: left;
+}
+.jx-menu[hidden] { display: none; }
+.jx-titre {
+  margin: .2rem .5rem .5rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--jx-attenue, #64748b);
+}
+.jx-jeu {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .6rem;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+a.jx-jeu:hover, a.jx-jeu:focus-visible { background: var(--jx-doux, #f1f5f9); outline: none; }
+.jx-jeu.is-ici { box-shadow: inset 0 0 0 1.5px var(--jx-accent, #2563eb); }
+.jx-icone { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 10px;
+  background: var(--jx-doux, #f1f5f9); font-size: 1.35rem; line-height: 1; }
+.jx-texte { display: flex; flex-direction: column; min-width: 0; }
+.jx-texte b { font-weight: 800; }
+.jx-texte small { font-size: .8rem; color: var(--jx-attenue, #64748b); }
+.jx-jeu.is-ici small { color: var(--jx-accent, #2563eb); font-weight: 700; }
+.jx-note { margin: .5rem .5rem 0; font-size: .78rem; color: var(--jx-attenue, #64748b); }
+.jx-accueil {
+  display: block;
+  margin: .5rem .5rem .2rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--jx-accent, #2563eb);
+  text-decoration: none;
+}
+.jx-accueil:hover { text-decoration: underline; }
+
+/* Petit écran : le bouton se réduit à son icône */
+@media (max-width: 560px) {
+  .jx-bouton { width: 2.5rem; padding: 0; justify-content: center; }
+  .jx-libelle { display: none; }
+}

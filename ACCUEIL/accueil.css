@@ -1,0 +1,293 @@
+/* ==========================================================================
+   ACCUEIL/accueil.css — Apparence de la page d'accueil (index.html à la racine)
+
+   Thème clair ou sombre, selon le système. Trois parties :
+     - la liste des jeux ;
+     - le bouton du compte (en haut à gauche) et son menu, sur le modèle du menu « Jeux » ;
+     - le tableau de bord de l'administrateur : chiffres, comptes, défis de la semaine, fenêtre d'un défi.
+   ========================================================================== */
+:root {
+  --bg: #f8fafc; --card: #ffffff; --ink: #0f172a; --ink-2: #475569; --line: #e2e8f0; --accent: #2563eb;
+  --soft: #f1f5f9; --sur-accent: #ffffff; --danger: #dc2626; --sur-danger: #ffffff; --ok: #15803d; --warn: #b45309;
+  --shadow: 0 10px 30px rgba(15, 23, 42, .10); --shadow-menu: 0 12px 32px rgba(15, 23, 42, .18);
+  --shadow-bouton: 0 1px 3px rgba(15, 23, 42, .12);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0b1220; --card: #131d31; --ink: #e6edf7; --ink-2: #a8b5c9; --line: #26354f; --accent: #60a5fa;
+    --soft: #1b2741; --sur-accent: #0b1220; --danger: #f87171; --sur-danger: #1f0a0a; --ok: #4ade80; --warn: #fbbf24;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .45); --shadow-menu: 0 12px 32px rgba(0, 0, 0, .55);
+    --shadow-bouton: 0 1px 3px rgba(0, 0, 0, .4); color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif; }
+h1 { margin: 0; font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; line-height: 1.15; }
+.lead { margin: .5rem 0 0; color: var(--ink-2); }
+footer { margin-top: 2.5rem; text-align: center; font-size: .85rem; color: var(--ink-2); }
+svg { flex: none; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- Liste des jeux ---------- */
+.accueil { max-width: 860px; margin: 0 auto; padding: 4.5rem 16px 3rem; }
+.accueil h1, .accueil .lead { text-align: center; }
+.jeux { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+.jeu { display: flex; flex-direction: column; gap: .5rem; padding: 1.5rem; border: 1.5px solid var(--line); border-radius: 20px;
+  background: var(--card); color: inherit; text-decoration: none; box-shadow: var(--shadow);
+  transition: transform .15s ease, border-color .15s ease; }
+.jeu:hover, .jeu:focus-visible { transform: translateY(-3px); border-color: var(--accent); outline: none; }
+.jeu__tete { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+.jeu__icone { font-size: 2.5rem; line-height: 1; }
+.jeu__version { padding: .15rem .55rem; border: 1px solid var(--line); border-radius: 999px; font-size: .78rem;
+  font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.jeu__nom { font-size: 1.35rem; font-weight: 800; }
+.jeu__desc { color: var(--ink-2); font-size: .95rem; flex: 1; }
+.jeu__aller { font-weight: 700; color: var(--accent); }
+
+/* ---------- Boutons, champs, messages ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 2.5rem; padding: 0 1rem;
+  border: 1px solid transparent; border-radius: 10px; background: none; color: inherit; font: inherit; font-weight: 700;
+  cursor: pointer; white-space: nowrap; }
+.btn:focus-visible, .ligne:focus-visible, .recent:focus-visible, .recent__oublier:focus-visible, .compte-bouton:focus-visible,
+.onglets button:focus-visible, .onglets-admin button:focus-visible, .semaine__fleche:focus-visible, .dialogue__fermer:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn--plein { background: var(--accent); color: var(--sur-accent); }
+.btn--doux { background: var(--soft); border-color: var(--line); color: var(--ink); }
+.btn--doux:hover:not(:disabled) { border-color: var(--accent); }
+.btn--contour { border-color: var(--accent); color: var(--accent); }
+.btn--contour:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.btn--danger { background: var(--danger); color: var(--sur-danger); }
+.btn--lien-danger { padding: 0 .5rem; color: var(--danger); }
+.btn--lien-danger:hover:not(:disabled) { text-decoration: underline; }
+.btn--lien-danger.is-arme { background: var(--danger); color: var(--sur-danger); text-decoration: none; }
+.btn--petit { min-height: 2.1rem; padding: 0 .75rem; font-size: .86rem; }
+
+.champ { display: flex; flex-direction: column; gap: .3rem; min-width: 0; font-size: .82rem; font-weight: 700; color: var(--ink-2); }
+.champ input, .champ textarea, .champ select { width: 100%; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--bg); color: var(--ink); font: inherit; font-size: .95rem; font-weight: 400; }
+.champ textarea { resize: vertical; min-height: 5.5rem; }
+.champ input:focus, .champ textarea:focus, .champ select:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+
+.message { margin: 0; font-size: .88rem; font-weight: 600; color: var(--ok); }
+.message:empty { display: none; }
+.message--erreur { color: var(--danger); }
+.form__boutons { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+.avatar { display: grid; place-items: center; flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+  background: var(--avatar, #64748b); color: #fff; font-size: .9rem; font-weight: 800; line-height: 1; }
+.avatar--invite { background: var(--soft); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line); }
+.avatar--invite svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.avatar--menu { width: 2.4rem; height: 2.4rem; font-size: 1.05rem; }
+.texte { display: flex; flex-direction: column; min-width: 0; }
+.texte b { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.texte small { font-size: .8rem; color: var(--ink-2); }
+.badge { display: inline-block; padding: .05rem .5rem; border: 1px solid var(--line); border-radius: 999px; background: var(--soft);
+  color: var(--ink-2); font-size: .72rem; font-weight: 800; white-space: nowrap; }
+.badge--admin { border-color: currentColor; background: none; color: var(--accent); }
+
+/* ---------- Bouton du compte et son menu ---------- */
+.compte-coin { position: absolute; top: 16px; left: 16px; z-index: 50; font-size: .92rem; line-height: 1.3; }
+.compte-bouton { display: inline-flex; align-items: center; gap: .5rem; max-width: calc(100vw - 32px); height: 2.5rem;
+  padding: 0 .9rem 0 .3rem; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink);
+  box-shadow: var(--shadow-bouton); font: inherit; font-weight: 700; cursor: pointer; }
+.compte-bouton:hover, .is-ouvert .compte-bouton { border-color: var(--accent); }
+.compte-nom { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 11rem; }
+.compte-menu { position: absolute; top: calc(100% + 8px); left: 0; width: min(22rem, calc(100vw - 32px)); max-height: calc(100vh - 80px);
+  overflow-y: auto; padding: .6rem; border: 1px solid var(--line); border-radius: 16px; background: var(--card);
+  box-shadow: var(--shadow-menu); }
+.menu-titre, .menu-sous-titre { margin: .2rem .5rem .5rem; font-size: .72rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--ink-2); }
+.menu-sous-titre { margin-top: .6rem; }
+.menu-note { margin: .6rem .5rem .2rem; font-size: .78rem; color: var(--ink-2); }
+.menu-note:empty { display: none; }
+.identite { display: flex; align-items: center; gap: .75rem; padding: .6rem; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--accent); }
+.identite small { color: var(--accent); font-weight: 700; }
+.compte-menu > div > .message { margin: .6rem .5rem 0; }
+.lignes { display: flex; flex-direction: column; gap: 2px; margin-top: .6rem; padding-top: .5rem; border-top: 1px solid var(--line); }
+.ligne { display: flex; align-items: center; gap: .75rem; width: 100%; padding: .55rem .6rem; border: 0; border-radius: 12px;
+  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.ligne:hover:not(:disabled) { background: var(--soft); }
+.ligne:disabled { opacity: .55; cursor: default; }
+.ligne__icone { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 10px; background: var(--soft); }
+.ligne:hover .ligne__icone { background: var(--card); }
+.ligne__icone svg, .recent__oublier svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; }
+
+.recents ul { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.recents li { display: flex; align-items: center; gap: .25rem; }
+.recent { display: flex; flex: 1; align-items: center; gap: .65rem; min-width: 0; padding: .45rem .55rem; border: 0; border-radius: 12px;
+  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.recent:hover:not(:disabled) { background: var(--soft); }
+.recent small { color: var(--accent); font-weight: 700; }
+.recent__oublier { display: grid; place-items: center; flex: none; width: 2rem; height: 2rem; border: 0; border-radius: 8px;
+  background: none; color: var(--ink-2); cursor: pointer; }
+.recent__oublier:hover:not(:disabled) { background: var(--soft); color: var(--danger); }
+.recent__oublier svg { width: .95rem; height: .95rem; }
+
+.onglets { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: .6rem 0 .5rem; padding: 4px; border-radius: 12px; background: var(--soft); }
+.onglets button { padding: .45rem .3rem; border: 0; border-radius: 9px; background: none; color: var(--ink-2); font: inherit;
+  font-size: .88rem; font-weight: 700; cursor: pointer; }
+.onglets button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow-bouton); }
+.form { display: flex; flex-direction: column; gap: .6rem; padding: .2rem .3rem .2rem; }
+
+/* ---------- Tableau de bord de l'administrateur ---------- */
+.admin { max-width: 1120px; margin: 0 auto; padding: 4.75rem 16px 3rem; }
+.surtitre { margin: 0 0 .3rem; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.admin h1 { font-size: clamp(1.8rem, 4.5vw, 2.4rem); }
+.chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .75rem; margin-top: 1.5rem; }
+.chiffre { display: flex; flex-direction: column; gap: .15rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.chiffre b { font-size: 1.75rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.chiffre b small { font-size: .95rem; font-weight: 700; color: var(--ink-2); }
+.chiffre span { font-size: .85rem; color: var(--ink-2); }
+
+.onglets-admin { display: flex; gap: .25rem; margin: 2rem 0 1.25rem; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.onglets-admin button { margin-bottom: -1px; padding: .7rem 1rem; border: 0; border-bottom: 2px solid transparent; background: none;
+  color: var(--ink-2); font: inherit; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.onglets-admin button:hover { color: var(--ink); }
+.onglets-admin button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--ink); }
+[role="tabpanel"] > .message { margin-bottom: .8rem; }
+.vide { margin: 0; padding: 1.25rem; color: var(--ink-2); text-align: center; }
+
+/* Comptes */
+.barre { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
+.recherche { display: flex; flex: 1 1 260px; align-items: center; gap: .5rem; height: 2.5rem; padding: 0 .8rem;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink-2); }
+.recherche:focus-within { outline: 2px solid var(--accent); border-color: transparent; }
+.recherche svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.recherche input { flex: 1; min-width: 0; border: 0; background: none; color: var(--ink); font: inherit; outline: none; }
+.table { overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.rang { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 13.5rem; align-items: center;
+  gap: .6rem 1rem; padding: .75rem 1rem; border-top: 1px solid var(--line); }
+.rang:first-child { border-top: 0; }
+.rang--tete { padding-block: .55rem; background: var(--soft); color: var(--ink-2); font-size: .72rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; }
+.rang.is-ouvert { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.rang__qui { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+.rang__qui .avatar { width: 2.2rem; height: 2.2rem; }
+.rang__nom { display: flex; align-items: center; gap: .45rem; min-width: 0; }
+.rang__cellule { font-size: .92rem; font-variant-numeric: tabular-nums; }
+.rang__cellule .attenue { color: var(--ink-2); }
+.rang__jeux { display: flex; gap: .3rem; font-size: 1.15rem; line-height: 1; }
+.rang__actions { display: flex; justify-content: flex-end; gap: .4rem; }
+.rang__actions .btn--doux { color: var(--ink); }
+.rang__actions [data-action="supprimer"] { color: var(--danger); }
+.rang__panneau { grid-column: 1 / -1; display: flex; flex-direction: column; gap: .7rem; margin-top: .25rem; padding: 1rem;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.rang__panneau p { margin: 0; }
+.rang__panneau--danger { border-color: var(--danger); }
+.rang__champs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .7rem; }
+.note { font-size: .82rem; color: var(--ink-2); }
+
+/* Défis de la semaine */
+.defis-intro { margin: 0 0 1rem; max-width: 70ch; color: var(--ink-2); font-size: .95rem; }
+.semaine { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .6rem; border: 1px solid var(--line);
+  border-radius: 16px; background: var(--card); }
+.semaine__fleche { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--soft); color: var(--ink); cursor: pointer; }
+.semaine__fleche:hover { border-color: var(--accent); }
+.semaine__fleche svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.semaine__texte { display: flex; flex: 1; flex-direction: column; align-items: center; min-width: 12rem; text-align: center; }
+.semaine__texte b { display: inline-flex; align-items: center; gap: .5rem; font-size: 1.1rem; font-weight: 800; }
+.semaine__texte small { color: var(--ink-2); font-size: .88rem; }
+#defis-message { margin-top: .8rem; }
+
+.puce { display: inline-block; padding: .1rem .55rem; border-radius: 999px; background: var(--soft); color: var(--ink-2);
+  font-size: .72rem; font-weight: 800; white-space: nowrap; }
+.puce--accent { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+.puce--pret { background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); }
+.puce--brouillon { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+
+.defis-jeu { margin-top: 2rem; }
+.defis-jeu__tete { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding-bottom: .6rem; border-bottom: 1px solid var(--line); }
+.defis-jeu__nom { display: flex; align-items: center; gap: .7rem; }
+.defis-jeu__icone { font-size: 1.9rem; line-height: 1; }
+.defis-jeu h2 { margin: 0; font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+.defis-jeu__nom small { color: var(--ink-2); font-size: .82rem; }
+.progression { display: flex; flex-direction: column; align-items: flex-end; gap: .3rem; margin-left: auto; font-size: .85rem; color: var(--ink-2); }
+.progression b { color: var(--ink); }
+.progression__barre { display: flex; overflow: hidden; width: 11rem; height: .4rem; border-radius: 999px; background: var(--soft); }
+.progression__barre span { height: 100%; }
+.progression__barre .is-pret { background: var(--ok); }
+.progression__barre .is-brouillon { background: var(--warn); }
+.defis-groupe { margin: 1.1rem 0 .6rem; font-size: .75rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); }
+.defis-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: .75rem; }
+.defi { display: flex; flex-direction: column; gap: .4rem; padding: .9rem 1rem 1rem; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--card); box-shadow: inset 4px 0 0 var(--etat, transparent); }
+.defi.is-vide { border-style: dashed; background: none; }
+.defi.is-brouillon { --etat: var(--warn); }
+.defi.is-pret { --etat: var(--ok); }
+.defi__puces { display: flex; flex-wrap: wrap; gap: .3rem; }
+.defi__mode { margin: 0; font-size: 1rem; font-weight: 800; line-height: 1.3; }
+.defi p { margin: 0; }
+.defi__titre { font-weight: 700; }
+.defi__consigne { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--ink-2); font-size: .9rem; }
+.defi__meta { color: var(--ink-2); font-size: .82rem; }
+.defi__vide { color: var(--ink-2); font-size: .9rem; }
+.defi__bouton { align-self: flex-start; margin-top: auto; }
+.defi > :nth-last-child(2) { margin-bottom: .35rem; }
+
+/* Fenêtre d'un défi */
+.dialogue { width: min(880px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line);
+  border-radius: 20px; background: var(--card); color: var(--ink); box-shadow: var(--shadow-menu); }
+.dialogue::backdrop { background: rgba(2, 6, 23, .55); }
+.dialogue__form { display: flex; flex-direction: column; max-height: calc(100dvh - 34px); }
+.dialogue__tete { position: relative; padding: 1.1rem 3.5rem 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+.dialogue__tete h2 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.25; }
+.dialogue__dates { margin: .2rem 0 0; color: var(--ink-2); font-size: .9rem; }
+.dialogue__fermer { position: absolute; top: .9rem; right: .9rem; display: grid; place-items: center; width: 2.25rem; height: 2.25rem;
+  border: 0; border-radius: 10px; background: var(--soft); color: var(--ink); cursor: pointer; }
+.dialogue__fermer svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.dialogue__corps { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.25rem; overflow-y: auto; padding: 1.25rem; }
+.dialogue__champs { display: flex; flex-direction: column; gap: .9rem; }
+.dialogue__ligne { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .8rem; }
+.dialogue__pied { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .9rem 1.25rem; border-top: 1px solid var(--line); }
+.dialogue__espace { flex: 1; }
+.statut { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin: 0; padding: 0; border: 0; }
+.statut legend { margin-bottom: .3rem; padding: 0; font-size: .82rem; font-weight: 700; color: var(--ink-2); }
+.statut label { display: flex; align-items: flex-start; gap: .55rem; padding: .65rem .75rem; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+.statut label:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.statut input { margin: .2rem 0 0; accent-color: var(--accent); }
+.statut span { display: flex; flex-direction: column; }
+.statut small { color: var(--ink-2); font-size: .78rem; line-height: 1.35; }
+.apercu { display: flex; flex-direction: column; align-self: start; gap: .6rem; padding: 1rem; border-radius: 16px; background: var(--soft); }
+.apercu__titre-zone { margin: 0; font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); }
+.apercu__carte { display: flex; flex-direction: column; gap: .5rem; padding: 1.15rem; border-radius: 14px;
+  background: linear-gradient(140deg, #1e3a8a, #5b21b6); color: #fff; box-shadow: var(--shadow); }
+.apercu__carte p { margin: 0; }
+.apercu__sur { font-size: .72rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #c7d2fe; }
+.apercu__titre { font-size: 1.2rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+.apercu__consigne { font-size: .92rem; white-space: pre-line; overflow-wrap: anywhere; color: #e0e7ff; }
+.apercu__carte .is-vide { opacity: .55; font-style: italic; }
+.apercu__meta { display: flex; flex-wrap: wrap; gap: .35rem; }
+.apercu__meta span { padding: .15rem .55rem; border-radius: 999px; background: rgba(255, 255, 255, .16); font-size: .78rem; font-weight: 700; }
+.apercu__dates { font-size: .8rem; color: #c7d2fe; }
+.apercu__note { margin: 0; font-size: .8rem; color: var(--ink-2); }
+
+/* ---------- Petits écrans ---------- */
+@media (max-width: 760px) {
+  .rang--tete { display: none; }
+  .rang { grid-template-columns: 1fr 1fr; padding: .9rem; }
+  .rang__qui, .rang__actions { grid-column: 1 / -1; }
+  .rang__actions { justify-content: flex-start; }
+  .rang__cellule::before { content: attr(data-libelle); display: block; color: var(--ink-2); font-size: .7rem; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase; }
+  .rang__cellule--jeux { grid-column: 1 / -1; }
+  .dialogue__corps { grid-template-columns: 1fr; }
+  .progression { align-items: flex-start; margin-left: 0; width: 100%; }
+  .progression__barre { width: 100%; }
+}
+@media (max-width: 560px) {
+  .compte-nom { max-width: 8rem; }
+  .statut { grid-template-columns: 1fr; }
+  .semaine__texte { order: -1; flex-basis: 100%; }
+  .semaine__fleche { flex: 1; }
+  #semaine-avenir { flex: 2; }
+  .dialogue__espace { display: none; }
+  .dialogue__pied .btn--doux, .dialogue__pied .btn--plein { flex: 1; }
+  .dialogue__pied [data-defi-action="effacer"] { order: 1; flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jeu { transition: none; }
+  .jeu:hover, .jeu:focus-visible { transform: none; }
+}

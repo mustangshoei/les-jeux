@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anotehomy Quizz - Anatomie humaine en 3D</title>
+
+<!-- ===================== STYLES ===================== -->
+<!-- commun a tous les jeux (dossier ../COMMUN) : selecteur "Changer de jeu". S'il manque, le jeu marche sans. -->
+<link rel="stylesheet" href="../COMMUN/jeux.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/panel.css">
+<link rel="stylesheet" href="css/stage.css">
+<link rel="stylesheet" href="css/skeleton.css">
+<link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/setup.css">
+<link rel="stylesheet" href="css/results.css">
+<link rel="stylesheet" href="css/account.css">
+<link rel="stylesheet" href="css/responsive.css">
+
+<!-- ===================== SCRIPTS =====================
+     Scripts classiques (pas de modules ES) pour que le jeu fonctionne en
+     ouvrant directement ce fichier, sans serveur. L'ORDRE COMPTE : chaque
+     fichier s'appuie sur ceux charges avant lui. "defer" les execute dans
+     cet ordre, une fois la page analysee. -->
+<!-- commun a tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et selecteur.
+     Facultatifs : s'ils manquent, le jeu se joue en invite, sans selecteur. -->
+<script defer src="../COMMUN/comptes.js"></script>
+<script defer src="../COMMUN/jeux.js"></script>
+<!-- bibliotheque 3D (Three.js r158, licence MIT) -->
+<script defer src="js/vendor/three.min.js"></script>
+<script defer src="js/core/namespace.js"></script>
+<script defer src="js/core/utils.js"></script>
+<!-- donnees anatomiques -->
+<script defer src="js/data/regions.js"></script>
+<script defer src="js/data/bones.js"></script>
+<!-- decoupage des os en regions (jeu "Osteologie descriptive") -->
+<script defer src="js/data/osteology.js"></script>
+<!-- catalogue des muscles (jeu "Les muscles du corps humain") -->
+<script defer src="js/data/muscles.js"></script>
+<script defer src="js/data/games.js"></script>
+<!-- modele 3D genere par tools/build-model.ps1 (BodyParts3D, CC BY 4.0).
+     Charges a la demande : js/data/osteo-model.js (os detailles) et
+     js/data/muscle-model.js (muscles, Z-Anatomy, CC BY-SA 4.0). -->
+<script defer src="js/data/skeleton-model.js"></script>
+<!-- moteur 3D : modele, scene, camera, surbrillance, interactions, os isole, muscles -->
+<script defer src="js/engine/model.js"></script>
+<script defer src="js/engine/scene.js"></script>
+<script defer src="js/engine/camera.js"></script>
+<script defer src="js/engine/highlight.js"></script>
+<script defer src="js/engine/input.js"></script>
+<script defer src="js/engine/segment.js"></script>
+<script defer src="js/engine/osteo.js"></script>
+<script defer src="js/engine/muscles.js"></script>
+<!-- logique de jeu -->
+<script defer src="js/game/state.js"></script>
+<script defer src="js/game/matcher.js"></script>
+<!-- adaptateurs des jeux : os du squelette (jeu 1), osteologie descriptive (jeu 2), muscles -->
+<script defer src="js/game/skeleton-game.js"></script>
+<script defer src="js/game/osteo-game.js"></script>
+<script defer src="js/game/muscle-game.js"></script>
+<script defer src="js/game/setup.js"></script>
+<script defer src="js/game/osteo-setup.js"></script>
+<script defer src="js/game/muscle-setup.js"></script>
+<script defer src="js/game/play.js"></script>
+<script defer src="js/game/results.js"></script>
+<script defer src="js/game/autocomplete.js"></script>
+<script defer src="js/game/home.js"></script>
+<!-- compte du joueur (comptes communs a tous les jeux) et statistiques -->
+<script defer src="js/account/profile.js"></script>
+<script defer src="js/account/account.js"></script>
+<!-- point d'entree -->
+<script defer src="js/main.js"></script>
+</head>
+<body>
+<div id="app" class="mode-a">
+  <!-- ===================== PANNEAU LATERAL GAUCHE ===================== -->
+  <aside id="panel">
+    <header class="brand">
+      <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><g transform="rotate(-45 20 20)" fill="currentColor"><rect x="9" y="17" width="22" height="6" rx="3"/><circle cx="9" cy="16" r="4"/><circle cx="9" cy="24" r="4"/><circle cx="31" cy="16" r="4"/><circle cx="31" cy="24" r="4"/></g></svg></div>
+      <div><h1>Anotehomy Quizz</h1><p id="brandSub">Les os du squelette</p></div>
+    </header>
+
+    <section class="card-s" id="hud">
+      <div class="prog-row">
+        <span id="qCounter">Question 0 / 0</span>
+        <span class="timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span id="timer">00:00</span></span>
+      </div>
+      <div class="bar"><div id="barFill"></div></div>
+      <div class="stats">
+        <div class="stat"><b id="sScore">0</b><span>Score</span></div>
+        <div class="stat ok"><b id="sOk">0</b><span>Correct</span></div>
+        <div class="stat ko"><b id="sKo">0</b><span>Erreurs</span></div>
+      </div>
+    </section>
+
+    <!-- osteologie : os etudie, visible pendant toute la partie (js/game/play.js) -->
+    <section class="subject-card" id="subjectCard" hidden>
+      <span class="sc-label" id="subjectLabel">Os etudie</span>
+      <b class="sc-name" id="subjectName">-</b>
+    </section>
+
+    <!-- Mode A : nommage -->
+    <section class="card-s" id="qA" hidden>
+      <p class="qlabel">Mode A - Nommage</p>
+      <p class="qtitle" id="qTitleA">Quel est le nom de l'os en rouge ?</p>
+      <form id="answerForm" autocomplete="off">
+        <div class="input-wrap">
+          <input id="answerInput" class="answer" type="text" placeholder="Nom de l'os (nomenclature TA2)" spellcheck="false" autocapitalize="off" autocorrect="off" aria-autocomplete="list" aria-controls="suggest">
+          <ul id="suggest" class="suggest" role="listbox" hidden></ul>
+        </div>
+        <div class="btn-row">
+          <button type="submit" class="btn primary grow" id="btnSubmit">Valider</button>
+          <button type="button" class="btn" id="btnSkipA">Passer</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Mode B : ciblage -->
+    <section class="card-s" id="qB" hidden>
+      <p class="qlabel">Mode B - Ciblage</p>
+      <p class="qtitle" id="qTitleB">Cliquez sur cet os :</p>
+      <div class="target-name" id="targetName">-</div>
+      <div class="latin" id="targetLatin"></div>
+      <div class="btn-row"><button type="button" class="btn" id="btnSkipB">Je ne sais pas</button></div>
+    </section>
+
+    <section id="feedback" class="feedback" hidden aria-live="polite"></section>
+    <section class="card-s" id="reviewBox" hidden></section>
+
+    <footer class="panel-foot">
+      <div><span class="chip" id="modeChip">Mode A - Nommage</span></div>
+      <button class="btn ghost" id="btnQuit" type="button">Terminer la partie</button>
+      <p class="credits" id="panelCredits">Modele 3D : BodyParts3D, (c) DBCLS, CC BY 4.0</p>
+    </footer>
+  </aside>
+
+  <!-- ===================== SCENE 3D ===================== -->
+  <main id="stage">
+    <!-- rendu WebGL (squelette, os isole ou muscles), gere par js/engine/scene.js -->
+    <canvas id="view3d" aria-label="Modele anatomique 3D interactif"></canvas>
+    <div class="halo" id="halo" hidden></div>
+    <div class="loading" id="loading">Chargement du squelette 3D...</div>
+
+    <!-- consigne de la question en cours, au plus pres du squelette (js/game/state.js) -->
+    <div class="stage-prompt" id="stagePrompt" hidden aria-live="polite"></div>
+    <!-- osteologie : rappel de l'os etudie sur la vue 3D -->
+    <div class="stage-badge" id="stageBadge" hidden></div>
+    <div class="notice" id="viewNotice" hidden></div>
+    <div class="hidden-chip" id="hiddenChip" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-3.2 3.7M6.6 7.6C4.4 9.2 3 12 3 12s4 6 9 6c1.6 0 3-.4 4.3-1.1"/></svg>
+      <span id="hiddenCount"></span><button type="button" class="link" id="btnShowAll">Tout afficher</button>
+    </div>
+
+    <!-- barre de commandes : vues, zoom, aide -->
+    <div class="dock" role="toolbar" aria-label="Commandes de la vue 3D">
+      <div class="views" role="group" aria-label="Vues predefinies">
+        <button type="button" data-view="A" class="on" title="Vue anterieure (touche 1)"><span class="lg">Anterieure</span><span class="sm">Ant.</span></button>
+        <button type="button" data-view="P" title="Vue posterieure (touche 2)"><span class="lg">Posterieure</span><span class="sm">Post.</span></button>
+        <button type="button" data-view="LD" title="Vue laterale droite (touche 3)"><span class="lg">Lat. droite</span><span class="sm">Lat. D</span></button>
+        <button type="button" data-view="LG" title="Vue laterale gauche (touche 4)"><span class="lg">Lat. gauche</span><span class="sm">Lat. G</span></button>
+      </div>
+      <span class="dock-sep" aria-hidden="true"></span>
+      <div class="tools">
+        <button type="button" class="ico" id="zOut" title="Dezoomer (touche -)" aria-label="Dezoomer"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M8 11h6M16.5 16.5L21 21"/></svg></button>
+        <button type="button" class="ico" id="zIn" title="Zoomer (touche +)" aria-label="Zoomer"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M8 11h6M11 8v6M16.5 16.5L21 21"/></svg></button>
+        <button type="button" class="ico" id="zFit" title="Voir tout le squelette (touche 0)" aria-label="Voir tout le squelette"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        <button type="button" class="ico" id="zTarget" title="Recentrer sur l'os en cours" aria-label="Recentrer sur l'os en cours"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+        <!-- osteologie seulement : os voisins estompes, atlas des parties (revision) -->
+        <button type="button" class="ico" id="btnNeigh" hidden title="Os voisins estompes (touche V)" aria-label="Afficher les os voisins estompes" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M8.5 15.5l7-7"/><circle cx="7" cy="17" r="2.2"/><circle cx="17" cy="7" r="2.2"/><path d="M3 9.5a4 4 0 0 1 3-5.5M21 14.5a4 4 0 0 1-3 5.5" stroke-dasharray="1.5 2.5"/></svg></button>
+        <button type="button" class="ico" id="btnAtlas" hidden title="Atlas : une couleur par partie (touche C)" aria-label="Colorer chaque partie de l'os" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5V12l6.2 5.8M12 12l-8.2 2.4"/></svg></button>
+      </div>
+      <span class="dock-sep" aria-hidden="true"></span>
+      <button type="button" class="ico" id="btnHelp" title="Aide : commandes (touche H)" aria-label="Aide sur les commandes" aria-expanded="false" aria-controls="helpCard"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17.2v.3"/></svg></button>
+    </div>
+
+    <!-- aide a la demande (ouverte automatiquement a la premiere visite) -->
+    <div class="help-card" id="helpCard" hidden role="dialog" aria-label="Commandes de la vue 3D">
+      <div class="help-head"><b>Commandes</b><button type="button" class="ico sm-ico" id="btnHelpClose" aria-label="Fermer l'aide"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="help-grid">
+        <p class="help-sec">Souris</p>
+        <span class="hl">Tourner</span><span>glisser</span>
+        <span class="hl">Deplacer</span><span>clic droit + glisser <i>ou</i> <span class="kbd">Ctrl</span> + glisser</span>
+        <span class="hl">Zoomer</span><span>molette (vers le curseur)</span>
+        <span class="hl" id="helpPick">Choisir un os</span><span>clic</span>
+        <span class="hl" id="helpHide">Masquer un os</span><span><span class="kbd">Maj</span> + clic</span>
+        <p class="help-sec">Tactile</p>
+        <span class="hl">Tourner</span><span>1 doigt</span>
+        <span class="hl">Zoomer, deplacer</span><span>2 doigts</span>
+        <p class="help-sec">Clavier</p>
+        <span class="hl">Vues</span><span><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span></span>
+        <span class="hl">Zoom</span><span><span class="kbd">+</span> <span class="kbd">-</span> &nbsp;tout voir <span class="kbd">0</span></span>
+        <span class="hl">Question suivante</span><span><span class="kbd">Entree</span></span>
+      </div>
+    </div>
+    <div class="tooltip" id="tooltip" hidden></div>
+  </main>
+</div>
+
+<!-- ===================== ACCUEIL : CATEGORIES PUIS JEUX ===================== -->
+<!-- contenu genere par js/game/home.js a partir de js/data/games.js -->
+<div class="overlay" id="home">
+  <div class="card home-card">
+    <div class="hero home-hero">
+      <div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><g transform="rotate(-45 20 20)" fill="currentColor"><rect x="9" y="17" width="22" height="6" rx="3"/><circle cx="9" cy="16" r="4"/><circle cx="9" cy="24" r="4"/><circle cx="31" cy="16" r="4"/><circle cx="31" cy="24" r="4"/></g></svg></div>
+      <div><h1>Anotehomy Quizz</h1><p>Apprendre l'anatomie humaine en jouant, avec la nomenclature internationale TA2.</p></div>
+    </div>
+
+    <section class="home-view" id="homeCatsView">
+      <h2 class="home-h">Choisissez une categorie</h2>
+      <div class="cats" id="homeCats"></div>
+      <p class="home-msg" id="homeMsg" aria-live="polite"></p>
+    </section>
+
+    <section class="home-view" id="homeGamesView" hidden>
+      <nav class="crumbs" aria-label="Fil d'Ariane">
+        <button type="button" class="crumb" data-nav="home">Accueil</button><span class="crumb-sep">/</span><span class="crumb-cur" id="crumbCat">Les os</span>
+      </nav>
+      <div class="cat-head">
+        <span class="cat-ico" id="homeCatIco"></span>
+        <div><h2 id="homeCatTitle">Les os</h2><p id="homeCatDesc"></p></div>
+      </div>
+      <h2 class="home-h">Choisissez un jeu</h2>
+      <div class="games" id="homeGames"></div>
+    </section>
+
+    <p class="credits">Modeles anatomiques 3D : <b>BodyParts3D</b>, (c) The Database Center for Life Science, licence CC BY 4.0 (os) ; <b>Z-Anatomy</b>, licence CC BY-SA 4.0 (muscles). Rendu 3D : Three.js (licence MIT).</p>
+  </div>
+</div>
+
+<!-- ===================== PREPHASE : CONFIGURATION ===================== -->
+<div class="overlay" id="setup" hidden>
+  <div class="card">
+    <nav class="crumbs" aria-label="Fil d'Ariane">
+      <button type="button" class="crumb" data-nav="home">Accueil</button><span class="crumb-sep">/</span><button type="button" class="crumb" data-nav="cat" id="setupCrumbCat">Les os</button><span class="crumb-sep">/</span><span class="crumb-cur" id="setupCrumbGame">Les os du squelette</span>
+    </nav>
+    <div class="hero">
+      <!-- icone de la categorie du jeu (js/game/home.js) -->
+      <div class="logo" id="setupLogo"><svg viewBox="0 0 40 40" aria-hidden="true"><g transform="rotate(-45 20 20)" fill="currentColor"><rect x="9" y="17" width="22" height="6" rx="3"/><circle cx="9" cy="16" r="4"/><circle cx="9" cy="24" r="4"/><circle cx="31" cy="16" r="4"/><circle cx="31" cy="24" r="4"/></g></svg></div>
+      <div><h1 id="setupTitle">Les os du squelette</h1><p id="setupSub">Reconnaitre et localiser chaque os du corps humain.</p></div>
+    </div>
+    <p class="ta2">Toutes les reponses utilisent la nouvelle nomenclature anatomique internationale (Terminologia Anatomica 2, TA2). Les anciens termes (<span id="setupOld">rotule, perone, omoplate, astragale...</span>) sont signales et comptes comme incorrects.</p>
+
+    <!-- jeu "Les os du squelette" : zones du corps -->
+    <div class="step" id="stepZones">
+      <div class="step-h">
+        <h2><span class="num">1</span>Zones du corps</h2>
+        <div><button type="button" class="link" id="allZones">Tout</button><button type="button" class="link" id="noZones">Aucun</button></div>
+      </div>
+      <!-- cases generees par js/game/setup.js a partir de js/data/regions.js -->
+      <div class="zones" id="zones"></div>
+    </div>
+
+    <!-- jeu "Osteologie descriptive" : os tire au hasard (parmi des zones) ou os choisi -->
+    <div class="step" id="stepOsteo" hidden>
+      <div class="step-h"><h2><span class="num">1</span>Os a etudier</h2></div>
+      <div class="picks" role="radiogroup" aria-label="Choix de l'os">
+        <label class="pick"><input type="radio" name="opick" value="random" checked>
+          <span class="pk-t">Os tire au hasard</span><span class="pk-d">parmi les zones cochees</span></label>
+        <label class="pick"><input type="radio" name="opick" value="chosen">
+          <span class="pk-t">Os choisi</span><span class="pk-d">dans la liste des os</span></label>
+      </div>
+      <div class="pick-pane" id="oRandomPane">
+        <div class="step-h sub-h">
+          <span class="sub-t">Zones du corps</span>
+          <div><button type="button" class="link" id="oAllZones">Tout</button><button type="button" class="link" id="oNoZones">Aucun</button></div>
+        </div>
+        <!-- cases generees par js/game/osteo-setup.js -->
+        <div class="zones" id="oZones"></div>
+      </div>
+      <div class="pick-pane" id="oChosenPane" hidden>
+        <label class="sel-wrap"><span class="sub-t">Os</span>
+          <!-- liste generee par js/game/osteo-setup.js, groupee par zone -->
+          <select id="oBone" aria-label="Os a etudier"></select>
+        </label>
+        <p class="pk-info" id="oBoneInfo"></p>
+      </div>
+    </div>
+
+    <!-- jeu "Les muscles du corps humain" : zones du corps et muscles proposes -->
+    <div class="step" id="stepMuscles" hidden>
+      <div class="step-h">
+        <h2><span class="num">1</span>Zones du corps</h2>
+        <div><button type="button" class="link" id="mAllZones">Tout</button><button type="button" class="link" id="mNoZones">Aucun</button></div>
+      </div>
+      <!-- cases generees par js/game/muscle-setup.js a partir de js/data/muscles.js -->
+      <div class="zones" id="mZones"></div>
+      <div class="step-h sub-h m-set-h"><span class="sub-t">Muscles proposes</span></div>
+      <div class="picks" role="radiogroup" aria-label="Muscles proposes">
+        <label class="pick"><input type="radio" name="mset" value="main" checked>
+          <span class="pk-t">Muscles principaux</span><span class="pk-d">les muscles classiques des cours d'anatomie (<span id="mSetMainN"></span>)</span></label>
+        <label class="pick"><input type="radio" name="mset" value="all">
+          <span class="pk-t">Tous les muscles</span><span class="pk-d">y compris les petits muscles et les muscles profonds (<span id="mSetAllN"></span>)</span></label>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-h"><h2><span class="num">2</span><span id="countTitle">Nombre d'os a deviner</span></h2></div>
+      <div class="count-row">
+        <input type="number" id="countNum" min="1" value="10" aria-label="Nombre de questions">
+        <input type="range" id="countRange" min="1" value="10" aria-label="Nombre de questions (curseur)">
+        <span class="of" id="countOf">sur 0 disponibles</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-h"><h2><span class="num">3</span>Mode de jeu</h2></div>
+      <div class="modes">
+        <label class="mode"><input type="radio" name="mode" value="A" checked>
+          <div class="mt">Nommage <span class="tag">Mode A</span></div>
+          <p id="modeADesc">Un os s'illumine en rouge sur le squelette : saisissez son nom exact dans le panneau de gauche.</p>
+        </label>
+        <label class="mode"><input type="radio" name="mode" value="B">
+          <div class="mt">Ciblage <span class="tag">Mode B</span></div>
+          <p id="modeBDesc">Le nom officiel (TA2) d'un os s'affiche : cliquez sur l'os correspondant directement sur le squelette.</p>
+        </label>
+      </div>
+      <div class="opts">
+        <label><input type="checkbox" id="optAuto" checked> Autocompletion des noms (mode A)</label>
+        <label><input type="checkbox" id="optTol" checked> Tolerance aux fautes de frappe mineures</label>
+        <label id="optNeighWrap" hidden><input type="checkbox" id="optNeigh"> Afficher les os voisins, estompes</label>
+        <label id="optPreciseWrap" title="Cotes : numero et cote du corps (12e cote gauche). Vertebres : niveau (T9). Sans cette option, le nom general suffit et le nom precis est rappele."><input type="checkbox" id="optPrecise"> Exiger le numero et le cote (cotes, vertebres)</label>
+      </div>
+    </div>
+
+    <div class="start-row">
+      <span class="warn-txt" id="setupWarn"></span>
+      <button type="button" class="btn primary" id="startBtn">Commencer la partie</button>
+    </div>
+    <p class="credits" id="setupCredits">Modele anatomique 3D : <b>BodyParts3D</b>, (c) The Database Center for Life Science, licence CC BY 4.0 (simplifie pour le web). Rendu 3D : Three.js (licence MIT). Details dans CREDITS.md.</p>
+  </div>
+</div>
+
+<!-- ===================== FIN DE PARTIE ===================== -->
+<!-- contenu genere par js/game/results.js -->
+<div class="overlay" id="results" hidden>
+  <div class="card" id="resultsCard"></div>
+</div>
+
+<!-- ===================== STATISTIQUES DU JOUEUR ===================== -->
+<!-- au-dessus de l'ecran d'ou on l'ouvre ; contenu genere par js/account/account.js -->
+<div class="overlay" id="stats" hidden>
+  <div class="card stats-card" id="statsCard"></div>
+</div>
+
+<!-- ===================== COMPTE ET CHANGEMENT DE JEU ===================== -->
+<!-- visibles seulement sur les ecrans superposes (accueil, configuration, resultats) : css/account.css -->
+<!-- bouton de compte (en haut a gauche) : js/account/account.js -->
+<button type="button" class="acct-btn" id="acctBtn" aria-haspopup="dialog"></button>
+<!-- changer de jeu (en haut a droite) : rempli par ../COMMUN/jeux.js -->
+<div class="jeux-coin" data-jeux-selecteur="anotehomy"></div>
+
+<dialog class="acct-dialog" id="acctDialog" aria-labelledby="acctTitle">
+  <div class="acct-head">
+    <h2 id="acctTitle">Compte</h2>
+    <button type="button" class="ico sm-ico" data-close aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <p class="acct-help" id="acctHelp"></p>
+  <!-- rempli par js/account/account.js : connexion / creation de compte, ou gestion du compte connecte -->
+  <div id="acctBody"></div>
+</dialog>
+</body>
+</html>

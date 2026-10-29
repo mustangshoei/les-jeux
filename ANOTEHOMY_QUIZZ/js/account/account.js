@@ -1,0 +1,283 @@
+/* ==========================================================================
+   Anotehomy Quizz - account/account.js
+   COMPTE DU JOUEUR : bouton en haut a gauche (sur les ecrans superposes :
+   accueil, configuration, resultats), fenetre du compte et ecran des
+   statistiques. Les donnees sont gerees par js/account/profile.js.
+     - non connecte : se connecter ou creer un compte (nom + mot de passe), ou
+       continuer en invite ; la fenetre s'ouvre seule a l'arrivee, une fois par
+       session du navigateur (tous jeux confondus) ;
+     - connecte : statistiques, renommer, mot de passe, se deconnecter, supprimer ;
+     - sans serveur (index.html ouvert directement) : invite seulement.
+   Les comptes sont communs a tous les jeux du dossier : se connecter ici connecte
+   aussi GeoNohyne Quizz. Le selecteur "Changer de jeu" (en haut a droite) vient de
+   ../COMMUN/jeux.js.
+   ========================================================================== */
+(function (NS) {
+  'use strict';
+  const { $, esc, fmt } = AQ.util;
+  const P = NS;
+
+  const MODES = { A: 'Nommage', B: 'Ciblage' };
+  const HISTORY_STEP = 30;               /* parties affichees par "Afficher plus" */
+
+  /* vues de la fenetre : 'login' ou 'register' (non connecte) ; connecte : formulaire ouvert
+     null, 'rename', 'pwd' ou 'delete' */
+  let view = 'login';
+  let form = null;
+  let message = '';
+  let welcome = false;                   /* fenetre ouverte automatiquement a l'arrivee */
+  let busy = false;                      /* requete en cours : boutons desactives */
+  let historyMax = HISTORY_STEP;
+
+  const initial = n => (String(n).trim().charAt(0) || '?').toUpperCase();
+  const avatar = (p, big) => `<span class="acct-av${big ? ' big' : ''}" style="--av:${esc(p.color)}" aria-hidden="true">${esc(initial(p.name))}</span>`;
+  const plural = (n, w) => n + ' ' + w + (n > 1 ? 's' : '');
+  const pct = (a, b) => (b ? Math.round(a / b * 100) : 0) + ' %';
+  const gameName = (id, fallback) => (AQ.data.GAME && AQ.data.GAME[id] ? AQ.data.GAME[id].name : fallback || id);
+  function duration(s) {
+    const min = Math.round(s / 60);
+    if (s < 60) return Math.round(s) + ' s';
+    if (min < 60) return min + ' min';
+    return Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0');
+  }
+
+  /* ---------------- Bouton de compte ---------------- */
+  function updateButton() {
+    const p = P.player(), b = $('acctBtn');
+    b.innerHTML = avatar(p) + `<span class="acct-name">${esc(p.name)}</span>`;
+    const what = p.guest ? 'se connecter, creer un compte, statistiques' : 'compte, statistiques';
+    b.title = (p.guest ? 'Invite' : 'Compte : ' + p.name) + ' (' + what + ')';
+    b.setAttribute('aria-label', (p.guest ? 'Vous jouez en invite' : 'Compte : ' + p.name) + '. Ouvrir la fenetre du compte (' + what + ')');
+  }
+
+  /* ---------------- Fenetre du compte ---------------- */
+  const field = (label, name, type, auto, extra) => `<label class="acct-field">${label}<input name="${name}" type="${type}" autocomplete="${auto}" spellcheck="false" required${extra || ''}></label>`;
+  const errHtml = () => `<p class="acct-err" role="alert">${esc(message)}</p>`;
+  const dis = () => busy ? ' disabled' : '';
+
+  /* non connecte : formulaires reconnus par les gestionnaires de mots de passe */
+  function visitorView() {
+    const reg = view === 'register', played = P.stats().totals.played;
+    return `<div class="acct-tabs" role="tablist">` +
+        `<button type="button" role="tab" class="${reg ? '' : 'on'}" aria-selected="${!reg}" data-view="login">Se connecter</button>` +
+        `<button type="button" role="tab" class="${reg ? 'on' : ''}" aria-selected="${reg}" data-view="register">Creer un compte</button></div>` +
+      `<form class="acct-form" data-form="${view}">` +
+        field('Nom', 'username', 'text', 'username', ` maxlength="${P.NAME_MAX}"`) +
+        field('Mot de passe', 'password', 'password', reg ? 'new-password' : 'current-password', reg ? ` minlength="${P.PWD_MIN}"` : '') +
+        (reg ? field('Confirmer le mot de passe', 'confirm', 'password', 'new-password') +
+          (played ? `<label class="acct-check"><input name="take" type="checkbox" checked><span>Reprendre les statistiques de l'invite de ce navigateur (${plural(played, 'partie')})</span></label>` : '') : '') +
+        errHtml() +
+        `<button type="submit" class="btn primary"${dis()}>${busy ? '...' : reg ? 'Creer mon compte' : 'Se connecter'}</button>` +
+      `</form>` +
+      `<div class="acct-actions"><button type="button" class="btn" data-act="guest">Continuer en invite</button>` +
+        `<button type="button" class="btn" data-act="stats">Statistiques de l'invite</button></div>`;
+  }
+
+  /* connecte : le compte et ses actions */
+  function accountView() {
+    const p = P.player(), t = P.stats().totals;
+    const state = P.pending() ? (P.serverAvailable() ? 'synchronisation...' : 'serveur injoignable : vos dernieres parties partiront des son retour')
+      : 'statistiques enregistrees sur le serveur';
+    let h = `<div class="acct-card">${avatar(p, true)}<div><b>${esc(p.name)}</b><small>${plural(t.played, 'partie')} - ${state}</small></div></div>`;
+    const buttons = (label, cls) => `<div class="btn-row"><button type="submit" class="btn ${cls}"${dis()}>${label}</button><button type="button" class="btn ghost" data-act="cancel">Annuler</button></div>`;
+    if (form === 'rename') {
+      h += `<form class="acct-form" data-form="rename">` + field('Nouveau nom', 'name', 'text', 'username', ` maxlength="${P.NAME_MAX}" value="${esc(p.name)}"`) +
+        errHtml() + buttons('Renommer', 'primary') + `</form>`;
+    } else if (form === 'pwd') {
+      h += `<form class="acct-form" data-form="pwd"><input type="text" name="username" autocomplete="username" value="${esc(p.name)}" hidden>` +
+        field('Mot de passe actuel', 'old', 'password', 'current-password') +
+        field('Nouveau mot de passe', 'new', 'password', 'new-password', ` minlength="${P.PWD_MIN}"`) +
+        field('Confirmer le nouveau mot de passe', 'confirm', 'password', 'new-password') +
+        errHtml() + buttons('Changer le mot de passe', 'primary') + `</form>`;
+    } else if (form === 'delete') {
+      h += `<form class="acct-form danger" data-form="delete"><p>Supprimer le compte "${esc(p.name)}" et ses statistiques <b>dans tous les jeux</b> ? C'est definitif.</p>` +
+        field('Mot de passe', 'pwd', 'password', 'current-password') + errHtml() + buttons('Supprimer definitivement', 'danger') + `</form>`;
+    } else if (message) {
+      h += `<p class="acct-info" role="status">${esc(message)}</p>`;
+    }
+    return h + `<div class="acct-actions">` +
+      `<button type="button" class="btn primary" data-act="stats">Mes statistiques</button>` +
+      `<button type="button" class="btn" data-act="rename">Renommer</button>` +
+      `<button type="button" class="btn" data-act="pwd">Mot de passe</button>` +
+      `<button type="button" class="btn" data-act="logout">Se deconnecter</button>` +
+      `<button type="button" class="btn acct-danger" data-act="delete">Supprimer le compte</button></div>`;
+  }
+
+  function renderDialog() {
+    const on = P.connected(), server = P.serverAvailable();
+    $('acctTitle').textContent = on ? 'Mon compte' : welcome ? 'Bienvenue sur Anotehomy Quizz !' : 'Compte';
+    $('acctHelp').textContent = on
+      ? 'Vos statistiques vous suivent sur tous vos appareils. Ce compte sert aussi dans les autres jeux : vous restez connecte en changeant de jeu.'
+      : server
+        ? 'Connectez-vous pour retrouver vos statistiques sur tous vos appareils, ou continuez en invite (statistiques gardees dans ce navigateur). Un seul compte pour tous les jeux.'
+        : 'Vous jouez en invite : vos statistiques restent dans ce navigateur. Pour creer un compte (commun a tous les jeux), lancez les jeux avec game.bat, a la racine du dossier des jeux.';
+    $('acctBody').innerHTML = on ? accountView() : server ? visitorView()
+      : `<div class="acct-actions"><button type="button" class="btn primary" data-act="stats">Mes statistiques</button></div>`;
+  }
+
+  function focusFirst() {
+    const c = document.querySelector('#acctBody input:not([hidden]):not([type="checkbox"])');
+    if (c) c.focus();
+  }
+
+  function openDialog(auto) {
+    welcome = !!auto;
+    view = 'login';
+    form = null;
+    message = P.error();
+    P.clearError();
+    renderDialog();
+    const d = $('acctDialog');
+    if (!d.open) d.showModal();
+    focusFirst();
+  }
+  const closeDialog = () => { const d = $('acctDialog'); if (d.open) d.close(); };
+
+  /* requete au serveur : boutons desactives pendant l'attente, message d'erreur sinon */
+  async function run(action, after) {
+    const typed = {};                    /* saisies remises apres chaque redessin (sauf mots de passe) */
+    document.querySelectorAll('#acctBody input[type="text"]').forEach(i => { typed[i.name] = i.value; });
+    const restore = () => Object.keys(typed).forEach(n => { const i = document.querySelector(`#acctBody input[name="${n}"]`); if (i) i.value = typed[n]; });
+    busy = true; message = '';
+    renderDialog(); restore();
+    try {
+      await action();
+      busy = false;
+      after();
+    } catch (err) {
+      busy = false;
+      message = err.message;
+      renderDialog(); restore(); focusFirst();
+    }
+  }
+
+  function submit(f) {
+    const v = n => f.elements[n] ? f.elements[n].value : '';
+    const mismatch = (a, b) => { if (a !== b) { message = 'Les deux mots de passe ne sont pas identiques.'; renderDialog(); return true; } return false; };
+    const done = () => { message = ''; closeDialog(); };
+    switch (f.dataset.form) {
+      case 'login': return run(() => P.login(v('username'), v('password')), done);
+      case 'register':
+        if (mismatch(v('password'), v('confirm'))) return;
+        return run(() => P.register(v('username'), v('password'), f.elements.take ? f.elements.take.checked : false), done);
+      case 'rename': return run(() => P.rename(v('name')), () => { form = null; message = 'Nom change.'; renderDialog(); });
+      case 'pwd':
+        if (mismatch(v('new'), v('confirm'))) return;
+        return run(() => P.changePassword(v('old'), v('new')), () => { form = null; message = 'Mot de passe change. Vos autres appareils devront se reconnecter.'; renderDialog(); });
+      case 'delete': return run(() => P.deleteAccount(v('pwd')), () => { form = null; message = ''; view = 'login'; renderDialog(); });
+    }
+  }
+
+  function bindDialog() {
+    $('acctBtn').addEventListener('click', () => openDialog(false));
+    const d = $('acctDialog');
+    d.addEventListener('click', e => {
+      if (e.target === d || e.target.closest('[data-close]')) { closeDialog(); return; }   /* clic sur le fond : fermeture */
+      const b = e.target.closest('button');
+      if (!b || b.disabled) return;
+      if (b.dataset.view) { view = b.dataset.view; message = ''; renderDialog(); focusFirst(); return; }
+      switch (b.dataset.act) {
+        case 'guest': closeDialog(); break;
+        case 'stats': closeDialog(); openStats(); break;
+        case 'rename': case 'pwd': case 'delete': form = b.dataset.act; message = ''; renderDialog(); focusFirst(); break;
+        case 'cancel': form = null; message = ''; renderDialog(); break;
+        case 'logout': run(() => P.logout(), () => { message = ''; view = 'login'; renderDialog(); }); break;
+      }
+    });
+    d.addEventListener('submit', e => { e.preventDefault(); if (!busy) submit(e.target); });
+  }
+
+  /* ---------------- Ecran des statistiques ---------------- */
+  function openStats() {
+    historyMax = HISTORY_STEP;
+    $('stats').hidden = false;
+    renderStats();
+    $('stats').scrollTop = 0;
+  }
+  const closeStats = () => { $('stats').hidden = true; };
+
+  function renderStats() {
+    if ($('stats').hidden) return;
+    const p = P.player(), s = P.stats(), t = s.totals;
+    const where = P.connected() ? `Statistiques enregistrees sur le serveur des jeux, sous votre compte "${esc(p.name)}".`
+      : 'Vous jouez en invite : statistiques enregistrees dans ce navigateur, sur cet appareil.';
+    const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
+
+    /* par jeu et par mode, dans l'ordre du catalogue */
+    const order = (AQ.data.GAMES || []).map(g => g.id);
+    const keys = Object.keys(s.games).sort((a, b) => {
+      const [ga, ma] = a.split('|'), [gb, mb] = b.split('|');
+      return (order.indexOf(ga) - order.indexOf(gb)) || ma.localeCompare(mb);
+    });
+    const rows = keys.map(k => {
+      const [g, m] = k.split('|'), x = s.games[k], b = x.best;
+      return `<tr><td>${esc(gameName(g))}</td><td>${MODES[m] || esc(m)}</td><td><b>${x.played}</b></td><td><b>${pct(x.ok, x.questions)}</b><small>${x.ok} / ${x.questions}</small></td>` +
+        `<td>${b ? `<b>${b.pct} %</b> (${b.ok} / ${b.n}) - ${fmt(b.time)}<small>${esc(b.detail || '')} - ${new Date(b.date).toLocaleDateString('fr-FR')}</small>` : '<span class="st-empty">aucune partie complete</span>'}</td></tr>`;
+    }).join('');
+
+    /* elements a revoir, par jeu */
+    const missed = order.concat(Object.keys(s.missed).filter(g => order.indexOf(g) < 0)).map(g => {
+      const list = P.mostMissed(g, 12);
+      return list.length ? `<p class="st-game">${esc(gameName(g))}</p><div class="subs">` +
+        list.map(x => `<span>${esc(x.name)} <small>ratee ${x.missed} fois sur ${x.seen}</small></span>`).join('') + '</div>' : '';
+    }).join('');
+
+    const hist = s.history.slice(0, historyMax).map(h => {
+      const d = new Date(h.date);
+      return `<tr><td>${d.toLocaleDateString('fr-FR')}<small>${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</small></td>` +
+        `<td>${esc(gameName(h.game, h.name))}${h.aborted ? '<span class="st-tag">interrompue</span>' : ''}</td><td>${MODES[h.mode] || esc(h.mode)}</td>` +
+        `<td>${esc(h.detail || '')}</td><td><b>${h.ok} / ${h.n}</b><small>${pct(h.ok, h.n)} - ${h.points} pts</small></td><td>${fmt(h.time)}</td></tr>`;
+    }).join('');
+
+    $('statsCard').innerHTML =
+      `<div class="st-head">${avatar(p, true)}<div><h2 class="res-title">Statistiques de ${esc(p.name)}</h2><p class="st-sub">${where}</p></div></div>` +
+      (P.storageOk() ? '' : '<p class="fb-note">Ce navigateur refuse l\'enregistrement : les statistiques ne seront gardees que jusqu\'a la fermeture de la page.</p>') +
+      `<div class="kpis">${kpi(t.played, 'Parties jouees')}${kpi(duration(t.time), 'Temps de jeu')}${kpi(pct(t.ok, t.questions), 'Bonnes reponses')}${kpi(t.questions, 'Questions')}</div>` +
+      `<h3 class="res-sec">Par jeu et par mode</h3>` +
+      (rows ? `<div class="st-scroll"><table class="st-table"><thead><tr><th>Jeu</th><th>Mode</th><th>Parties</th><th>Reussite</th><th>Meilleure partie</th></tr></thead><tbody>${rows}</tbody></table></div>`
+        : '<p class="st-empty">Aucune partie pour l\'instant : elles apparaitront ici a la fin de chaque partie.</p>') +
+      `<h3 class="res-sec">A revoir</h3>` + (missed || '<p class="st-empty">Aucune erreur enregistree pour l\'instant.</p>') +
+      `<h3 class="res-sec">Dernieres parties</h3>` +
+      (hist ? `<div class="st-scroll"><table class="st-table"><thead><tr><th>Date</th><th>Jeu</th><th>Mode</th><th>Configuration</th><th>Score</th><th>Temps</th></tr></thead><tbody>${hist}</tbody></table></div>` +
+        (s.history.length > historyMax ? `<button type="button" class="btn st-more" data-st="more">Afficher plus (${s.history.length - historyMax} de plus)</button>` : '') +
+        `<p class="st-sub">${plural(s.history.length, 'partie')} dans l'historique (les 500 dernieres sont gardees).</p>`
+        : '<p class="st-empty">Aucune partie pour l\'instant.</p>') +
+      `<div class="res-actions"><button type="button" class="btn ghost acct-danger" data-st="reset">Effacer mes statistiques</button>` +
+      `<button type="button" class="btn primary" data-st="close">Fermer</button></div>`;
+  }
+
+  function bindStats() {
+    $('statsCard').addEventListener('click', e => {
+      const b = e.target.closest('[data-st]');
+      if (!b) return;
+      if (b.dataset.st === 'close') closeStats();
+      else if (b.dataset.st === 'more') { historyMax += HISTORY_STEP; renderStats(); }
+      else if (b.dataset.st === 'reset' && confirm('Effacer toutes les statistiques de "' + P.player().name + '" ? Le compte est garde. C\'est definitif.')) P.reset();
+    });
+    $('stats').addEventListener('click', e => { if (e.target === $('stats')) closeStats(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('stats').hidden && !$('acctDialog').open) closeStats(); });
+  }
+
+  /* a l'arrivee (une fois par session, tous jeux confondus) : si le serveur repond et qu'aucun
+     compte n'est memorise, on propose de se connecter ou de creer un compte */
+  function proposeLogin() {
+    if (P.serverAvailable() && !P.connected() && !$('home').hidden && P.firstVisit()) openDialog(true);
+  }
+
+  function init() {
+    updateButton();
+    bindDialog();
+    bindStats();
+    P.onChange(() => {
+      updateButton();
+      if ($('acctDialog').open && !busy) {
+        const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest('#acctBody form');
+        if (!typing) renderDialog();       /* pas de redessin pendant la saisie d'un formulaire */
+      }
+      renderStats();
+    });
+    P.ready.then(proposeLogin);
+  }
+
+  Object.assign(NS, { init, openStats });
+})(AQ.account);
