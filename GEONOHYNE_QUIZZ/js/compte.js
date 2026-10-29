@@ -26,13 +26,7 @@
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  const ONGLETS = {
-    records:     { icone: '🏆', titre: 'Mes records', description: 'Vos meilleurs scores et temps, pour chaque catégorie et chaque périmètre.' },
-    classements: { icone: '🥇', titre: 'Classements', description: 'Le classement des joueurs, record par record.' },
-    historique:  { icone: '🗓️', titre: 'Historique', description: 'Toutes vos parties : date, façon de jouer, sélection, score, temps.' },
-    revoir:      { icone: '🔁', titre: 'Zones à revoir', description: 'Les zones que vous ratez le plus souvent, et une partie pour les revoir.' },
-    sauvegarde:  { icone: '💾', titre: 'Exports et sauvegarde', description: 'Exporter en CSV pour un tableur, sauvegarder ou restaurer vos statistiques.' }
-  };
+  const ONGLETS = ['records', 'classements', 'historique', 'revoir', 'sauvegarde'];   // de l'écran des statistiques
   const NOMS_JEU = { ciblage: '🎯 Ciblage', nommage: '⌨️ Nommage' };
   const PAS_HISTORIQUE = 50;            // parties affichées par « Afficher plus »
   const MAX_REVISION = 12;              // zones proposées à la révision, par catégorie
@@ -330,7 +324,7 @@
   /* Écran des statistiques                                              */
   /* ------------------------------------------------------------------ */
   function ouvrirStats(o) {
-    onglet = ONGLETS[o] ? o : 'records';
+    onglet = ONGLETS.includes(o) ? o : 'records';
     historiqueMax = PAS_HISTORIQUE;
     GeoNohyne.afficher('screen-stats');
     rendreStats();
@@ -511,19 +505,6 @@
       }
     });
   }
-
-  /* ------------------------------------------------------------------ */
-  /* Pages du menu (grande catégorie « Records et statistiques »)        */
-  /* ------------------------------------------------------------------ */
-  Object.keys(ONGLETS).forEach((o) => {
-    GeoNohyne.registerPage({
-      id: 'stats-' + o,
-      titre: ONGLETS[o].titre,
-      icone: ONGLETS[o].icone,
-      description: ONGLETS[o].description,
-      ouvrir: () => ouvrirStats(o)
-    });
-  });
 
   function init() {
     majBouton();

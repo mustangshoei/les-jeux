@@ -32,13 +32,11 @@
   const DUEL = ['Solo', 'Duel'];
 
   const JEUX = [
-    { id: 'geonohyne', dossier: 'GEONOHYNE_QUIZZ', nom: 'GéoNohyne Quizz', icone: '🌍', version: '2.0.0',
+    { id: 'geonohyne', dossier: 'GEONOHYNE_QUIZZ', nom: 'GéoNohyne Quizz', icone: '🌍', version: '2.1.0',
       description: 'Géographie : départements, fleuves, pays et mers du monde.',
       modes: [
-        { id: 'departements', nom: 'Les Départements', groupe: 'France', variantes: CIBLAGE },
+        { id: 'departements', nom: 'Les départements et leurs préfectures', groupe: 'France', variantes: CIBLAGE },
         { id: 'fleuves', nom: 'Fleuves & Océans', groupe: 'France', variantes: CIBLAGE },
-        { id: 'regions', nom: 'Les Régions', groupe: 'France', variantes: CIBLAGE, bientot: true },
-        { id: 'prefectures', nom: 'Les Préfectures', groupe: 'France', variantes: CIBLAGE, bientot: true },
         { id: 'grand-chemin', nom: 'Le Grand Chemin', groupe: 'France' },
         { id: 'morpion', nom: 'Morpion des Départements', groupe: 'France', variantes: DUEL },
         { id: 'liste', nom: 'La Liste des Départements', groupe: 'France' },

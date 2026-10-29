@@ -1,19 +1,26 @@
 /* ==========================================================================
-   france/quiz-departements.js — Catégorie de quiz « Les Départements »
+   france/quiz-departements.js — Catégorie de quiz « Les départements et leurs préfectures »
 
    Ce fichier sert de MODÈLE pour les futures catégories : il déclare au noyau
    (core.js) les textes du jeu et l'identifiant de la carte à utiliser.
    La carte elle-même est dans data/france/carte-departements.js.
    Sa place dans le menu : { quiz: 'departements' } dans js/menu.js.
+   Il réunit les anciennes cartes « Les Départements » et « Les Préfectures » (à venir) : seul le titre
+   a changé pour l'instant, les questions portent toujours sur les départements.
    ========================================================================== */
 GeoNohyne.registerCategory({
   id: 'departements',
-  titre: 'Les Départements',
+  titre: 'Les départements et leurs préfectures',
   icone: '🗺️',
   description: 'Placez les départements français sur la carte.',
   consigne: 'Un nom s\'affiche : cliquez sur le bon département de la carte. ' +
             'Choisissez la longueur de la partie.',
   question: 'Où se trouve…',
+
+  // Écran de choix : titre de la colonne de ce quiz, et colonne droite réservée au jeu des préfectures
+  // (structure seulement dans index.html, #setup-prefectures ; aucune logique pour l'instant)
+  nomColonne: 'Départements',
+  colonneDroite: 'setup-prefectures',
 
   // Identifiant de la carte, donné par son fichier de data/ : GeoCarte.enregistrer('france-departements', …)
   carte: 'france-departements',
@@ -21,12 +28,15 @@ GeoNohyne.registerCategory({
   unite: 'départements',
   libelleOrdre: 'Dans l\'ordre des codes INSEE (… 67 Bas-Rhin, 68 Haut-Rhin …)',
   libelleIndice: 'Afficher le code du département à côté du nom : « Nom (XX) »',
+  libelleOrdreCourt: 'Ordre INSEE',
+  libelleIndiceCourt: 'Indice : code',
   indice: (zone) => zone.code,
 
   // Départements d'Outre-Mer : absents du tirage « par nombre » sauf si la case est cochée
   zonesOptionnelles: {
     codes: ['971', '972', '973', '974', '976'],
-    libelle: 'Inclure les départements d\'Outre-Mer (Guadeloupe, Martinique, Guyane, La Réunion, Mayotte)'
+    libelle: 'Inclure les départements d\'Outre-Mer (Guadeloupe, Martinique, Guyane, La Réunion, Mayotte)',
+    libelleCourt: 'Inclure l\'Outre-Mer (5 départements)'
   },
 
   // Sélection par régions (nouvelles régions, depuis 2016) : codes des départements de chacune.

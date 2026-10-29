@@ -28,16 +28,23 @@
      id, titre       obligatoires
      carte           obligatoire : identifiant d'une carte de data/ (voir carte.js)
      icone, description   textes de la carte du menu
-     consigne        phrase d'explication sur l'écran de choix de la partie
+     consigne        phrase d'explication de la catégorie (l'écran de choix décrit lui-même ciblage et nommage)
+     nomColonne      titre de sa colonne sur l'écran de choix (défaut : « Votre partie »)
+     colonneDroite   id d'une seconde colonne de l'écran de choix (index.html), affichée à droite (ex.
+                     'setup-prefectures') ; sans elle, une seule colonne, centrée
      question        texte au-dessus du nom à trouver (défaut : « Où se trouve… »)
      unite           nom des zones, au pluriel (« départements »), pour le sélecteur de nombre
      libelleOrdre    texte de la case « ordre des codes » (la case n'apparaît que s'il est défini)
      indice(zone)    renvoie le code à afficher à côté du nom : « Nom (code) » (active la case à cocher)
      libelleIndice   texte de cette case à cocher
-     zonesOptionnelles  { codes: [...], libelle } : zones écartées du tirage « par nombre » sauf si la case
-                     (libellée libelle) est cochée ; elles restent accessibles via un groupe (ex. Outre-Mer)
+     libelleOrdreCourt, libelleIndiceCourt   (facultatifs) versions courtes, affichées sur l'écran de choix
+                     (la version complète reste en info-bulle)
+     zonesOptionnelles  { codes: [...], libelle, libelleCourt } : zones écartées du tirage « par nombre » sauf
+                     si la case (libellée libelle, ou libelleCourt sur l'écran de choix) est cochée ; elles
+                     restent accessibles via un groupe (ex. Outre-Mer)
      groupes         { 'Nom du groupe': [codes des zones] } : active le mode « par groupes » (régions…) ;
-                     en jouant par groupes, la carte se cadre sur les groupes choisis
+                     en jouant par groupes, la carte se cadre sur les groupes choisis. L'écran de choix
+                     montre alors une mini-carte cliquable des groupes (cocher, ou choisir le périmètre)
      nomGroupes      nom des groupes, au pluriel (« régions »)
      modeInitial     'groupes' : l'écran de choix s'ouvre sur le mode « par groupes », tous cochés
      groupesInitiaux [noms] : avec modeInitial 'groupes', seuls ces groupes sont cochés au départ
@@ -84,7 +91,8 @@
      sansCarte       true : le jeu n'utilise pas la carte (ex. Morpion des Départements)
    Pas de mode record ni de statistiques pour les jeux à part.
 
-   CONTRAT D'UNE PAGE (GeoNohyne.registerPage) — ex. les statistiques, dans js/compte.js
+   CONTRAT D'UNE PAGE (GeoNohyne.registerPage) — aucune pour l'instant (les statistiques s'ouvrent depuis
+   le menu du compte, js/compte.js)
      id, titre, ouvrir()   obligatoires (carte du menu : { page: 'id' } dans js/menu.js)
      icone, description    textes de la carte du menu
    ========================================================================== */
@@ -115,7 +123,7 @@
   const categories = [];          // catégories de quiz enregistrées, dans l'ordre
   const apprentissages = [];      // modules « Apprendre » enregistrés, dans l'ordre
   const jeux = [];                // jeux à part (ex. Le Grand Chemin), enregistrés par GeoNohyne.registerJeu
-  const pages = [];               // pages du menu (ex. statistiques), enregistrées par GeoNohyne.registerPage
+  const pages = [];               // pages du menu, enregistrées par GeoNohyne.registerPage
   const zones = new Map();        // code -> { nom, el, cx, cy, brut }
 
   let svg = null;
@@ -128,6 +136,8 @@
   let cerclesPoints = [];         // points des petites zones : leur taille à l'écran ne dépend pas du zoom
   let jeu = null;                 // état de la partie en cours
   let derniereTaille = 20;        // dernier nombre de questions choisi
+  let miniCarte = null;           // écran de choix : mini-carte des groupes de la catégorie ouverte (<svg>)
+  const CLE_RECORD = 'geonohyne.setup.record';   // dernier état de l'interrupteur « Mode record »
   let derniereConfig = null;      // réglages de la dernière partie (bouton « Rejouer »)
   let mode = 'nombre';            // mode de sélection (occasionnel) : 'nombre' ou 'groupes'
   let jeuType = 'ciblage';        // façon de jouer : 'ciblage' ou 'nommage' (gardée d'une catégorie à l'autre)
@@ -246,7 +256,7 @@
   /* ------------------------------------------------------------------ */
   // Active ou désactive tous les réglages de l'écran de choix de la partie
   function activerChoix(actif) {
-    ['#count-range', '#count-input', '#opt-ordre', '#opt-indice', '#opt-rattrapage', '#opt-extras', '#btn-start']
+    ['#count-range', '#count-input', '#opt-ordre', '#opt-indice', '#opt-rattrapage', '#opt-extras', '#opt-record', '#btn-start']
       .forEach((s) => { $(s).disabled = !actif; });
   }
 
@@ -292,26 +302,19 @@
     $('#mode-nombre').classList.toggle('hidden', m !== 'nombre');
     $('#mode-groupes').classList.toggle('hidden', m !== 'groupes');
     majBoutonLancer();
+    majMiniCarte();
   }
 
   /* ---------- Façon de jouer (ciblage / nommage) et mode (occasionnel / record) ---------- */
 
-  const AIDES = {
-    ciblage: 'Un nom s\'affiche : cliquez sur la bonne zone de la carte.',
-    nommage: 'Une zone s\'allume sur la carte : tapez son nom (majuscules, accents, espaces, tirets et apostrophes ignorés).',
-    record: ' Mode record : toutes les zones du périmètre, une fois chacune, sans indice ni rattrapage. ' +
-            'Le meilleur score l\'emporte, puis le meilleur temps.'
-  };
+  const AIDE_RECORD = 'Mode record : toutes les zones du périmètre, une fois chacune, sans indice ni rattrapage. ' +
+                      'Le meilleur score l\'emporte, puis le meilleur temps.';
 
-  // Consigne de la catégorie en ciblage occasionnel ; sinon une aide adaptée à la façon de jouer et au mode
+  // Sous les deux cartes (qui décrivent déjà ciblage et nommage) : seulement les règles du mode record
   function majAide() {
-    let t = AIDES[jeuType];
-    if (jeuType === 'nommage') t += partieType === 'record' ? ' Sans suggestions.' : ' Des suggestions s\'affichent en tapant.';
-    if (partieType === 'record') t += AIDES.record;
-    const parDefaut = jeuType === 'ciblage' && partieType === 'occasionnel';
-    $('#setup-consigne').classList.toggle('hidden', !parDefaut);
-    $('#setup-aide').classList.toggle('hidden', parDefaut);
-    $('#setup-aide').textContent = t;
+    const record = partieType === 'record';
+    $('#setup-aide').textContent = record ? AIDE_RECORD : '';
+    $('#setup-aide').classList.toggle('hidden', !record);
   }
 
   function definirJeuType(t) {
@@ -323,12 +326,71 @@
 
   function definirPartieType(t) {
     partieType = t;
-    enfoncer('partie', t);
+    $('#opt-record').checked = t === 'record';
     $('#partie-occasionnelle').classList.toggle('hidden', t !== 'occasionnel');
     $('#partie-record').classList.toggle('hidden', t !== 'record');
     majAide();
     majRecords();
     majBoutonLancer();
+    majMiniCarte();
+  }
+
+  function lireRecord() {
+    try { return localStorage.getItem(CLE_RECORD) === '1'; } catch (e) { return false; }
+  }
+
+  /* ---------- Mini-carte des groupes : une région cliquée est cochée (ou devient le périmètre du record) ---------- */
+
+  // Construite à l'ouverture de la catégorie, à partir de sa carte : chaque zone porte son groupe (data-groupe)
+  function preparerMiniCarte(cat) {
+    miniCarte = null;
+    document.querySelectorAll('[data-mini-carte]').forEach((p) => { p.innerHTML = ''; });
+    if (!cat.groupes || !carte) return;
+    const groupeDe = {};
+    Object.keys(cat.groupes).forEach((g) => cat.groupes[g].forEach((c) => { groupeDe[c] = g; }));
+    const v = carte.vue || { x: 0, y: 0, w: carte.largeur, h: carte.hauteur };
+    const svg = creerSVG('svg', 'mini-carte', { viewBox: [v.x, v.y, v.w, v.h].join(' '), 'aria-hidden': 'true' });
+    // Carte en longueur (le monde) : au-dessus de la liste, sur toute la largeur ; sinon, à côté
+    document.querySelectorAll('.groupes-choix').forEach((b) => b.classList.toggle('groupes-choix--large', v.w / v.h > 1.3));
+    carte.elements.forEach((e) => {
+      if (!e.d && !e.point) return;
+      const forme = e.d
+        ? creerSVG('path', 'mini-zone' + (e.ligne ? ' mini-zone--ligne' : ''), { d: e.d })
+        : creerSVG('circle', 'mini-zone mini-zone--point', { cx: e.cx, cy: e.cy, r: v.w * 0.006 });
+      const g = groupeDe[e.code];
+      if (g) {
+        forme.dataset.groupe = g;
+        const titre = creerSVG('title');
+        titre.textContent = g;
+        forme.appendChild(titre);
+      } else {
+        forme.classList.add('mini-zone--hors');
+      }
+      svg.appendChild(forme);
+    });
+    miniCarte = svg;
+  }
+
+  // Place la mini-carte dans le panneau affiché (occasionnel par groupes, ou record) et colore les groupes choisis
+  function majMiniCarte() {
+    if (!miniCarte) return;
+    const place = document.querySelector('[data-mini-carte="' + (partieType === 'record' ? 'record' : 'groupes') + '"]');
+    if (place && miniCarte.parentNode !== place) place.appendChild(miniCarte);
+    const choisis = partieType === 'record'
+      ? (perimetre === 'tout' ? null : new Set([perimetre]))
+      : new Set([...document.querySelectorAll('#groupes-liste input:checked')].map((i) => i.value));
+    miniCarte.querySelectorAll('[data-groupe]').forEach((z) => {
+      z.classList.toggle('is-choisi', !choisis || choisis.has(z.dataset.groupe));
+    });
+  }
+
+  // Survol : toute la région s'éclaire, sur la carte et dans la liste
+  function survolerGroupe(g) {
+    if (!miniCarte) return;
+    miniCarte.querySelectorAll('[data-groupe]').forEach((z) => z.classList.toggle('is-survol', z.dataset.groupe === g));
+    document.querySelectorAll('#groupes-liste input, #record-perimetres input').forEach((i) => {
+      i.parentNode.classList.toggle('is-survol', i.value === g);
+    });
   }
 
   /* ---------- Périmètres du record : toutes les zones, ou un seul groupe ---------- */
@@ -338,6 +400,17 @@
     return categorie.groupes[perimetre].filter((c) => zones.has(c));
   }
   const nomPerimetre = () => (perimetre === 'tout' ? categorie.nomTout || 'Tout' : perimetre);
+
+  // Texte d'une case de groupe : le nom, et à droite le nombre de zones
+  function puce(nom, n) {
+    const texte = document.createElement('span');
+    const b = document.createElement('b');
+    b.textContent = nom;
+    const small = document.createElement('small');
+    small.textContent = n;
+    texte.append(b, small);
+    return texte;
+  }
 
   function preparerPerimetres(cat) {
     const liste = $('#record-perimetres');
@@ -350,9 +423,7 @@
       choix.name = 'perimetre';
       choix.value = id;
       choix.checked = id === perimetre;
-      const texte = document.createElement('span');
-      texte.textContent = nom + ' · ' + n;
-      label.append(choix, texte);
+      label.append(choix, puce(nom, n));
       liste.appendChild(label);
     };
     ajouter('tout', cat.nomTout || 'Tout', zones.size);
@@ -394,9 +465,7 @@
         const coche = document.createElement('input');
         coche.type = 'checkbox';
         coche.value = g;
-        const texte = document.createElement('span');
-        texte.textContent = g + ' · ' + n;
-        label.append(coche, texte);
+        label.append(coche, puce(g, n));
         liste.appendChild(label);
       });
     }
@@ -430,6 +499,21 @@
     $('#count-max').textContent = total;
     const v = Math.min(total, Math.max(min, parseInt($('#count-input').value, 10) || derniereTaille));
     $('#count-range').value = $('#count-input').value = v;
+    majRaccourcis();
+  }
+
+  // Raccourcis 10, 20, 30, 50, « Tous » : celui de la valeur choisie est enfoncé ; ceux hors plage sont cachés
+  function majRaccourcis() {
+    const curseur = $('#count-range');
+    const v = +curseur.value, min = +curseur.min, max = +curseur.max;
+    $('#count-tous').textContent = max;
+    document.querySelectorAll('#nombre-raccourcis [data-nombre]').forEach((b) => {
+      const tous = b.dataset.nombre === 'max';
+      const n = tous ? max : Number(b.dataset.nombre);
+      b.hidden = !tous && (n < min || n >= max);
+      b.classList.toggle('is-active', n === v);
+      b.setAttribute('aria-pressed', String(n === v));
+    });
   }
 
   function ouvrirCategorie(id) {
@@ -442,23 +526,33 @@
     activite = null;
 
     $('#setup-titre').textContent = cat.titre;
-    $('#setup-consigne').textContent = cat.consigne || '';
+    // Colonne de la catégorie (nomColonne) et colonne droite facultative (colonneDroite : id d'une colonne de
+    // l'écran, ex. 'setup-prefectures') ; sans elle, une seule colonne, centrée
+    $('#setup-col-nom').textContent = cat.nomColonne || 'Votre partie';
+    document.querySelectorAll('.setup-col--droite').forEach((c) => c.classList.toggle('hidden', c.id !== cat.colonneDroite));
+    $('#setup-colonnes').classList.toggle('setup-colonnes--deux', !!cat.colonneDroite);
     $('#count-unit').textContent = cat.unite || 'zones';
     $('#opt-ordre').checked = false;
     $('#opt-ordre-wrap').classList.toggle('hidden', !cat.libelleOrdre);
-    $('#opt-ordre-label').textContent = cat.libelleOrdre || '';
+    // Options : libellé court sur l'écran (libelleOrdreCourt, libelleIndiceCourt), le complet en info-bulle
+    $('#opt-ordre-label').textContent = cat.libelleOrdreCourt || cat.libelleOrdre || '';
+    $('#opt-ordre-label').title = cat.libelleOrdreCourt ? cat.libelleOrdre : '';
     $('#opt-indice').checked = false;
     $('#opt-indice-wrap').classList.toggle('hidden', typeof cat.indice !== 'function');
-    $('#opt-indice-label').textContent = cat.libelleIndice || 'Afficher un indice';
+    $('#opt-indice-label').textContent = cat.libelleIndiceCourt || cat.libelleIndice || 'Afficher un indice';
+    $('#opt-indice-label').title = cat.libelleIndiceCourt ? cat.libelleIndice : '';
     $('#opt-rattrapage').checked = true;
     $('#opt-extras').checked = false;
     $('#opt-extras-wrap').classList.toggle('hidden', !cat.zonesOptionnelles);
-    $('#opt-extras-label').textContent = cat.zonesOptionnelles ? cat.zonesOptionnelles.libelle : '';
+    const opt = cat.zonesOptionnelles;            // libellé court (libelleCourt) sur l'écran, le complet en info-bulle
+    $('#opt-extras-label').textContent = opt ? opt.libelleCourt || opt.libelle : '';
+    $('#opt-extras-label').title = opt && opt.libelleCourt ? opt.libelle : '';
 
     $('#mode-wrap').classList.add('hidden');      // réaffiché une fois la carte chargée (si groupes)
     perimetre = 'tout';
-    definirJeuType(jeuType);                      // la façon de jouer est gardée ; le mode revient à « occasionnel »
-    definirPartieType('occasionnel');
+    miniCarte = null;
+    definirJeuType(jeuType);                      // la façon de jouer est gardée ; le mode record est mémorisé
+    definirPartieType(lireRecord() ? 'record' : 'occasionnel');
     definirMode('nombre');
     activerChoix(false);
     afficher('screen-setup');
@@ -474,6 +568,8 @@
     construireSVG(carte, cat, false);
     preparerGroupes(cat);
     preparerPerimetres(cat);
+    preparerMiniCarte(cat);
+    majMiniCarte();
     majRecords();
 
     $('#count-input').value = derniereTaille;
@@ -1693,12 +1789,21 @@
       const v = parseInt(champ.value, 10);
       return Math.min(+curseur.max, Math.max(+curseur.min, isNaN(v) ? +curseur.value : v));
     };
-    curseur.addEventListener('input', () => { champ.value = curseur.value; });
+    curseur.addEventListener('input', () => { champ.value = curseur.value; majRaccourcis(); });
     champ.addEventListener('input', () => {
       const v = parseInt(champ.value, 10);
       if (!isNaN(v)) curseur.value = Math.min(+curseur.max, Math.max(+curseur.min, v));
     });
-    champ.addEventListener('change', () => { champ.value = curseur.value = nombreChoisi(); });
+    champ.addEventListener('change', () => { champ.value = curseur.value = nombreChoisi(); majRaccourcis(); });
+    // − et +, raccourcis (10, 20, 30, 50, tous)
+    const choisirNombre = (n) => { champ.value = n; champ.dispatchEvent(new Event('change')); };
+    document.querySelectorAll('[data-pas]').forEach((b) => {
+      b.addEventListener('click', () => { if (!champ.disabled) choisirNombre(nombreChoisi() + Number(b.dataset.pas)); });
+    });
+    $('#nombre-raccourcis').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-nombre]');
+      if (b && !champ.disabled) choisirNombre(b.dataset.nombre === 'max' ? +curseur.max : Number(b.dataset.nombre));
+    });
     const lancer = () => {
       if (partieType === 'record') {
         return demarrer({ jeu: jeuType, record: true, codes: codesPerimetre(), estompe: true,
@@ -1726,25 +1831,50 @@
     document.querySelectorAll('.mode-btn[data-jeu-type]').forEach((b) => {
       b.addEventListener('click', () => definirJeuType(b.dataset.jeuType));
     });
-    document.querySelectorAll('.mode-btn[data-partie]').forEach((b) => {
-      b.addEventListener('click', () => definirPartieType(b.dataset.partie));
+    $('#opt-record').addEventListener('change', (e) => {
+      try { localStorage.setItem(CLE_RECORD, e.target.checked ? '1' : '0'); } catch (err) { /* valable pour la session */ }
+      definirPartieType(e.target.checked ? 'record' : 'occasionnel');
     });
     $('#record-perimetres').addEventListener('change', (e) => {
       if (e.target.name !== 'perimetre') return;
       perimetre = e.target.value;
       majRecords();
       majBoutonLancer();
+      majMiniCarte();
+    });
+
+    // Mini-carte : un clic coche ou décoche la région (record : la choisit, un second clic revient à « tout »)
+    document.querySelectorAll('[data-mini-carte]').forEach((place) => {
+      place.addEventListener('click', (e) => {
+        const z = e.target.closest('[data-groupe]');
+        if (!z) return;
+        const g = z.dataset.groupe;
+        if (partieType === 'record') {
+          const cible = perimetre === g ? 'tout' : g;
+          const r = [...document.querySelectorAll('#record-perimetres input')].find((i) => i.value === cible);
+          if (r) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
+        } else {
+          const c = [...document.querySelectorAll('#groupes-liste input')].find((i) => i.value === g);
+          if (c) { c.checked = !c.checked; c.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
+      });
+      place.addEventListener('mouseover', (e) => {
+        const z = e.target.closest('[data-groupe]');
+        survolerGroupe(z ? z.dataset.groupe : null);
+      });
+      place.addEventListener('mouseleave', () => survolerGroupe(null));
     });
 
     // Mode de sélection (par nombre / par groupes) et cases des groupes
     document.querySelectorAll('.mode-btn[data-mode]').forEach((b) => {
       b.addEventListener('click', () => definirMode(b.dataset.mode));
     });
-    $('#groupes-liste').addEventListener('change', majBoutonLancer);
+    $('#groupes-liste').addEventListener('change', () => { majBoutonLancer(); majMiniCarte(); });
     document.querySelectorAll('[data-groupes]').forEach((b) => {
       b.addEventListener('click', () => {
         document.querySelectorAll('#groupes-liste input').forEach((i) => { i.checked = b.dataset.groupes === 'tout'; });
         majBoutonLancer();
+        majMiniCarte();
       });
     });
     champ.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !$('#btn-start').disabled) lancer(); });

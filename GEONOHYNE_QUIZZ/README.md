@@ -5,7 +5,7 @@ GéoNohyne Quizz fait partie du dossier des jeux (voir le [README à la racine](
 avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif (`../SERVEUR/serveur.py`,
 Python sans dépendance) qui permet de jouer à plusieurs sur un réseau, avec des classements communs.
 
-**Version 2.0.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 2.1.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
@@ -42,9 +42,9 @@ js/compte.js                       bouton de compte (en haut à gauche), fenêtr
 js/ancien-nom.js                   reprend les réglages enregistrés dans le navigateur sous l'ancien nom (GéoQuiz)
 
 js/france/                         « La France et sa géographie »
-  quiz-departements.js             quiz « Les Départements » (modèle des autres quiz)
+  quiz-departements.js             quiz « Les départements et leurs préfectures » (modèle des autres quiz)
   quiz-fleuves.js                  quiz « Fleuves & Océans »
-  grand-chemin.js                  jeu « Le Grand Chemin » (relier deux départements)
+  grand-chemin.js                  jeu « Le Grand Chemin » (relier deux départements, avec ou sans étapes)
   morpion.js                       jeu « Morpion des Départements » (tic-tac-toe à critères croisés)
   liste.js                         jeu « La Liste des Départements » (citer départements et préfectures)
   codage.js                        jeu « Codage – Encodage » (numéro ↔ nom des départements, chronométré)
@@ -78,7 +78,7 @@ outils/ajouter-outre-mer.js        (facultatif) régénère les encadrés des DO
 
 ## Le menu
 
-Le menu est un **atlas** : à gauche, la liste des **chapitres** (grandes catégories, numérotés 01 à 04,
+Le menu est un **atlas** : à gauche, la liste des **chapitres** (grandes catégories, numérotés 01 à 03,
 avec leur nombre de cartes) ; à droite, l'**image du chapitre** : une carte en relief, dessinée à partir
 des données du jeu, avec sa légende (chiffres tirés des mêmes données). Un clic sur un chapitre change
 l'image (fondu) et affiche, dessous, ses cartes ; les **flèches ← →** du clavier passent au chapitre
@@ -87,14 +87,20 @@ rouvrant le jeu.
 
 | Chapitre | Image (et légende) | Cartes (dans l'ordre de la grille) |
 |---|---|---|
-| 01 **La France et sa géographie** | les régions de France, une couleur chacune, Paris (régions, départements métropolitains, d'Outre-Mer) | Les Départements · Fleuves & Océans · Les Régions *(à venir)* · Les Préfectures *(à venir)* · Le Grand Chemin · Morpion des Départements · La Liste des Départements · Codage – Encodage · L'Entonnoir |
+| 01 **La France et sa géographie** | les régions de France, une couleur chacune, Paris (régions, départements métropolitains, d'Outre-Mer) | Les départements et leurs préfectures · Fleuves & Océans · Le Grand Chemin · Morpion des Départements · La Liste des Départements · Codage – Encodage · L'Entonnoir |
 | 02 **Le monde et ses pays** | les pays du monde, une couleur par continent, la France (pays, continents, océans et mers) | Les pays du monde · Les capitales du monde *(à venir)* · Le morpion du monde *(à venir)* · Le Grand Chemin *(à venir)* · Les océans et mers |
 | 03 **Apprendre** | la France, ses fleuves et rivières, les grands fleuves et les mers nommés (cartes à explorer, nombre de fiches) | Apprendre les départements · Apprendre les fleuves et océans de France · Apprendre les pays · Apprendre les mers et océans du monde |
-| 04 **Records et statistiques** | **votre réussite** par département (quiz des Départements), du corail (souvent raté) au menthe (toujours trouvé), et les trois départements les plus ratés ; redessinée après chaque partie (vos totaux) | Mes records · Classements · Historique · Zones à revoir · Exports et sauvegarde |
+
+Les records et statistiques ne sont pas dans le menu : on les ouvre depuis le menu du compte (« Mes
+statistiques »), qui donne accès aux mêmes onglets.
+
+« Les départements et leurs préfectures » réunit les anciennes cartes « Les Départements » et « Les
+Préfectures » (à venir) : pour l'instant, seul le titre a changé, les questions portent toujours sur les
+départements. La carte « Les Régions » (à venir) a été retirée.
 
 Tout le menu est décrit au début de **`js/menu.js`** (constante `MENU`) : c'est là qu'on ajoute, déplace
 ou renomme une carte ou un chapitre, et qu'on choisit l'image d'un chapitre (`image`, une clé de
-`IMAGES` : `france`, `monde`, `apprendre`, `reussite`). Chaque carte y est notée `{ quiz: 'id' }`, `{ jeu: 'id' }`,
+`IMAGES` : `france`, `monde`, `apprendre`). Chaque carte y est notée `{ quiz: 'id' }`, `{ jeu: 'id' }`,
 `{ apprendre: 'id' }` ou `{ page: 'id' }`, avec son pictogramme (`icone`, une clé de `ICONES`), la
 couleur de sa vignette (`teinte`, une clé de `TEINTES`) et, si besoin, ses repères (`meta`, ex.
 « Solo · Duel »).
@@ -119,7 +125,7 @@ trouvée. Les animations sont discrètes et s'arrêtent si le système demande d
 ## Façons de jouer : ciblage et nommage
 
 Tous les quiz (Départements, Fleuves & Océans, Pays du monde, Océans et mers) se jouent de deux façons,
-choisies en haut de l'écran de choix de la partie :
+choisies sur l'écran de choix de la partie (voir plus bas) :
 
 - **🎯 Ciblage** : un nom s'affiche, on clique sur la bonne zone de la carte.
 - **⌨️ Nommage** : une zone s'allume en jaune sable (avec un anneau pulsant pour les plus petites), on tape son
@@ -138,9 +144,34 @@ choisies en haut de l'écran de choix de la partie :
 Chaque façon de jouer existe en **mode occasionnel** (par défaut : nombre de questions, groupes, indice,
 rattrapage) et en **mode record**.
 
+## L'écran de choix de la partie
+
+Il tient **sur un seul écran, sans défilement** (vérifié de 1280 × 720 à 1920 × 1080, et sur téléphone) :
+une grille calée sur la hauteur de la fenêtre, dont la mini-carte est la partie souple. Sous 900 pixels de
+haut environ, la liste des régions peut défiler dans son cadre ; la page, elle, ne défile jamais.
+
+- **En-tête** : « ← Menu » et le titre du quiz. En dessous, une colonne pour le quiz ; pour « Les
+  départements et leurs préfectures », une **seconde colonne, « Préfectures »**, en structure seulement
+  (grisée, « Bientôt », aucune logique) : propriété `colonneDroite` de la catégorie, qui désigne la
+  colonne `#setup-prefectures` de `index.html`. Sur téléphone, elle se réduit à son titre.
+- **Mode record** : interrupteur en haut de la colonne, mémorisé.
+- **Façon de jouer** : deux cartes, 🎯 Ciblage et ⌨️ Nommage, chacune avec sa phrase d'explication.
+- **Questions** (occasionnel), deux onglets :
+  - **🎲 Au hasard** : le nombre en grand, boutons − et +, raccourcis 10 · 20 · 30 · 50 · Tous, curseur,
+    et l'interrupteur des zones optionnelles (Outre-Mer) ;
+  - **🗺️ Par régions** (continents, types, niveaux…) : une **mini-carte cliquable** (un clic coche ou
+    décoche toute la région, le survol l'éclaire avec sa case) et la liste des cases, synchronisées ;
+    « Tout », « Aucun ». Carte en longueur (le monde) : au-dessus de la liste ; sinon, à côté.
+- **Périmètre du record** : la même mini-carte (un clic choisit la région, un second revient à tout) et
+  la liste ; votre record et le meilleur de tous les joueurs, côte à côte.
+- **Options** : interrupteurs sur une ligne, libellés courts (`libelleOrdreCourt`, `libelleIndiceCourt`,
+  `zonesOptionnelles.libelleCourt` ; la version complète en info-bulle).
+- Le crédit de la carte (exigé par les licences) est en pied d'écran.
+
 ## Mode record
 
-Bouton **🏆 Record** de l'écran de choix (pas de mode record pour les jeux à part : Grand Chemin, Morpion, La Liste, Codage – Encodage, L'Entonnoir).
+Interrupteur **🏆 Mode record** de l'écran de choix, dont le dernier état est mémorisé dans le navigateur
+(clé `geonohyne.setup.record`) ; pas de mode record pour les jeux à part : Grand Chemin, Morpion, La Liste, Codage – Encodage, L'Entonnoir).
 
 - **Périmètre fixe** : toutes les zones (« France entière » = les 101 départements, Outre-Mer compris ;
   « Monde complet » = les 196 pays, micro-États compris ; « Toute la carte » ; « Tous les niveaux ») ou
@@ -177,7 +208,7 @@ Bouton **🏆 Record** de l'écran de choix (pas de mode record pour les jeux à
   À la création d'un compte, une case permet de **reprendre les statistiques de l'invité**.
 - **Invité** : toujours possible, avec ou sans serveur ; ses statistiques restent dans le navigateur de
   l'appareil (`localStorage`, clé `geonohyne.profils`).
-- **Statistiques** (ligne « Mes statistiques » du menu du compte ou grande catégorie « Records et statistiques ») :
+- **Statistiques** (ligne « Mes statistiques » du menu du compte) :
   totaux (parties, temps de jeu, taux de bonnes réponses, records), **records** par catégorie et périmètre,
   **classements** de tous les joueurs record par record, **historique** des parties, **zones à revoir** (les
   plus ratées, avec une partie de révision en ciblage ou en nommage), **exports**.
@@ -220,7 +251,7 @@ grisées. Identifiants prévus dans `js/menu.js` (le module qui utilisera l'un d
 
 ### Les pays du monde
 
-Sur le modèle de « Les Départements ». Code : `js/monde/quiz-pays.js`.
+Sur le modèle du quiz des départements. Code : `js/monde/quiz-pays.js`.
 
 - **196 pays** : les 193 membres de l'ONU, le Vatican, le Kosovo et Taïwan.
 - **Territoires rattachés** : ils comptent pour leur pays (un clic sur le Groenland = le Danemark, sur la
@@ -272,22 +303,54 @@ télécharger les cartes et les placer dans `data/monde/`.
 
 Jeu de la catégorie « La France et sa géographie ». Code : `js/france/grand-chemin.js`.
 
-- Deux départements sont tirés au hasard : **départ** (bleu) et **arrivée** (rose). Leur écart est de
-  **5 à 12 sauts** (chaque frontière franchie = 1 saut) ; le chemin le plus court passe donc par
-  « écart − 1 » départements : c'est le **minimum** affiché.
+- Deux départements sont tirés au hasard : **départ** (bleu) et **arrivée** (rose). Leur écart (chaque
+  frontière franchie = 1 saut) est dans la **longueur** choisie, 5 à 12 sauts par défaut ; le chemin le
+  plus court passe donc par « écart − 1 » départements : c'est le **minimum** affiché.
 - La carte est **épurée** : seulement la silhouette de la France, sans frontières intérieures. Seuls le
-  départ, l'arrivée et les départements proposés y apparaissent.
+  départ, l'arrivée, les étapes et les départements proposés y apparaissent.
 - On propose des départements **dans l'ordre qu'on veut**, uniquement en **tapant leur nom**
   (suggestions) : la carte n'est pas cliquable, sinon le jeu perdrait son intérêt. La partie se
   termine dès que les propositions relient le départ à l'arrivée.
 - **Étoiles** : ★★★ si l'on a proposé exactement le minimum ; ★★ si l'on en a proposé au plus
   minimum × 1,5 (arrondi au supérieur) ; ★ sinon.
-- **Aide** (case à cocher, mémorisée) : chaque proposition s'affiche en vert si elle fait partie d'un
-  chemin parfait, en rouge sinon. S'il existe plusieurs chemins parfaits, le jeu retient celui qui
-  correspond le mieux aux choix du joueur (le plus de propositions communes ; à égalité, les premières) :
-  si A et B mènent tous deux à C, c'est celui que vous choisissez qui est validé, et les couleurs se
-  mettent à jour en direct. Sans l'aide, les propositions restent neutres jusqu'à la fin.
-- « Voir la solution » abandonne la partie et affiche un chemin parfait.
+- **Paramètres** : bouton au-dessus de « Voir la solution » et « Nouvelle partie » ; son panneau s'ouvre
+  **vers le haut** (un clic ailleurs ou Échap le referme). Le bouton résume les réglages (« 5–12 sauts »,
+  « 8–15 · 3 étapes · pas à pas »), tous mémorisés. Longueur, détours et « Pas à pas » changent la partie
+  tout de suite si rien n'a encore été proposé ; sinon une note indique qu'ils serviront à la prochaine
+  partie. Les textes du panneau, des messages et du bilan sont justifiés.
+  - **Longueur du chemin** (seule distance réglable) : de 3 à 12 sauts sans détour (12 est le plus grand
+    écart possible entre deux départements continentaux : Moselle – Pyrénées-Atlantiques, Moselle –
+    Hautes-Pyrénées, Pas-de-Calais – Pyrénées-Orientales). Avec des étapes, c'est la longueur du chemin
+    parfait complet, de 2 × (k + 1) à 5 × (k + 1) sauts pour k étapes, 15 au plus (1 étape : 4 à 10 ;
+    2 étapes : 6 à 15 ; 5 étapes : 12 à 15).
+  - **Détours** (case à cocher) : **1 à 5 étapes** imposées (nombre au choix ; violet, numérotées sur la
+    carte et dans le trajet), à relier **dans l'ordre** (départ → étape 1 → étape 2 → … → arrivée),
+    **sans repasser par un même département** : aller à une étape et revenir par le département d'où
+    l'on vient ne compte pas. L'écart entre deux arrêts n'est pas réglable : il est tiré au hasard, de
+    **2 à 5 sauts**. Chaque étape est un vrai détour (hors des plus courts chemins entre l'arrêt d'avant
+    et celui d'après). Minimum = longueur − 1 − nombre d'étapes. Le tirage construit d'abord un chemin
+    parfait, tronçon par tronçon, chacun étant un plus court chemin qui évite les précédents : personne
+    ne peut faire mieux que le minimum.
+  - **Indications** (une seule à la fois) :
+    - **Libre** (par défaut) : aucune indication, les propositions restent neutres jusqu'à la fin.
+    - **Aide** : chaque proposition s'affiche en vert si elle fait partie d'un chemin parfait, en rouge
+      sinon. S'il existe plusieurs chemins parfaits, le jeu retient celui qui correspond le mieux aux
+      choix du joueur (le plus de propositions communes ; à égalité, les premières) : si A et B mènent
+      tous deux à C, c'est celui que vous choisissez qui est validé, et les couleurs se mettent à jour en
+      direct.
+    - **Pas à pas** : on avance dans l'ordre depuis le départ, de voisin en voisin, sans détour. Une
+      proposition est verte si elle touche le dernier département du chemin, rapproche de l'arrêt suivant
+      et laisse encore un chemin parfait jusqu'à l'arrivée (sans repasser par un département) ; sinon elle
+      est rouge, le message dit pourquoi, et elle compte quand même dans le total (donc dans les étoiles).
+      Un département refusé peut être reproposé plus tard, au bon moment. Arrivé à côté d'une étape ou de
+      l'arrivée, on y passe tout seul (elles ne se tapent pas).
+- **Relié, avec des étapes** : le jeu cherche, parmi les propositions, un chemin qui passe par les étapes
+  dans l'ordre sans jamais repasser par un département (vérifications rapides, puis recherche complète).
+  Si le joueur a proposé énormément de départements autour du chemin et que la recherche dépasse son
+  budget (rare), le chemin est accepté : mieux vaut une victoire à une étoile qu'une partie bloquée.
+- « Voir la solution » abandonne la partie et affiche un chemin parfait (étapes en gras).
+- Sur petit écran, le trajet se resserre (et défile s'il y a beaucoup d'étapes) pour que « Paramètres »,
+  « Voir la solution » et « Nouvelle partie » restent toujours visibles.
 - Uniquement la **France métropolitaine continentale** (94 départements) : la Corse et l'Outre-Mer
   n'ont aucune frontière terrestre avec le continent. Les frontières sont celles des contours IGN, y
   compris dans les estuaires (la Charente-Maritime et la Gironde se touchent dans l'estuaire de la
@@ -496,7 +559,7 @@ Le bouton « Suivant → » permet de passer la pause sans attendre.
    grande catégorie.
 3. Dans `js/menu.js`, placez la carte `{ quiz: 'xxx' }` dans la bonne grande catégorie.
 
-Si la carte est déjà dans le menu, grisée (`regions`, `prefectures`, `capitales`), il suffit d'utiliser
+Si la carte est déjà dans le menu, grisée (`capitales`), il suffit d'utiliser
 le même `id` : elle s'active toute seule. Le nouveau quiz a automatiquement le nommage, le mode record et
 les statistiques ; ses périmètres de record sont « tout » (nommé par `nomTout`) et chacun de ses `groupes`.
 
@@ -594,5 +657,6 @@ page d'accueil.
 
 | Version | Date | Changements |
 |---|---|---|
+| 2.1.0 | 29/10/2026 | Le Écran de choix des quiz refait, sans défilement : interrupteur « Mode record » mémorisé, cartes Ciblage / Nommage, nombre de questions avec − / + et raccourcis, mini-carte cliquable des régions (et du périmètre du record), options en interrupteurs ; pour les départements, colonne « Préfectures » en structure seulement. Le Grand Chemin : bouton « Paramètres » (panneau qui s'ouvre vers le haut) avec la longueur du chemin (de 3 à 12 sauts, jusqu'à 15 avec des détours), les détours (1 à 5 étapes imposées, dans l'ordre, sans repasser par un même département ; 2 à 5 sauts entre deux arrêts, tirés au hasard) et les indications (Libre, Aide, Pas à pas : dans l'ordre, sans détour, sinon le département est en rouge) ; textes justifiés. Menu : « Les Départements » devient « Les départements et leurs préfectures » (fusion avec « Les Préfectures », titre seulement), « Les Régions » retirée, chapitre « Records et statistiques » retiré (les statistiques restent dans le menu du compte). |
 | 2.0.0 | 28/10/2026 | Refonte « Atlas en relief » : thème sombre, polices locales, menu en chapitres avec une carte en relief par chapitre (régions, monde, fleuves, votre réussite), menu du compte déroulant sur le modèle du menu « Jeux », partie avec parcours, compteurs, série et étiquette « +1 ». |
 | 1.x | avant le 28/10/2026 | Versions non numérotées : GéoQuiz, puis GéoNohyne Quizz (menu en carrousel, thème clair / sombre). |

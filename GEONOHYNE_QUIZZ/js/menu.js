@@ -3,13 +3,13 @@
 
    Le menu est une suite de CHAPITRES (grandes catégories). En haut : la liste des chapitres
    et, à côté, l'IMAGE du chapitre choisi : une carte en relief dessinée à partir des données
-   (image : 'france' = les régions, 'monde' = les continents, 'apprendre' = les fleuves et les mers,
-   'reussite' = la réussite du joueur par département ; voir IMAGES), avec sa légende. En
-   dessous : le chapitre choisi et ses cartes. Chaque carte est :
+   (image : 'france' = les régions, 'monde' = les continents, 'apprendre' = les fleuves et les mers ;
+   voir IMAGES), avec sa légende. En dessous : le chapitre choisi et ses cartes. Chaque carte est :
      { quiz: 'id' }       catégorie de quiz        (GeoNohyne.registerCategory)
      { jeu: 'id' }        jeu à part               (GeoNohyne.registerJeu)
      { apprendre: 'id' }  module d'exploration     (GeoNohyne.registerApprentissage)
-     { page: 'id' }       page (ex. statistiques)  (GeoNohyne.registerPage)
+     { page: 'id' }       page                     (GeoNohyne.registerPage)
+   Les statistiques ne sont pas dans le menu : elles s'ouvrent depuis le menu du compte (js/compte.js).
    et peut préciser :
      icone   pictogramme de la vignette (une clé de ICONES)
      teinte  couleur de la vignette (une clé de TEINTES)
@@ -35,9 +35,7 @@
       cartes: [
         { quiz: 'departements', icone: 'carte', teinte: 'ciel' },               // js/france/quiz-departements.js
         { quiz: 'fleuves', icone: 'vagues', teinte: 'lagon' },                  // js/france/quiz-fleuves.js
-        { quiz: 'regions',     titre: 'Les Régions',     description: 'Retrouvez les 13 régions métropolitaines.' },
-        { quiz: 'prefectures', titre: 'Les Préfectures', description: 'Associez chaque département à son chef-lieu.' },
-        { jeu: 'grand-chemin', icone: 'chemin', teinte: 'corail', meta: '5 à 12 sauts · étoiles' },   // js/france/grand-chemin.js
+        { jeu: 'grand-chemin', icone: 'chemin', teinte: 'corail', meta: '3 à 15 sauts · détours' },   // js/france/grand-chemin.js
         { jeu: 'morpion', icone: 'grille', teinte: 'lavande', meta: 'Solo · Duel' },                // js/france/morpion.js
         { jeu: 'liste', icone: 'liste', teinte: 'sable', meta: 'Chrono · indices' },                 // js/france/liste.js
         { jeu: 'codage', icone: 'diese', teinte: 'prairie', meta: '3 à 30 s par question' },         // js/france/codage.js
@@ -69,20 +67,6 @@
         { apprendre: 'fleuves-oceans', icone: 'goutte', teinte: 'ciel' },       // js/apprendre/fleuves-oceans.js (France)
         { apprendre: 'pays', icone: 'globe', teinte: 'prairie' },               // js/apprendre/pays.js
         { apprendre: 'mers-monde', icone: 'ancre', teinte: 'lavande' }          // js/apprendre/mers-monde.js
-      ]
-    },
-    {
-      id: 'records',
-      titre: 'Records et statistiques',
-      description: 'Vos records, les classements entre joueurs, l\'historique et les zones à revoir.',
-      unite: ['page', 'pages'],
-      image: 'reussite',
-      cartes: [                                 // pages de js/compte.js
-        { page: 'stats-records', icone: 'trophee', teinte: 'sable', meta: 'Par catégorie et périmètre' },
-        { page: 'stats-classements', icone: 'podium', teinte: 'corail', meta: 'Entre tous les joueurs' },
-        { page: 'stats-historique', icone: 'horloge', teinte: 'ciel', meta: 'Toutes vos parties' },
-        { page: 'stats-revoir', icone: 'boucle', teinte: 'rose', meta: 'Zones souvent ratées' },
-        { page: 'stats-sauvegarde', icone: 'telecharger', teinte: 'prairie', meta: 'CSV · JSON' }
       ]
     }
   ];
@@ -116,11 +100,6 @@
     ancre: '<circle cx="12" cy="5" r="2"/><path d="M12 7v14M8 11h8M5 14a7 7 0 0 0 14 0"/>',
     repere: '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
     goutte: '<path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/>',
-    trophee: '<path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9.5 17h5"/>',
-    podium: '<path d="M3 21h18M5 21v-6h4v6M10 21V10h4v11M15 21v-8h4v8"/>',
-    horloge: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-    boucle: '<path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/>',
-    telecharger: '<path d="M12 3v12M7 10l5 5 5-5M4 19h16"/>',
     boussole: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
     cadenas: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     fleche: '<path d="M5 12h14M13 6l6 6-6 6"/>'
@@ -272,9 +251,9 @@
   // Chaque image est dessinée à partir des données déjà chargées et rend :
   //   { cadre: [x, y, largeur, hauteur] (coordonnées de la carte), calques: contenu du <svg>,
   //     etiquettes: [{ texte, x, y, classe }], point: { x, y } (point et onde) ou null,
-  //     legende, description (lecteurs d'écran), large (carte en longueur), variable (à redessiner) }
+  //     legende, description (lecteurs d'écran), large (carte en longueur) }
   // ou null si ses données manquent : l'image est alors cachée.
-  const IMAGES = { france: imageFrance, monde: imageMonde, apprendre: imageApprendre, reussite: imageReussite };
+  const IMAGES = { france: imageFrance, monde: imageMonde, apprendre: imageApprendre };
   const RESERVE = Object.values(TEINTES).map((t) => t[0]);    // région ou continent sans couleur attitrée
 
   const chemins = (els, classe) => els.map((e) => '<path' + (classe ? ' class="' + classe + '"' : '') + ' d="' + e.d + '"/>').join('');
@@ -390,49 +369,14 @@
     };
   }
 
-  // Réussite d'un département : [fois vu, fois raté] → du corail (toujours raté) au sable puis au menthe
-  // (toujours trouvé) ; jamais vu : la couleur des zones de la carte
-  function couleurReussite(v) {
-    if (!v || !v[0]) return '#1d4b57';
-    const r = Math.max(0, Math.min(1, 1 - v[1] / v[0]));
-    const [a, b, k] = r < .5 ? [[255, 122, 89], [242, 197, 107], r * 2] : [[242, 197, 107], [94, 234, 212], (r - .5) * 2];
-    return 'rgb(' + a.map((x, i) => Math.round(x + (b[i] - x) * k)).join(',') + ')';
-  }
-
-  // « Records et statistiques » : la réussite du joueur dans le quiz des départements, et les trois
-  // départements qu'il rate le plus ; la légende donne ses totaux (toutes catégories)
-  function imageReussite() {
-    const m = metropole();
-    if (!m || !window.GeoProfils) return null;
-    const s = GeoProfils.statistiques();
-    const vus = (s.rates && s.rates.departements) || {};
-    const t = s.totaux;
-    const aRevoir = m.deps.filter((e) => vus[e.code] && vus[e.code][1] > 0)
-      .sort((a, b) => vus[b.code][1] - vus[a.code][1] || vus[a.code][0] - vus[b.code][0]).slice(0, 3);
-    const colore = m.deps.some((e) => vus[e.code] && vus[e.code][0]);
-    const nbRecords = Object.keys(s.records || {}).length;
-    return {
-      variable: true,
-      cadre: m.cadre,
-      calques: m.deps.map((e) => '<path fill="' + couleurReussite(vus[e.code]) + '" d="' + e.d + '"/>').join(''),
-      etiquettes: aRevoir.map((e) => ({ texte: e.nom, x: e.cx, y: e.cy, classe: 'relief-etiquette--revoir' })),
-      point: aRevoir.length ? { x: aRevoir[0].cx, y: aRevoir[0].cy } : null,
-      legende: (colore ? 'Votre réussite par département' : 'Jouez aux Départements : la carte se colore au fil de vos réponses') +
-        (t.parties ? ' · ' + pluriel(t.parties, 'partie') + ' · ' + Math.round(100 * t.bonnes / Math.max(1, t.questions)) + ' % de bonnes réponses · ' +
-          pluriel(nbRecords, 'record') : ''),
-      description: 'Carte de votre réussite par département, du corail (souvent raté) au vert menthe (toujours trouvé)'
-    };
-  }
-
-  const images = {};                            // images déjà dessinées (sauf les « variables »)
+  const images = {};                            // images déjà dessinées
   let imageAffichee = null;
 
-  // Affiche l'image id ; redessiner : la recalcule même si elle est déjà affichée (réussite du joueur)
-  function afficherImage(id, redessiner) {
-    if (id === imageAffichee && !redessiner) return;
+  // Affiche l'image id
+  function afficherImage(id) {
+    if (id === imageAffichee) return;
     const img = images[id] || (IMAGES[id] ? IMAGES[id]() : null);
-    if (img && !img.variable) images[id] = img;
-    const meme = id === imageAffichee;
+    if (img) images[id] = img;
     imageAffichee = id;
     $('#menu-atlas').classList.toggle('hidden', !img);
     if (!img) return;
@@ -442,7 +386,7 @@
       left: Math.max(4, Math.min(96, (x - x0) / l * 100)).toFixed(2) + '%',
       top: Math.max(4, Math.min(96, (y - y0) / h * 100)).toFixed(2) + '%'
     });
-    const relief = element('div', 'relief' + (img.large ? ' relief--large' : '') + (meme ? ' relief--stable' : ''));
+    const relief = element('div', 'relief' + (img.large ? ' relief--large' : ''));
     relief.style.aspectRatio = l + ' / ' + h;
     relief.setAttribute('role', 'img');
     relief.setAttribute('aria-label', img.description);
@@ -461,18 +405,18 @@
       });
     }
 
-    // L'ancienne image s'efface pendant que la nouvelle apparaît (même image redessinée : remplacée d'un coup)
+    // L'ancienne image s'efface pendant que la nouvelle apparaît
     const cadre = $('#menu-relief');
     const anciennes = [...cadre.querySelectorAll('.relief')];
     anciennes.forEach((a) => {
-      if (meme || sansAnimation()) return a.remove();
+      if (sansAnimation()) return a.remove();
       a.classList.remove('is-entree');
       a.classList.add('is-sortie');
       a.removeAttribute('role');
       a.setAttribute('aria-hidden', 'true');
       setTimeout(() => a.remove(), 400);
     });
-    if (anciennes.length && !meme) relief.classList.add('is-entree');
+    if (anciennes.length) relief.classList.add('is-entree');
     cadre.appendChild(relief);
     $('#menu-legende').textContent = img.legende;
   }
@@ -513,13 +457,6 @@
       e.preventDefault();
       aller(courant + (e.key === 'ArrowRight' ? 1 : -1), false);
     });
-
-    // La carte de réussite suit les parties : redessinée au retour au menu et quand les statistiques
-    // changent (connexion, données reçues du serveur…)
-    const reussite = () => { if (MENU[courant].image === 'reussite') afficherImage('reussite', true); };
-    new MutationObserver(() => { if (document.body.dataset.ecran === 'screen-menu') reussite(); })
-      .observe(document.body, { attributes: true, attributeFilter: ['data-ecran'] });
-    if (window.GeoProfils) GeoProfils.surChangement(reussite);
   }
 
   function init() {
