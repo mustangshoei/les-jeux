@@ -110,7 +110,7 @@
        "precision", un os en serie est demande sous une forme precise (une instance donnee) */
     build() {
       EN.closeBone();
-      EN.deactivateMuscles();
+      EN.deactivateMuscles(); EN.deactivateVessels();
       return Promise.resolve(shuffle(NS.pool().slice()).slice(0, settings.count).map(b => {
         const q = { item: b, inst: null };
         if (settings.precise && SERIES[b.id]) { q.inst = pickOne(EN.instancesOf(b.id)); q.precise = true; }

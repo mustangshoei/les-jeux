@@ -54,17 +54,17 @@
     NS.addObject(group);
   }
 
-  /* muscle profond : masque les muscles qui le recouvrent vus depuis "key" (vue predefinie).
-     Rayons paralleles a la direction de vue, vers des sommets de la face du muscle tournee
-     vers l'observateur ; tout muscle touche avant le sommet est masque (Maj + clic automatique).
-     Renvoie le nombre de muscles masques. */
+  /* objet profond (muscle, vaisseau) : masque les objets de la liste "list" qui le recouvrent vus
+     depuis "key" (vue predefinie). Rayons paralleles a la direction de vue, vers des sommets de la
+     face de l'objet tournee vers l'observateur ; tout objet touche avant le sommet est masque
+     (Maj + clic automatique). Renvoie le nombre d'objets masques. */
   const DIRS = { A: [0, 0, 1], P: [0, 0, -1], LD: [-1, 0, 0], LG: [1, 0, 0], S: [0, 1, 0], I: [0, -1, 0] };
   const ray = new THREE.Raycaster();
-  function peelFor(inst, key) {
+  function peelAmong(inst, key, list) {
     const d = DIRS[key];
-    if (!d || !inst || !inst.muscle) return 0;
+    if (!d || !inst) return 0;
     const g = inst.mesh.geometry, pos = g.attributes.position, nrm = g.attributes.normal;
-    const others = MUSCLE_INST.filter(m => m !== inst && m.mesh.visible).map(m => m.mesh);
+    const others = list.filter(m => m !== inst && m.mesh.visible).map(m => m.mesh);
     const dir = new THREE.Vector3(-d[0], -d[1], -d[2]), o = new THREE.Vector3(), p = new THREE.Vector3();
     const hide = new Set(), step = Math.max(1, Math.floor(pos.count / 90)), FAR = 1500;
     for (let i = 0; i < pos.count; i += step) {
@@ -78,6 +78,7 @@
     hide.forEach(m => NS.setHidden(m, true));
     return hide.size;
   }
+  const peelFor = (inst, key) => inst && inst.muscle ? peelAmong(inst, key, MUSCLE_INST) : 0;
 
   /* chargement unique (le fichier fait environ 3 Mo) */
   function loadMuscleModel() {
@@ -93,6 +94,7 @@
   /* bascule vers les muscles : squelette du jeu 1 masque, muscles cliquables */
   function activateMuscles() {
     if (!group || active) return;
+    if (NS.deactivateVessels) NS.deactivateVessels();
     active = true;
     NS.closeBone();
     NS.clearMarks(); NS.setHover(null);
@@ -122,7 +124,7 @@
   }
 
   Object.assign(NS, {
-    MUSCLE_INST, loadMuscleModel, activateMuscles, deactivateMuscles, peelFor,
+    MUSCLE_INST, loadMuscleModel, activateMuscles, deactivateMuscles, peelFor, peelAmong,
     musclesActive: () => active,
     musclesLoaded: () => MUSCLE_INST.length > 0,
     muscleInstances: id => BY_MUSCLE[id] || []

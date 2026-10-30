@@ -14,22 +14,28 @@
   const STATES = ['target', 'ok', 'ko', 'reveal'];
   const COLORS = { target: 0xff2f24, ko: 0xff2f24, ok: 0x2fe08a, reveal: 0x2fe08a };
   /* couleurs des marques : rouge sur les os ; bleu (cible) et orange (faux) sur les muscles ;
-     survol : os eclairci, ou muscle rose pale */
+     survol : os rose franc (bien distinct de l'os blanc et du rouge de la cible), ou muscle rose pale ;
+     dans les deux cas, avec un contour lumineux (hg : sa couleur) */
   const PALETTES = {
-    default: { target: 0xff2f24, ko: 0xff2f24, ok: 0x2fe08a, mt: [0xff3a2f, 0xff1a0a], mk: [0xff3a2f, 0xc8150a], hv: [0xfff4d8, 0x3a2e12] },
-    muscle: { target: 0x2f8cff, ko: 0xffa31a, ok: 0x2fe08a, mt: [0x3d97ff, 0x0a4cff], mk: [0xffa31a, 0xb35f00], hv: [0xf4a898, 0x4a1c12] }
+    default: { target: 0xff2f24, ko: 0xff2f24, ok: 0x2fe08a, mt: [0xff3a2f, 0xff1a0a], mk: [0xff3a2f, 0xc8150a], hv: [0xff8fb4, 0x9e1f52], hg: 0xff6f9c },
+    muscle: { target: 0x2f8cff, ko: 0xffa31a, ok: 0x2fe08a, mt: [0x3d97ff, 0x0a4cff], mk: [0xffa31a, 0xb35f00], hv: [0xf4a898, 0x4a1c12], hg: 0xffd6c8 },
+    /* vaisseaux (arteres rouges, veines bleues) : cible jaune, faux en violet, survol blanc */
+    vessel: { target: 0xffd21f, ko: 0xd84dff, ok: 0x2fe08a, mt: [0xffd84a, 0xc79400], mk: [0xd84dff, 0x7a16a0], hv: [0xfff3e6, 0x6a5a48], hg: 0xffffff }
   };
+  let hoverGlowColor = PALETTES.default.hg;
   function setMarkPalette(name) {
     const p = PALETTES[name] || PALETTES.default;
     COLORS.target = p.target; COLORS.ko = p.ko; COLORS.ok = COLORS.reveal = p.ok;
     NS.MAT.target.color.setHex(p.mt[0]); NS.MAT.target.emissive.setHex(p.mt[1]);
     NS.MAT.ko.color.setHex(p.mk[0]); NS.MAT.ko.emissive.setHex(p.mk[1]);
     NS.MAT.hover.color.setHex(p.hv[0]); NS.MAT.hover.emissive.setHex(p.hv[1]);
+    hoverGlowColor = p.hg;
     document.body.classList.toggle('pal-muscle', name === 'muscle');
+    document.body.classList.toggle('pal-vessel', name === 'vessel');
     NS.requestRender();
   }
   const marked = new Map();        /* instance -> { state, extras: [maillages] } */
-  let hovered = null, haloItem = null, haloKind = 'target';
+  let hovered = null, hoverGlow = null, haloItem = null, haloKind = 'target';
 
   /* aura : contour lumineux qui suit la silhouette (Fresnel), additif, sans test de profondeur */
   function glowMaterial(color) {
@@ -84,6 +90,7 @@
   function mark(inst, state) {
     state = String(state).replace(/^st-/, '');
     unmark(inst);
+    if (inst === hovered) removeHoverGlow();     /* l'os marqué a sa propre aura */
     inst.mesh.material = state === 'target' ? NS.MAT.target : state === 'ko' ? NS.MAT.ko : NS.MAT.ok;
     marked.set(inst, { state, extras: addExtras(inst, state) });
     if (!inst.mesh.visible) NS.setHidden(inst, false);
@@ -101,6 +108,13 @@
   const stateOf = inst => { const e = marked.get(inst); return e ? 'st-' + e.state : undefined; };
   const markedItems = () => Array.from(marked.keys());
 
+  function removeHoverGlow() {
+    if (!hoverGlow) return;
+    if (hoverGlow.parent) hoverGlow.parent.remove(hoverGlow);
+    hoverGlow.material.dispose();
+    hoverGlow = null;
+  }
+
   /* survol (mode ciblage et revision) */
   let hoverEnabled = false;
   function setHoverEnabled(on) { hoverEnabled = !!on; if (!on) setHover(null); }
@@ -109,8 +123,18 @@
     if (inst === hovered) return;
     const prev = hovered;
     hovered = inst;
+    removeHoverGlow();
     if (prev && !marked.has(prev)) prev.mesh.material = restMaterial(prev);
-    if (inst && !marked.has(inst)) inst.mesh.material = NS.MAT.hover;
+    if (inst && !marked.has(inst)) {
+      inst.mesh.material = NS.MAT.hover;
+      /* contour lumineux de l'os survolé : on le repère même petit, ou serré entre d'autres os */
+      hoverGlow = new THREE.Mesh(inst.mesh.geometry, glowMaterial(hoverGlowColor));
+      hoverGlow.material.uniforms.grow.value = clamp(inst.radius * 0.06, 0.6, 5);
+      hoverGlow.material.uniforms.intensity.value = 1.4;
+      hoverGlow.renderOrder = 6;
+      hoverGlow.raycast = () => {};
+      inst.mesh.add(hoverGlow);
+    }
     NS.canvas.classList.toggle('pointing', !!inst);
     NS.requestRender();
   }

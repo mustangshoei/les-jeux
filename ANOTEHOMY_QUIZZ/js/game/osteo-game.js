@@ -75,7 +75,7 @@
     build(opts = {}) {
       const def = A.pickDef(opts);
       if (!def) return Promise.reject(new Error('Aucun os à étudier : cochez au moins une zone du corps.'));
-      EN.deactivateMuscles();
+      EN.deactivateMuscles(); EN.deactivateVessels();
       const ld = $('loading');
       ld.textContent = 'Préparation de l\'os : ' + boneTitle(def) + '…';
       ld.hidden = false;

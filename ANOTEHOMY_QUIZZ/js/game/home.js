@@ -26,7 +26,7 @@
     nerf: '<path d="M12 3v6M12 9l-5 4M12 9l5 4M7 13l-3 6M7 13l2 7M17 13l3 6M17 13l-2 7"/><circle cx="12" cy="9" r="1.6"/>',
     vaisseau: '<path d="M4 20c4-1 6-4 7-8s3-7 9-8"/><path d="M9.2 14.6c2.6.2 5 1.4 7 3.8M12.4 8.6c1.6-.4 3.6-.2 5.6.8"/>',
     pathologie: '<circle cx="12" cy="12" r="5"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.9 2.9M15.5 15.5l2.9 2.9M5.6 18.4l2.9-2.9M15.5 8.5l2.9-2.9"/>',
-    medicament: '<rect x="2.8" y="8.2" width="18.4" height="7.6" rx="3.8" transform="rotate(-38 12 12)"/><path d="M9.4 15.4l5.2-6.8" transform="rotate(0)"/>',
+    termes: '<path d="M4.5 3h3M14.5 3h3M6 3v5a5 5 0 0 0 10 0V3"/><path d="M11 13v3a4 4 0 0 0 8 0v-2"/><circle cx="19" cy="12" r="2"/>',
     corps: '<circle cx="12" cy="4.6" r="2.2"/><path d="M12 7.6v7.2M12 9.4l-5.4 3M12 9.4l5.4 3M12 14.8l-3.2 6.4M12 14.8l3.2 6.4"/>',
     cadenas: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     fleche: '<path d="M5 12h14M13 6l6 6-6 6"/>'
@@ -66,7 +66,7 @@
         { texte: 'Odont(o)- · dent', x: 21.1, y: 73.4, cote: 'g' },
         { texte: 'Gnath(o)- · mâchoire', x: 44, y: 80, cote: 'd' }
       ],
-      legende: () => 'Racines grecques et latines · pathologies · médicaments',
+      legende: () => 'Racines grecques et latines · pathologies · termes médicaux',
       description: 'Crâne vu de trois quarts, entouré de racines de mots médicaux'
     },
     vie: {
@@ -92,16 +92,17 @@
   let courant = -1;                  /* index du chapitre affiché */
   let plancheAffichee = null;
 
-  /* ---------- Chapitres ---------- */
+  /* ---------- Chapitres (le nombre affiché est celui des cartes : un groupe compte pour une) ---------- */
   function renderChapters() {
     $('homeChapters').innerHTML = D.CHAPTERS.map((c, i) =>
       `<button type="button" class="chapitre-ligne" data-index="${i}">` +
       `<span class="chapitre-num">${deuxChiffres(i + 1)}</span><span class="chapitre-nom">${esc(c.name)}</span>` +
-      `<span class="chapitre-nb">${compte(D.gamesOf(c.id).length, c.unit)}</span></button>`).join('');
+      `<span class="chapitre-nb">${compte(D.cardsOf(c.id).length, c.unit)}</span></button>`).join('');
   }
 
-  /* ---------- Cartes d'un chapitre ---------- */
-  function carte(g, numero, rang) {
+  /* ---------- Cartes d'un chapitre : un jeu (data-game) ou un groupe de jeux (data-group) ----------
+     contenu() sert aussi aux moitiés de la fenêtre d'un groupe. */
+  function contenu(g, numero) {
     const pret = g.status === 'ready';
     const t = TINTS[g.tint] || TINTS.rose;
     const vignette = pret
@@ -110,11 +111,16 @@
     const bas = pret
       ? `<span class="carte-meta">${esc(g.meta || '')}</span><span class="carte-go">${picto('fleche')}</span>`
       : `<span class="carte-bientot">Bientôt</span>`;
-    const corps = `<span class="carte-haut"><span class="carte-index">${numero}</span>${vignette}</span>` +
+    return `<span class="carte-haut"><span class="carte-index">${numero}</span>${vignette}</span>` +
       `<span class="carte-titre">${esc(g.name)}</span><span class="carte-desc">${esc(g.tagline)}</span>` +
       `<span class="carte-bas">${bas}</span>`;
-    return pret
-      ? `<button type="button" class="carte" data-game="${g.id}" style="--rang:${rang}">${corps}</button>`
+  }
+
+  function carte(g, numero, rang) {
+    const corps = contenu(g, numero);
+    return g.status === 'ready'
+      ? `<button type="button" class="carte" data-${g.games ? 'group' : 'game'}="${g.id}" style="--rang:${rang}"` +
+        (g.games ? ' aria-haspopup="dialog"' : '') + `>${corps}</button>`
       : `<div class="carte carte--bientot" aria-disabled="true" style="--rang:${rang}">${corps}</div>`;
   }
 
@@ -123,7 +129,7 @@
     index = (index + D.CHAPTERS.length) % D.CHAPTERS.length;
     if (index !== courant) {
       courant = index;
-      const c = D.CHAPTERS[index], jeux = D.gamesOf(c.id);
+      const c = D.CHAPTERS[index], jeux = D.cardsOf(c.id);
       ecrire(c.id);
       document.querySelectorAll('#homeChapters [data-index]').forEach((b, i) => {
         if (i === index) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
@@ -143,6 +149,25 @@
         tete.scrollIntoView({ behavior: sansAnimation() ? 'auto' : 'smooth', block: 'start' });
       }
     }
+  }
+
+  /* ---------- Fenêtre d'un groupe : un rectangle coupé en deux, une moitié par jeu ----------
+     Rien d'autre : un clic sur une moitié ouvre la configuration du jeu ; Échap ou un clic à côté referme. */
+  function moitie(g, numero) {
+    const corps = contenu(g, numero);
+    return g.status === 'ready'
+      ? `<button type="button" class="duo-moitie" data-game="${g.id}">${corps}</button>`
+      : `<div class="duo-moitie duo-moitie--bientot" aria-disabled="true">${corps}</div>`;
+  }
+
+  function ouvrirGroupe(id, numero) {
+    const r = D.GROUP[id];
+    if (!r || r.status !== 'ready') return;
+    const f = $('homeDuo');
+    f.setAttribute('aria-label', r.name);
+    $('homeDuoChoix').innerHTML = r.games.map((g, i) => moitie(g, numero + '.' + (i + 1))).join('');
+    f.showModal();
+    f.focus();                         /* la fenêtre elle-même : Tab mène ensuite aux deux moitiés */
   }
 
   /* ---------- Planche du chapitre : l'ancienne s'efface pendant que la nouvelle apparaît ---------- */
@@ -182,7 +207,7 @@
     clearTimeout(session.nextT);
     clearInterval(session.timer);
     session.phase = 'home';
-    EN.clearMarks(); EN.setHoverEnabled(false); EN.closeBone(); EN.deactivateMuscles(); EN.showAll();
+    EN.clearMarks(); EN.setHoverEnabled(false); EN.closeBone(); EN.deactivateMuscles(); EN.deactivateVessels(); EN.showAll();
     NS.hideNotice(); NS.hideTip(); NS.setPrompt(null); NS.updateDock();
     ['qA', 'qB', 'feedback', 'reviewBox', 'setup', 'results'].forEach(id => { $(id).hidden = true; });
     $('app').className = 'mode-a';
@@ -225,7 +250,15 @@
     });
     $('homeCards').addEventListener('click', e => {
       const g = e.target.closest('[data-game]');
-      if (g) openGame(g.dataset.game);
+      if (g) return openGame(g.dataset.game);
+      const r = e.target.closest('[data-group]');
+      if (r) ouvrirGroupe(r.dataset.group, r.querySelector('.carte-index').textContent);
+    });
+    const duo = $('homeDuo');
+    duo.addEventListener('click', e => {
+      if (e.target === duo) return duo.close();            /* clic à côté du rectangle */
+      const g = e.target.closest('[data-game]');
+      if (g) { duo.close(); openGame(g.dataset.game); }
     });
     /* « ← Menu » de la configuration : retour au chapitre du jeu */
     document.addEventListener('click', e => {

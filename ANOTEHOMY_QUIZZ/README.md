@@ -8,7 +8,7 @@ Anotehomy Quizz fait partie du dossier des jeux (voir le [README à la racine](.
 avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif qui permet de jouer à
 plusieurs sur un réseau.
 
-**Version 2.0.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 2.1.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
@@ -44,11 +44,14 @@ img/                        planches des chapitres du menu (images figées du mo
 js/main.js                  point d'entrée : menu immédiat, chargement du modèle 3D au lancement d'une partie,
                             raccourcis clavier
 js/core/                    espace de noms AQ, utilitaires
-js/data/                    données : zones du corps, catalogue des os, découpage des os, catalogue des muscles,
+js/data/                    données : zones du corps, catalogue des os, découpage des os, catalogues des muscles
+                            et des vaisseaux,
                             catalogue du menu (games.js), modèles 3D compressés (*-model.js, générés)
-js/engine/                  moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles
+js/engine/                  moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles,
+                            vaisseaux
 js/game/                    logique de jeu : menu, correction des réponses, configuration, partie, résultats,
-                            révision, et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js)
+                            révision, et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js,
+                            vessel-game.js)
 js/account/profile.js       statistiques du joueur (invité ou compte commun)
 js/account/account.js       bouton de compte, fenêtre du compte, écran des statistiques
 js/vendor/three.min.js      Three.js r158 (licence MIT)
@@ -60,17 +63,20 @@ tools/                      (facultatif) régénération des modèles 3D, voir t
 Même construction que le menu de GéoNohyne Quizz (`js/game/home.js`, catalogue `js/data/games.js`) :
 
 - **Trois chapitres** :
-  1. **Le corps humain** : les os du squelette, l'ostéologie descriptive, les muscles ; annoncés : les
-     organes, la splanchnologie descriptive (les parties de chaque organe, comme l'ostéologie pour les
-     os), les nerfs, les vaisseaux sanguins ;
-  2. **La langue médicale** : annoncés : les pathologies, les termes médicamenteux ;
+  1. **Le corps humain** : **Ostéologie des humains** (les os du squelette, l'ostéologie descriptive),
+     les muscles, les vaisseaux sanguins ; annoncés : **Splanchnologie des humains** (les organes, la
+     splanchnologie descriptive : les parties de chaque organe, comme l'ostéologie pour les os), les nerfs ;
+  2. **La langue médicale** : annoncés : les pathologies, les termes médicaux (le vocabulaire du milieu
+     médical) ;
   3. **Apprendre la Vie** : annoncé : le module « Le corps humain » (explorer librement le corps et
      consulter la fiche de chaque élément).
 - À droite, la **planche du chapitre** : une image figée tirée du modèle 3D (squelette, crâne, écorché),
   avec quelques repères et une légende. Les planches sont des images : **aucune 3D ne tourne dans le
   menu**.
 - Dessous, les **cartes** du chapitre : un clic ouvre la configuration du jeu. Les jeux annoncés restent
-  grisés (« Bientôt »).
+  grisés (« Bientôt »). Les jeux d'un même **groupe** (`group` dans `js/data/games.js`) n'ont qu'une
+  carte : un clic ouvre une fenêtre coupée en deux, une moitié par jeu (Échap ou un clic à côté la
+  referme).
 - Le dernier chapitre affiché est mémorisé (clé `anotehomy.menu.chapitre`) ; les flèches **←** **→**
   changent de chapitre.
 
@@ -85,7 +91,7 @@ Même construction que le menu de GéoNohyne Quizz (`js/game/home.js`, catalogue
 4. **Résultats**, puis **révision** libre sur le modèle 3D.
 
 **La 3D ne démarre qu'au lancement d'une partie** : le squelette se charge au premier lancement
-(« Chargement du modèle 3D… »), les os détaillés (ostéologie) et les muscles au premier lancement du jeu
+(« Chargement du modèle 3D… »), les os détaillés (ostéologie), les muscles et les vaisseaux au premier lancement du jeu
 concerné. Dès qu'on quitte la partie (menu, configuration), l'affichage 3D est **mis en pause** : rien ne
 tourne en arrière-plan.
 
@@ -117,9 +123,10 @@ signalés, mais **comptés faux**.
 
 Code : `js/game/matcher.js`.
 
-## Modes de jeu (communs aux trois jeux)
+## Modes de jeu (communs à tous les jeux)
 
-- **Nommage** : un élément s'illumine (en rouge ; en bleu pour les muscles) ; on tape son nom dans le
+- **Nommage** : un élément s'illumine (en rouge ; en bleu pour les muscles ; en jaune pour les
+  vaisseaux) ; on tape son nom dans le
   panneau de gauche, puis Valider (ou Entrée). « Passer » compte la question comme ratée.
   **Autocomplétion** (option) : dès 2 caractères, les noms TA2 de **tous** les éléments du jeu (pas
   seulement ceux de la partie, pour ne pas donner d'indice), la saisie surlignée même tapée sans accent ;
@@ -187,6 +194,30 @@ Reconnaître et localiser les muscles sur le corps en 3D. Code : `js/game/muscle
   **Maj + clic** écarte un muscle qui en cache un autre ; « Tout afficher » les fait réapparaître.
 - Chefs et parties d'un muscle forment un seul objet cliquable par côté du corps.
 
+## Jeu 4 : Les vaisseaux sanguins
+
+Reconnaître et localiser les artères et les veines sur le corps en 3D. Code : `js/game/vessel-game.js`,
+`js/game/vessel-setup.js`, moteur `js/engine/vessels.js`, catalogue `js/data/vessels.js`.
+
+- **279 vaisseaux** (artères, veines et sinus veineux de la dure-mère), dont **101 principaux**, dans
+  7 zones : tête et cou, encéphale, thorax et cœur, abdomen, pelvis et périnée, membre supérieur,
+  membre inférieur.
+- **Type** : artères et veines, artères seulement, ou veines seulement ; **vaisseaux proposés** :
+  principaux seulement, ou tous (y compris les petites branches). Avec les artères seules (ou les veines
+  seules), les vaisseaux de l'autre type sont cachés pendant la partie, ne sont pas cliquables et ne
+  sont pas proposés par l'autocomplétion.
+- **Couleurs** des atlas : artères en **rouge**, veines en **bleu** ; dans la circulation pulmonaire,
+  c'est l'inverse (artères pulmonaires en bleu, veines pulmonaires en rouge). La cible est **jaune**.
+- Le **squelette** et le **cœur** sont affichés **en transparence** : on voit les vaisseaux à travers les
+  os (artères cérébrales dans le crâne, vaisseaux du bassin…). Ils ne sont pas cliquables.
+- Les vaisseaux sont fins : un clic **à quelques pixels** d'un vaisseau le sélectionne (le plus proche
+  l'emporte).
+- **Nommage** : le vaisseau (un côté au hasard) s'allume en jaune ; s'il est caché par d'autres
+  vaisseaux, ceux-ci sont masqués automatiquement. **Ciblage** : rien n'est masqué, mais un vaisseau
+  caché est signalé (**Maj + clic** écarte un vaisseau gênant).
+- Les segments et les petites branches d'un vaisseau forment un seul objet cliquable par côté du corps
+  (ex. l'artère cérébrale moyenne avec ses branches corticales).
+
 ## Commandes de la vue 3D
 
 Le bouton **?** (ou la touche **H**) affiche l'aide ; elle s'ouvre seule à la première visite.
@@ -239,7 +270,8 @@ voisins (**V**) et atlas des parties (**C**, en révision).
 
 1. Ajouter son entrée dans `js/data/games.js` : son chapitre (`chapter`), `status: 'soon'` tant qu'il
    n'est pas prêt (la carte reste grisée, « Bientôt »), son pictogramme (`icon`) et sa couleur (`tint`),
-   pris dans `ICONS` et `TINTS` de `js/game/home.js`, ses textes (`name`, `tagline`, `desc`, `meta`). Le
+   pris dans `ICONS` et `TINTS` de `js/game/home.js`, ses textes (`name`, `tagline`, `desc`, `meta`), et
+   éventuellement son groupe (`group`, déclaré dans `GROUPS`). Le
    déclarer aussi dans `../COMMUN/jeux.js` (ligne `anotehomy`, `modes`).
 2. Écrire son **adaptateur** dans `js/game/` (même interface que `js/game/osteo-game.js`, décrite en tête
    de ce fichier) et, si besoin, son bloc de configuration (`index.html` + un fichier `*-setup.js`).
@@ -251,14 +283,15 @@ Un nouveau chapitre se déclare dans `CHAPTERS` (`js/data/games.js`) et sa planc
 
 ## Modèles 3D, outils et crédits
 
-- Squelette et os détaillés : **BodyParts3D** (DBCLS, CC BY 4.0) ; muscles : **Z-Anatomy** (CC BY-SA 4.0,
-  `js/data/muscle-model.js` est donc distribué sous la même licence) ; rendu : **Three.js** (MIT) ;
+- Squelette et os détaillés : **BodyParts3D** (DBCLS, CC BY 4.0) ; muscles et vaisseaux : **Z-Anatomy**
+  (CC BY-SA 4.0, `js/data/muscle-model.js` et `js/data/vessel-model.js` sont donc distribués sous la même
+  licence) ; rendu : **Three.js** (MIT) ;
   polices : **Bricolage Grotesque** et **IBM Plex Mono** (OFL). Détails et modifications : `CREDITS.md`.
 - Les planches du menu (`img/chapitre-*.webp`) sont des rendus figés de ces modèles, faits une fois pour
   toutes dans le navigateur ; elles suivent la licence du modèle dont elles viennent (voir `CREDITS.md`).
 - Les modèles compressés de `js/data/*-model.js` sont générés par les scripts de `tools/` (PowerShell +
   C#, rien à installer) : **inutiles pour jouer**, ils servent à changer le niveau de détail ou la liste
-  des os et des muscles. Mode d'emploi : `tools/README.md`.
+  des os, des muscles et des vaisseaux. Mode d'emploi : `tools/README.md`.
 
 ## Versions
 
@@ -268,5 +301,6 @@ Numérotation **MAJEUR.MINEUR.CORRECTIF** commune à tous les jeux (règles : «
 
 | Version | Date | Changements |
 |---|---|---|
+| 2.1.0 | 30/10/2026 | Groupes de jeux : « Ostéologie des humains » (les os du squelette, ostéologie descriptive) et « Splanchnologie des humains » (organes, splanchnologie descriptive) n'ont plus qu'une carte, qui ouvre une fenêtre coupée en deux pour choisir le jeu ; « Les termes médicamenteux » deviennent « Les termes médicaux » (tout le vocabulaire du milieu médical) ; nouveau jeu **Les vaisseaux sanguins** (279 artères et veines, dont 101 principales, modèle 3D Z-Anatomy, choix des zones et des artères et/ou veines, squelette et cœur en transparence) ; os ou partie d'os survolé bien plus visible (rose franc et contour lumineux, au lieu d'un blanc à peine plus clair). |
 | 2.0.0 | 30/10/2026 | Refonte graphique complète, inspirée de GéoNohyne Quizz : thème « Planches anatomiques » (rose et blanc sur fond sombre), menu en trois chapitres (Le corps humain, La langue médicale, Apprendre la Vie) avec une planche tirée du modèle 3D ; jeux annoncés (organes, splanchnologie descriptive, nerfs, vaisseaux sanguins, pathologies, termes médicamenteux, module « Le corps humain ») ; configuration sur un seul écran, sans défilement ; 3D chargée au lancement de la partie et en pause hors des parties ; accents dans tous les textes et tous les noms (toujours facultatifs dans les réponses). |
 | 1.0.0 | 28/10/2026 | Première version numérotée : les os du squelette, ostéologie descriptive (53 os détaillés), les muscles (194, dont 101 principaux), modes Nommage et Ciblage, comptes communs et statistiques. |

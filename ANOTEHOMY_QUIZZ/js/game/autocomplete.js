@@ -13,10 +13,13 @@
   const LISTS = {};   /* noms normalises, par jeu */
   let sugg = [], sIdx = -1;
 
+  /* noms proposés : ceux du jeu, ou ceux que l'adaptateur retient pour la partie (suggestNames : ex.
+     les artères seules dans le jeu des vaisseaux), une liste par variante (listKey) */
   function names() {
-    const id = session.game ? session.game.id : 'os-squelette';
+    const A = NS.adapter();
+    const id = (session.game ? session.game.id : 'os-squelette') + (A.listKey ? '|' + A.listKey() : '');
     if (!LISTS[id]) {
-      LISTS[id] = NS.adapter().names().map(b => ({ name: b.name, latin: b.latin, n: NS.norm(b.name), nl: NS.norm(b.latin) }))
+      LISTS[id] = (A.suggestNames ? A.suggestNames() : A.names()).map(b => ({ name: b.name, latin: b.latin, n: NS.norm(b.name), nl: NS.norm(b.latin) }))
         .sort((a, b) => a.name.localeCompare(b.name));
     }
     return LISTS[id];

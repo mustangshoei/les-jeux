@@ -26,6 +26,10 @@
   .carte { min-height: 0; padding: 18px; }
   .carte-titre { font-size: 1.3rem; }
   .menu-pied { margin-top: 40px; padding: 18px 0 28px; }
+  /* fenêtre d'un groupe : les deux moitiés l'une sous l'autre */
+  .duo-choix { grid-template-columns: minmax(0, 1fr); }
+  .duo-moitie { min-height: 0; padding: 22px; }
+  .duo-moitie + .duo-moitie { border-left: 0; border-top: 1px solid var(--line-2); }
 }
 
 /* ---------- Configuration ---------- */

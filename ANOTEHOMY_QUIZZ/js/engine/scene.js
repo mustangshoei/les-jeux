@@ -22,7 +22,7 @@
   function makeMaterials() {
     const std = (color, extra) => new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.72, metalness: 0 }, extra || {}));
     MAT.bone = std(0xe6dac2);
-    MAT.hover = std(0xfff4d8, { emissive: 0x3a2e12, emissiveIntensity: 0.6 });
+    MAT.hover = std(0xff8fb4, { emissive: 0x9e1f52, emissiveIntensity: 0.55, roughness: 0.55 });
     MAT.target = std(0xff3a2f, { emissive: 0xff1a0a, emissiveIntensity: 0.5, roughness: 0.5 });
     MAT.ko = std(0xff3a2f, { emissive: 0xc8150a, emissiveIntensity: 0.35, roughness: 0.5 });
     MAT.ok = std(0x35d98a, { emissive: 0x0c8a4c, emissiveIntensity: 0.45, roughness: 0.5 });

@@ -281,6 +281,44 @@ button.carte:hover .carte-go svg { transform: translateX(3px); }
   color: var(--warn);
 }
 
+/* ---------- Fenêtre d'un groupe de jeux : un rectangle coupé en deux ---------- */
+.duo {
+  width: min(880px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid rgba(255, 196, 214, .3);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #2a1624, #1b0e18);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  overflow: auto;
+}
+.duo::backdrop { background: rgba(12, 6, 11, .7); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.duo[open] { animation: pop .25s ease; }
+.duo:focus { outline: none; }
+.duo-choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.duo-moitie {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 300px;
+  padding: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: background-color .25s ease;
+}
+.duo-moitie + .duo-moitie { border-left: 1px solid var(--line-2); }
+button.duo-moitie:hover { background: rgba(255, 92, 138, .1); }
+button.duo-moitie:focus-visible { outline: 2px solid var(--rose); outline-offset: -4px; border-radius: 20px; }
+button.duo-moitie:hover .carte-go { background: var(--rose); color: #2a0d1a; }
+button.duo-moitie:hover .carte-go svg { transform: translateX(3px); }
+.duo-moitie--bientot { color: var(--ink-2); cursor: not-allowed; }
+.duo-moitie--bientot .carte-icone { background: none; border: 1px dashed rgba(255, 196, 214, .4); color: var(--muted); box-shadow: none; }
+
 .menu-pied {
   display: flex;
   flex-wrap: wrap;

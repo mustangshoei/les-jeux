@@ -3,7 +3,8 @@
    PREPHASE, commune aux jeux : nombre de questions (champ + curseur
    synchronises), mode de jeu et options. Jeu 1 : zones du corps (ici).
    Jeu 2 : choix de l'os (js/game/osteo-setup.js). Muscles : zones et filtre
-   des muscles proposes (js/game/muscle-setup.js).
+   des muscles proposes (js/game/muscle-setup.js). Vaisseaux : zones, type et
+   filtre des vaisseaux proposes (js/game/vessel-setup.js).
    ========================================================================== */
 (function (NS) {
   'use strict';
@@ -15,7 +16,8 @@
   const gameId = () => session.game ? session.game.id : 'os-squelette';
   const isOsteoGame = () => gameId() === 'os-descriptive';
   const isMuscleGame = () => gameId() === 'muscles-localisation';
-  const kind = () => isOsteoGame() ? 'osteo' : isMuscleGame() ? 'muscles' : 'bones';
+  const isVesselGame = () => gameId() === 'vaisseaux';
+  const kind = () => isOsteoGame() ? 'osteo' : isMuscleGame() ? 'muscles' : isVesselGame() ? 'vessels' : 'bones';
 
   /* textes des modes (une phrase courte, comme dans GéoNohyne Quizz), titre du nombre de questions et
      crédits selon le jeu */
@@ -27,7 +29,10 @@
       count: 'Nombre de parties à trouver', old: 'trochiter, épitrochlée, apophyse coracoïde…', credits: BP3D },
     muscles: { modes: ['Un muscle s\'illumine en bleu : écrivez son nom.', 'Un nom de muscle s\'affiche : cliquez sur ce muscle.'],
       count: 'Nombre de muscles à trouver', old: 'grand fessier, jambier antérieur, sus-épineux, couturier…',
-      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (muscles et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' }
+      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (muscles et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' },
+    vessels: { modes: ['Un vaisseau s\'illumine en jaune : écrivez son nom.', 'Un nom de vaisseau s\'affiche : cliquez sur ce vaisseau.'],
+      count: 'Nombre de vaisseaux à trouver', old: 'artère humérale, saphène interne, sous-clavière, artère pédieuse…',
+      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (vaisseaux, cœur et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' }
   };
 
   function initSetup() {
@@ -68,6 +73,7 @@
     $('startBtn').addEventListener('click', () => NS.startGame());
     NS.initOsteoSetup();
     NS.initMuscleSetup();
+    NS.initVesselSetup();
     configure();
     updatePool();
     updateOpts();
@@ -78,12 +84,13 @@
 
   /* blocs et textes propres au jeu choisi */
   function configure() {
-    const o = isOsteoGame(), m = isMuscleGame(), t = GAME_TEXT[kind()];
-    $('stepZones').hidden = o || m;
+    const o = isOsteoGame(), m = isMuscleGame(), v = isVesselGame(), t = GAME_TEXT[kind()];
+    $('stepZones').hidden = o || m || v;
     $('stepOsteo').hidden = !o;
     $('stepMuscles').hidden = !m;
+    $('stepVessels').hidden = !v;
     $('optNeighWrap').hidden = !o;
-    $('optPreciseWrap').hidden = o || m;
+    $('optPreciseWrap').hidden = o || m || v;
     $('countTitle').textContent = t.count;
     $('setupOld').textContent = t.old;
     $('modeADesc').textContent = t.modes[0];
@@ -93,11 +100,13 @@
 
   /* nombre maximal de questions pour la configuration courante */
   const countMax = () => isOsteoGame() ? NS.osteoCounts().max
-    : isMuscleGame() ? NS.ADAPTERS['muscles-localisation'].pool().length : NS.pool().length;
+    : isMuscleGame() ? NS.ADAPTERS['muscles-localisation'].pool().length
+    : isVesselGame() ? NS.ADAPTERS['vaisseaux'].pool().length : NS.pool().length;
 
   function updatePool() {
     if (isOsteoGame()) { NS.updateOsteoPool(); return; }
     if (isMuscleGame()) { NS.updateMusclePool(); return; }
+    if (isVesselGame()) { NS.updateVesselPool(); return; }
     const n = NS.pool().length;
     $('countNum').max = $('countRange').max = Math.max(1, n);
     $('countOf').textContent = `sur ${n} os disponibles`;
@@ -106,10 +115,10 @@
     $('setupWarn').textContent = n === 0 ? 'Sélectionnez au moins une zone du corps.' : '';
   }
 
-  /* synchronisation champ numerique <-> curseur (os du squelette, parties de l'os, muscles) ;
+  /* synchronisation champ numerique <-> curseur (os du squelette, parties de l'os, muscles, vaisseaux) ;
      keep : simple mise a jour de l'affichage (le nombre souhaite est conserve, meme s'il
      depasse le maximum de la configuration courante, qui peut encore changer) */
-  const countKey = () => isOsteoGame() ? 'oCount' : isMuscleGame() ? 'mCount' : 'count';
+  const countKey = () => isOsteoGame() ? 'oCount' : isMuscleGame() ? 'mCount' : isVesselGame() ? 'vCount' : 'count';
   function setCount(v, typing, keep) {
     const key = countKey();
     let c = parseInt(v, 10);
@@ -142,14 +151,14 @@
     ['qA', 'qB', 'feedback', 'reviewBox', 'results'].forEach(id => { $(id).hidden = true; });
     $('setup').hidden = false;
     $('app').className = 'mode-a';
-    /* aucune 3D derrière la configuration : les modèles (squelette, os détaillés, muscles) ne se
+    /* aucune 3D derrière la configuration : les modèles (squelette, os détaillés, muscles, vaisseaux) ne se
        chargent qu'au lancement de la partie (js/game/play.js), et l'affichage est en pause */
-    EN.deactivateMuscles();
+    EN.deactivateMuscles(); EN.deactivateVessels();
     EN.pause();
     NS.updateDock();
     configure();
     updatePool();
   }
 
-  Object.assign(NS, { initSetup, showSetup, updatePool, setCount, isOsteoGame, isMuscleGame });
+  Object.assign(NS, { initSetup, showSetup, updatePool, setCount, isOsteoGame, isMuscleGame, isVesselGame });
 })(AQ.game);

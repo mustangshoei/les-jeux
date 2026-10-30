@@ -37,6 +37,24 @@ de **Z-Anatomy**, atlas anatomique 3D libre, lui-même dérivé de BodyParts3D :
 - En conséquence, **`js/data/muscle-model.js` est distribué sous la même licence CC BY-SA 4.0**
   (partage dans les mêmes conditions, avec cette attribution).
 
+## Modèle anatomique 3D des vaisseaux sanguins : Z-Anatomy
+
+Les vaisseaux du jeu « Les vaisseaux sanguins » (avec le cœur et le squelette affichés en transparence)
+proviennent aussi de **Z-Anatomy** :
+
+- Source : https://github.com/LluisV/Z-Anatomy (branche `PC-Version`,
+  `Resources/Models/FBX/CardioVascular41.fbx` et `SkeletalSystem100.fbx`)
+- Licence : [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)
+- Modifications apportées pour ce projet (`tools/build-vessels.ps1`) :
+  - regroupement des maillages par vaisseau (segments et petites branches réunis, un objet par côté du
+    corps), selon le catalogue `js/data/vessels.js` (279 vaisseaux, noms TA2 en français) ;
+  - cavités du cœur et squelette en décor ; valves et piliers du cœur non repris ;
+  - simplification des maillages (environ 300 000 triangles au total), quantification 16 bits,
+    compression gzip ;
+  - calcul des vues où chaque vaisseau est visible (`tools/Visibility.cs`).
+- En conséquence, **`js/data/vessel-model.js` est distribué sous la même licence CC BY-SA 4.0**
+  (partage dans les mêmes conditions, avec cette attribution).
+
 ## Planches du menu
 
 Images figées des chapitres du menu, rendues une fois pour toutes dans le navigateur à partir des

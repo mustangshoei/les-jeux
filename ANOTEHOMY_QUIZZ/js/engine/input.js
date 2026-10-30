@@ -15,16 +15,31 @@
   const hooks = { onBoneClick: null, onHover: null };
   const pointers = new Map();
   const ray = new THREE.Raycaster();
-  let drag = null, pinch = null, hoverEvt = null, hidingAllowed = true;
+  let drag = null, pinch = null, hoverEvt = null, hidingAllowed = true, margin = 0;
 
   const local = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
 
   /* lancer de rayon : premier os visible sous le pointeur */
-  function pick(px, py) {
+  function pickAt(px, py, list) {
     const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
     ray.setFromCamera(new THREE.Vector2(px / w * 2 - 1, -(py / h) * 2 + 1), NS.camera());
-    const hits = ray.intersectObjects(NS.PICK.filter(m => m.visible), false);
+    const hits = ray.intersectObjects(list, false);
     return hits.length ? { inst: hits[0].object.userData.inst, point: hits[0].point } : null;
+  }
+  /* objets fins (vaisseaux) : marge en pixels ; à côté de l'objet, on essaie des cercles de plus en
+     plus grands autour du pointeur (8 directions), et le plus proche l'emporte */
+  const DIRS8 = [[1, 0], [0.7, 0.7], [0, 1], [-0.7, 0.7], [-1, 0], [-0.7, -0.7], [0, -1], [0.7, -0.7]];
+  function pick(px, py) {
+    const list = NS.PICK.filter(m => m.visible);
+    const hit = pickAt(px, py, list);
+    if (hit || !margin) return hit;
+    for (let r = 3; r <= margin; r += 3) {
+      for (const [dx, dy] of DIRS8) {
+        const h = pickAt(px + dx * r, py + dy * r, list);
+        if (h) return h;
+      }
+    }
+    return null;
   }
 
   function twoFingers() {
@@ -112,7 +127,8 @@
   /* mots de l'interface selon les objets cliquables : os (squelette) ou muscles */
   const WORDS = {
     os: { one: ' os masqué', many: ' os masqués', pick: 'Choisir un os', hide: 'Masquer un os' },
-    muscle: { one: ' muscle masqué', many: ' muscles masqués', pick: 'Choisir un muscle', hide: 'Masquer un muscle' }
+    muscle: { one: ' muscle masqué', many: ' muscles masqués', pick: 'Choisir un muscle', hide: 'Masquer un muscle' },
+    vaisseau: { one: ' vaisseau masqué', many: ' vaisseaux masqués', pick: 'Choisir un vaisseau', hide: 'Masquer un vaisseau' }
   };
   let words = WORDS.os;
   function setObjectWords(kind) {
@@ -159,5 +175,6 @@
     $('btnShowAll').addEventListener('click', () => NS.showAll());
   }
 
-  Object.assign(NS, { hooks, initInput, onHiddenChange, setObjectWords, pick, toggleHelp, setHidingAllowed: on => { hidingAllowed = !!on; } });
+  Object.assign(NS, { hooks, initInput, onHiddenChange, setObjectWords, pick, toggleHelp, setHidingAllowed: on => { hidingAllowed = !!on; },
+    setPickMargin: px => { margin = Math.max(0, px | 0); } });
 })(AQ.engine);

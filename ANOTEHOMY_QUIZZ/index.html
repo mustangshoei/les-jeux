@@ -38,13 +38,15 @@
 <script defer src="js/data/osteology.js"></script>
 <!-- catalogue des muscles (jeu « Les muscles du corps humain ») -->
 <script defer src="js/data/muscles.js"></script>
+<!-- catalogue des vaisseaux sanguins (jeu « Les vaisseaux sanguins ») -->
+<script defer src="js/data/vessels.js"></script>
 <!-- catalogue du menu : chapitres et cartes -->
 <script defer src="js/data/games.js"></script>
 <!-- modèle 3D généré par tools/build-model.ps1 (BodyParts3D, CC BY 4.0) : simples données, décodées seulement
      au lancement de la première partie. Chargés à la demande : js/data/osteo-model.js (os détaillés) et
-     js/data/muscle-model.js (muscles, Z-Anatomy, CC BY-SA 4.0). -->
+     js/data/muscle-model.js (muscles) et js/data/vessel-model.js (vaisseaux), tous deux Z-Anatomy, CC BY-SA 4.0. -->
 <script defer src="js/data/skeleton-model.js"></script>
-<!-- moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles -->
+<!-- moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles, vaisseaux -->
 <script defer src="js/engine/model.js"></script>
 <script defer src="js/engine/scene.js"></script>
 <script defer src="js/engine/camera.js"></script>
@@ -53,16 +55,19 @@
 <script defer src="js/engine/segment.js"></script>
 <script defer src="js/engine/osteo.js"></script>
 <script defer src="js/engine/muscles.js"></script>
+<script defer src="js/engine/vessels.js"></script>
 <!-- logique de jeu -->
 <script defer src="js/game/state.js"></script>
 <script defer src="js/game/matcher.js"></script>
-<!-- adaptateurs des jeux : os du squelette, ostéologie descriptive, muscles -->
+<!-- adaptateurs des jeux : os du squelette, ostéologie descriptive, muscles, vaisseaux -->
 <script defer src="js/game/skeleton-game.js"></script>
 <script defer src="js/game/osteo-game.js"></script>
 <script defer src="js/game/muscle-game.js"></script>
+<script defer src="js/game/vessel-game.js"></script>
 <script defer src="js/game/setup.js"></script>
 <script defer src="js/game/osteo-setup.js"></script>
 <script defer src="js/game/muscle-setup.js"></script>
+<script defer src="js/game/vessel-setup.js"></script>
 <script defer src="js/game/play.js"></script>
 <script defer src="js/game/results.js"></script>
 <script defer src="js/game/autocomplete.js"></script>
@@ -255,6 +260,12 @@
       <span id="homeVersion"></span>
     </footer>
   </div>
+
+  <!-- fenêtre d'un groupe de jeux (ex. « Ostéologie des humains ») : un rectangle coupé en deux, une moitié
+       par jeu ; remplie par js/game/home.js -->
+  <dialog id="homeDuo" class="duo" tabindex="-1">
+    <div id="homeDuoChoix" class="duo-choix"></div>
+  </dialog>
 </div>
 
 <!-- ===================== CONFIGURATION DE LA PARTIE =====================
@@ -329,6 +340,25 @@
           <div class="onglets onglets--large" role="radiogroup" aria-label="Muscles proposés">
             <label class="onglet"><input type="radio" name="mset" value="main" checked><span>Principaux · <span id="mSetMainN"></span></span></label>
             <label class="onglet"><input type="radio" name="mset" value="all"><span>Tous · <span id="mSetAllN"></span></span></label>
+          </div>
+        </div>
+
+        <!-- jeu « Les vaisseaux sanguins » : zones du corps, artères et/ou veines, vaisseaux proposés -->
+        <div class="setup-bloc setup-bloc--souple" id="stepVessels" hidden>
+          <div class="setup-bloc__tete">
+            <span class="setup-etiquette">Zones du corps</span>
+            <span><button type="button" class="link" id="vAllZones">Tout</button><button type="button" class="link" id="vNoZones">Aucun</button></span>
+          </div>
+          <!-- cases générées par js/game/vessel-setup.js à partir de js/data/vessels.js -->
+          <div class="zones" id="vZones"></div>
+          <div class="onglets onglets--large" role="radiogroup" aria-label="Type de vaisseaux">
+            <label class="onglet"><input type="radio" name="vtype" value="av" checked><span>Artères et veines</span></label>
+            <label class="onglet"><input type="radio" name="vtype" value="a"><span>Artères</span></label>
+            <label class="onglet"><input type="radio" name="vtype" value="v"><span>Veines</span></label>
+          </div>
+          <div class="onglets onglets--large" role="radiogroup" aria-label="Vaisseaux proposés">
+            <label class="onglet"><input type="radio" name="vset" value="main" checked><span>Principaux · <span id="vSetMainN"></span></span></label>
+            <label class="onglet"><input type="radio" name="vset" value="all"><span>Tous · <span id="vSetAllN"></span></span></label>
           </div>
         </div>
 

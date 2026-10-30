@@ -11,7 +11,7 @@ connexion Internet). Chaque jeu fonctionne **seul et indépendamment** des autre
 | Jeu | Version | Dossier | Pour apprendre | Documentation |
 |---|---|---|---|---|
 | 🌍 **GéoNohyne Quizz** | 2.1.0 | `GEONOHYNE_QUIZZ/` | la géographie : départements, fleuves, pays, mers du monde (quiz, jeux, mode Apprendre) | [GEONOHYNE_QUIZZ/README.md](GEONOHYNE_QUIZZ/README.md) |
-| 🦴 **Anotehomy Quizz** | 2.0.0 | `ANOTEHOMY_QUIZZ/` | l'anatomie humaine en 3D : os, ostéologie descriptive, muscles (nomenclature TA2) | [ANOTEHOMY_QUIZZ/README.md](ANOTEHOMY_QUIZZ/README.md) |
+| 🦴 **Anotehomy Quizz** | 2.1.0 | `ANOTEHOMY_QUIZZ/` | l'anatomie humaine en 3D : os, ostéologie descriptive, muscles, vaisseaux sanguins (nomenclature TA2) | [ANOTEHOMY_QUIZZ/README.md](ANOTEHOMY_QUIZZ/README.md) |
 | 📜 **Histehory Quizz** | 0.1.0 | `HISTEHORY_QUIZZ/` | l'histoire (en préparation : page d'accueil et comptes seulement, aucun mode de jeu encore) | [HISTEHORY_QUIZZ/README.md](HISTEHORY_QUIZZ/README.md) |
 
 ## Contenu du dossier

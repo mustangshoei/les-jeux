@@ -104,6 +104,8 @@
     const names = (ids, map) => Array.from(ids).map(id => map[id] ? map[id].name : id).join(', ');
     if (gameId === 'os-descriptive') return s.oDef ? AQ.game.ADAPTERS['os-descriptive'].boneTitle(s.oDef) : '';
     if (gameId === 'muscles-localisation') return names(st.mRegions, D.MUSCLE_REGION) + (st.mPrincipal ? ' - muscles principaux' : ' - tous les muscles');
+    if (gameId === 'vaisseaux') return names(st.vRegions, D.VESSEL_REGION) + ' - ' +
+      (st.vTypes === 'a' ? 'artères' : st.vTypes === 'v' ? 'veines' : 'artères et veines') + (st.vPrincipal ? ', principaux' : ', tous');
     return names(st.regions, D.REGION) + (st.precise ? ' - numéro et côté exigés' : '');
   }
 

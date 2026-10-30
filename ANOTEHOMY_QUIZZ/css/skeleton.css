@@ -19,5 +19,8 @@
 /* jeu des muscles : la cible est bleue (le rouge ne ressort pas sur les muscles) */
 .pal-muscle .halo:not(.ok) { border-color: var(--bleu); box-shadow: 0 0 16px rgba(106, 168, 255, .6), inset 0 0 12px rgba(106, 168, 255, .3); }
 .pal-muscle .stage-prompt .dot { background: var(--bleu); box-shadow: 0 0 10px var(--bleu); }
+/* jeu des vaisseaux : la cible est jaune (artères en rouge, veines en bleu) */
+.pal-vessel .halo:not(.ok) { border-color: var(--jaune); box-shadow: 0 0 16px rgba(255, 210, 31, .6), inset 0 0 12px rgba(255, 210, 31, .3); }
+.pal-vessel .stage-prompt .dot { background: var(--jaune); box-shadow: 0 0 10px var(--jaune); }
 
 @keyframes halo { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }

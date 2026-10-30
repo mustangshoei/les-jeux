@@ -2,14 +2,16 @@
 
 Ces fichiers regenerent `js/data/skeleton-model.js` (le squelette 3D compresse charge par le jeu),
 `js/data/osteo-model.js` (les os detailles du jeu "Osteologie descriptive", charges a la demande)
-et `js/data/muscle-model.js` (les muscles du jeu "Les muscles du corps humain", charges a la demande).
+`js/data/muscle-model.js` (les muscles du jeu "Les muscles du corps humain", charges a la demande)
+et `js/data/vessel-model.js` (les vaisseaux du jeu "Les vaisseaux sanguins", charges a la demande).
 **Ils ne sont pas necessaires pour jouer** : ils servent uniquement a changer le niveau de detail
-ou la liste des os et des muscles.
+ou la liste des os, des muscles et des vaisseaux.
 
 | Fichier | Role |
 |---|---|
 | `build-model.ps1` | Squelette et os detailles : telecharge BodyParts3D (une seule fois), simplifie, emballe |
 | `build-muscles.ps1` | Muscles : telecharge Z-Anatomy (une seule fois), regroupe par muscle, simplifie, emballe |
+| `build-vessels.ps1` | Vaisseaux : telecharge Z-Anatomy (une seule fois), regroupe par vaisseau, simplifie, emballe |
 | `MeshBuild.cs` | Traitement en C# (compile automatiquement par PowerShell, rien a installer) |
 | `FbxRead.cs` | Lecture des fichiers FBX binaires de Z-Anatomy (maillages, transformations) |
 | `Visibility.cs` | Vues ou chaque muscle est visible, et muscles profonds (rendu logiciel par identifiant) |
@@ -90,3 +92,27 @@ Z-Anatomy non utilises (fascias, bourses, gaines...) sont listes dans
   pour chaque muscle sont notees les vues ou il se voit le mieux et la part visible. Un muscle
   presque invisible (profond) est cadre depuis la face ou il est le moins profond ; en mode
   Nommage, les muscles qui le recouvrent sont masques automatiquement.
+
+## Vaisseaux (`build-vessels.ps1`)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\build-vessels.ps1
+# plus de detail (fichier plus lourd)
+powershell -ExecutionPolicy Bypass -File tools\build-vessels.ps1 -Budget 400000
+```
+
+Le premier lancement telecharge environ 105 Mo (systeme cardiovasculaire et squelette de
+Z-Anatomy, format FBX) dans `%TEMP%\anotehomy-zanatomy` ; les suivants prennent moins d'une minute.
+
+La liste des vaisseaux est le catalogue `js/data/vessels.js` : chaque entree donne les noms des
+objets Z-Anatomy du vaisseau (sans le suffixe `.r` / `.l`) ; segments et petites branches sont
+regroupes en un seul objet cliquable par cote du corps. Les objets Z-Anatomy non utilises sont
+listes dans `%TEMP%\anotehomy-zanatomy\vaisseaux-non-utilises.txt`.
+
+- Cote du corps : suffixe Z-Anatomy (`.r` = droite du sujet), sinon "Right" / "Left" dans le nom,
+  sinon position du maillage ; option `u: 1` du catalogue pour un vaisseau impair (aorte, veine porte,
+  arteres coronaires...).
+- Les cavites du coeur et le squelette Z-Anatomy sont ajoutes en decor (non cliquables, affiches en
+  transparence) ; les valves et les piliers du coeur ne sont pas repris.
+- `Visibility.cs` est applique aux vaisseaux seuls (le squelette, transparent, ne cache rien) :
+  un vaisseau cache par d'autres est degage automatiquement en mode Nommage.
