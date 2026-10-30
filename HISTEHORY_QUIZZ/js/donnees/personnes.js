@@ -36,8 +36,10 @@
   const PERSONNES = [];
   const A = { a: 1 };
   function P(id, nom, naissance, mort, sexe, region, pays, domaine, resume, o = {}) {
-    PERSONNES.push({ id, nom, naissance, mort, sexe, region, pays, domaine, resume,
-      approx: !!o.a, epoque: o.e || epoqueDe((naissance + mort) / 2) });
+    PERSONNES.push({
+      id, nom, naissance, mort, sexe, region, pays, domaine, resume,
+      approx: !!o.a, epoque: o.e || epoqueDe((naissance + mort) / 2)
+    });
   }
 
   /* ---------------- Antiquité ---------------- */
