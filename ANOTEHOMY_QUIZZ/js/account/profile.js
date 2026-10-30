@@ -104,7 +104,7 @@
     const names = (ids, map) => Array.from(ids).map(id => map[id] ? map[id].name : id).join(', ');
     if (gameId === 'os-descriptive') return s.oDef ? AQ.game.ADAPTERS['os-descriptive'].boneTitle(s.oDef) : '';
     if (gameId === 'muscles-localisation') return names(st.mRegions, D.MUSCLE_REGION) + (st.mPrincipal ? ' - muscles principaux' : ' - tous les muscles');
-    return names(st.regions, D.REGION) + (st.precise ? ' - numero et cote exiges' : '');
+    return names(st.regions, D.REGION) + (st.precise ? ' - numéro et côté exigés' : '');
   }
 
   /* enregistre la partie qui vient de se terminer (appele par js/game/results.js) */
@@ -125,7 +125,7 @@
       if (better(b, g.best)) g.best = b;
     }
 
-    const m = p.missed[e.game] = p.missed[e.game] || {};
+    const m = p.missed[e.game] = regrouper(e.game, p.missed[e.game] || {});
     s.log.forEach(l => {
       const name = l.item && l.item.name;
       if (!name) return;
@@ -145,9 +145,25 @@
     changed();
   }
 
+  /* Les éléments ratés sont rangés sous leur nom. Depuis la version 2.0.0, les noms portent leurs accents :
+     ceux enregistrés sous l'ancienne orthographe (« femur ») sont regroupés sous le nom actuel (« fémur »). */
+  function regrouper(gameId, m) {
+    const G = AQ.game, A = G.ADAPTERS && G.ADAPTERS[gameId];
+    if (!A || !G.plier) return m;
+    const actuel = new Map(A.names().map(x => [G.plier(x.name), x.name]));
+    Object.keys(m).forEach(k => {
+      const nom = actuel.get(G.plier(k));
+      if (!nom || nom === k) return;
+      const v = m[nom] || [0, 0];
+      m[nom] = [v[0] + m[k][0], v[1] + m[k][1]];
+      delete m[k];
+    });
+    return m;
+  }
+
   /* elements les plus rates d'un jeu (au moins une fois), les plus rates d'abord */
   function mostMissed(gameId, max) {
-    const m = current().missed[gameId] || {};
+    const m = current().missed[gameId] ? regrouper(gameId, current().missed[gameId]) : {};
     return Object.keys(m).filter(k => m[k][1] > 0)
       .map(k => ({ name: k, seen: m[k][0], missed: m[k][1] }))
       .sort((a, b) => b.missed - a.missed || b.missed / b.seen - a.missed / a.seen)

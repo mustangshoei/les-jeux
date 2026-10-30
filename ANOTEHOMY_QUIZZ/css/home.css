@@ -1,71 +1,298 @@
 /* ==========================================================================
    Anotehomy Quizz - home.css
-   Ecran d'accueil : categories (Muscles, Os, Vaisseaux sanguins), jeux d'une
-   categorie, et fil d'Ariane (aussi utilise par la configuration).
+   Le menu « Planches anatomiques » (js/game/home.js) : chapitres, planche du chapitre (image figée du
+   modèle 3D, repères, légende), cartes des jeux. Même construction que le menu de GéoNohyne Quizz.
    ========================================================================== */
-.home-card{max-width:980px}
-.home-hero{margin-bottom:6px}
-.home-hero h1{font-size:32px}
-.home-h{font-size:12.5px;margin:26px 0 12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
-.home-view{animation:viewIn .3s ease}
-.home-msg{min-height:20px;margin:12px 0 0;font-size:13px;color:var(--warn)}
-@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ecran-menu { overflow-y: auto; }
+.menu { --menu-largeur: 1400px; --menu-marge: clamp(16px, 2.5vw, 36px); position: relative; min-height: 100%; overflow-x: hidden; overflow-x: clip; }
 
-/* ---------- Icones de categorie ---------- */
-.cat-ico{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;flex:none;color:#fff;
-  background:linear-gradient(135deg,#334155,#1e293b);box-shadow:0 8px 20px rgba(0,0,0,.3)}
-.cat-ico svg{width:32px;height:32px}
-.cat-ico svg.st,.cat-foot svg,.game-play svg,.crumbs svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.cat-os .cat-ico,.cat-ico-os{background:linear-gradient(135deg,#1f9e93,#3b5bdb)}
-.cat-muscles .cat-ico,.cat-ico-muscles{background:linear-gradient(135deg,#9f1239,#f87171)}
-.cat-vaisseaux .cat-ico,.cat-ico-vaisseaux{background:linear-gradient(135deg,#be123c,#2563eb)}
+/* Mention centrale, entre le bouton de compte et « Jeux » */
+.menu-edition {
+  position: absolute;
+  top: 27px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  font: 500 .75rem/1 var(--mono);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
 
-/* ---------- Cartes de categorie ---------- */
-.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.cat{display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;padding:22px;min-height:220px;
-  border-radius:18px;border:1.5px solid var(--line);background:linear-gradient(180deg,#141f37,#0f1729);
-  color:inherit;font:inherit;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
-.cat:hover:not(.locked),.cat:focus-visible:not(.locked){transform:translateY(-3px);border-color:rgba(79,209,197,.65);box-shadow:0 14px 34px rgba(0,0,0,.4);outline:none}
-.cat-name{font-size:20px;font-weight:750;margin-top:4px}
-.cat-desc{font-size:13px;color:var(--muted);flex:1}
-.cat-foot{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:650;color:var(--accent)}
-.cat-foot svg{width:16px;height:16px}
-.cat:hover:not(.locked) .cat-foot svg{transform:translateX(3px);transition:transform .2s}
-.cat.locked{cursor:not-allowed;background:#0d1426}
-.cat.locked .cat-ico{filter:grayscale(1);opacity:.45}
-.cat.locked .cat-name,.cat.locked .cat-desc{opacity:.55}
-.cat.locked .cat-foot{color:var(--muted)}
-.cat.nudge{animation:shake .35s}
+.menu-hero {
+  max-width: var(--menu-largeur);
+  margin: 0 auto;
+  padding: 104px var(--menu-marge) 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px 40px;
+}
+.menu-intro { flex: 1 1 400px; min-width: 0; }
+.menu-titre {
+  margin: 16px 0 0;
+  font-size: clamp(3.1rem, 8vw, 6.9rem);
+  font-weight: 800;
+  line-height: .88;
+  letter-spacing: -.04em;
+}
+.menu-titre span { color: var(--rose); }
+.menu-sous-titre { margin: 22px 0 0; max-width: 34ch; font-size: 1.25rem; line-height: 1.4; color: var(--ink-2); }
 
-/* ---------- Fil d'Ariane ---------- */
-.crumbs{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:13px;margin-bottom:16px}
-.crumb{background:none;border:0;padding:3px 6px;border-radius:7px;color:var(--accent);cursor:pointer;font:inherit;font-weight:600}
-.crumb:hover{background:rgba(79,209,197,.1)}
-.crumb-sep{color:#3a4870}
-.crumb-cur{color:var(--muted);padding:3px 2px}
+/* Chapitres : numéro, titre, nombre de cartes ; le chapitre affiché est souligné de rose */
+.chapitres { display: flex; flex-direction: column; gap: 6px; margin-top: 34px; }
+.chapitre-ligne {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: #ecd3dc;
+  text-align: left;
+  overflow: hidden;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.chapitre-ligne:hover { background: rgba(255, 235, 242, .05); }
+.chapitre-ligne:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+.chapitre-num { font: 600 .95rem/1 var(--mono); color: var(--muted); }
+.chapitre-nom { font-size: 1.2rem; font-weight: 600; line-height: 1.25; }
+.chapitre-nb { font: 500 .75rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.chapitre-ligne[aria-current="true"] { border-color: rgba(255, 92, 138, .5); background: rgba(255, 92, 138, .1); color: var(--ink); }
+.chapitre-ligne[aria-current="true"] .chapitre-num { color: var(--rose); }
+.chapitre-ligne[aria-current="true"] .chapitre-nb { color: var(--rose-pale); }
+.chapitre-ligne[aria-current="true"]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--rose);
+  transform-origin: left;
+  animation: trace 1.2s cubic-bezier(.2, .7, .2, 1) .1s backwards;
+}
+@keyframes trace { from { transform: scaleX(0); } }
 
-/* ---------- En-tete de categorie ---------- */
-.cat-head{display:flex;align-items:center;gap:16px}
-.cat-head h2{margin:0;font-size:26px}
-.cat-head p{margin:2px 0 0;color:var(--muted)}
+/* ---------- La planche du chapitre ----------
+   Son cadre a une taille fixe : la page ne bouge pas d'un chapitre à l'autre ; l'ancienne planche s'efface
+   pendant que la nouvelle apparaît. L'image flotte doucement, avec une lueur rose. */
+.menu-atlas {
+  position: relative;
+  flex: 1 1 420px;
+  min-width: 0;
+  margin: 0;
+  padding: 24px 0 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.planche-cadre {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  width: 100%;
+  height: min(64vh, 580px);
+  container-type: size;
+}
+/* La plus grande taille qui tient dans le cadre, en largeur comme en hauteur, sans déformer l'image
+   (--ratio : largeur / hauteur de l'image, posé par js/game/home.js) : les repères restent en place. */
+.planche {
+  grid-area: 1 / 1;
+  position: relative;
+  width: min(100cqw, 100cqh * var(--ratio, .5));
+  aspect-ratio: var(--ratio, .5);
+  animation: flotte 9s ease-in-out infinite;
+}
+.planche.is-entree { animation: flotte 9s ease-in-out infinite, apparition .7s cubic-bezier(.2, .7, .2, 1) backwards; }
+.planche.is-sortie { animation: flotte 9s ease-in-out infinite, efface .35s ease forwards; pointer-events: none; }
+@keyframes apparition { from { opacity: 0; translate: 0 24px; scale: .96; } }
+@keyframes efface { to { opacity: 0; scale: .97; } }
+@keyframes flotte { 0%, 100% { translate: 0 0; } 50% { translate: 0 -12px; } }
+.planche img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  filter: drop-shadow(0 0 30px rgba(255, 92, 138, .26)) drop-shadow(0 34px 30px rgba(0, 0, 0, .6));
+}
+/* Repères : un point rose, un trait, une étiquette d'un côté ou de l'autre */
+.planche-repere {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  background: var(--rose);
+  box-shadow: 0 0 0 3px rgba(255, 92, 138, .25);
+  pointer-events: none;
+  animation: apparait .8s ease backwards;
+  animation-delay: calc(var(--rang, 0) * .15s + .3s);
+}
+.planche-repere::after { content: ''; position: absolute; top: 50%; width: 12px; height: 1px; background: rgba(255, 92, 138, .75); }
+.planche-repere--d::after { left: 100%; }
+.planche-repere--g::after { right: 100%; }
+.planche-etiquette {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(23, 13, 21, .88);
+  font: 600 .62rem/1.3 var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.planche-repere--d .planche-etiquette { left: calc(100% + 12px); }
+.planche-repere--g .planche-etiquette { right: calc(100% + 12px); }
+@keyframes apparait { from { opacity: 0; translate: 0 8px; } }
+/* Le cœur (chapitre « Le corps humain ») : il bat */
+.planche-coeur {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--sang);
+  box-shadow: 0 0 14px var(--sang);
+  pointer-events: none;
+  animation: battement 1.15s ease-in-out infinite;
+}
+.planche-coeur::after { content: ''; position: absolute; inset: -9px; border: 2px solid var(--sang); border-radius: 50%; animation: onde 1.15s ease-out infinite; }
+@keyframes battement { 0%, 45%, 100% { transform: scale(1); } 12% { transform: scale(1.4); } 26% { transform: scale(1.15); } }
+@keyframes onde { from { transform: scale(.5); opacity: .9; } to { transform: scale(2.2); opacity: 0; } }
+.menu-legende {
+  margin-top: 22px;
+  font: 500 .75rem/1.6 var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+/* Rose d'orientation anatomique (fixe) */
+.orientation { position: absolute; left: 0; bottom: 30px; width: 88px; height: 88px; pointer-events: none; }
+.orientation-cercle { fill: none; stroke: #ffc2d3; stroke-opacity: .3; stroke-width: 1; }
+.orientation-graduation { fill: none; stroke: #ffc2d3; stroke-opacity: .2; stroke-width: 1; stroke-dasharray: 2 4; }
+.orientation-axe { fill: #ffc2d3; fill-opacity: .2; stroke: #ffc2d3; stroke-opacity: .45; stroke-width: 1; }
+.orientation-axe--lateral { fill-opacity: .12; stroke-opacity: .35; }
+.orientation-haut { fill: var(--rose); }
+.orientation-centre { fill: var(--bg); stroke: var(--ink); stroke-width: 1.5; }
+.orientation-lettre { fill: var(--muted); font: 600 9px var(--mono); text-anchor: middle; }
 
-/* ---------- Cartes de jeu ---------- */
-.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
-.game{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:18px;border:1.5px solid var(--line);
-  background:linear-gradient(180deg,#141f37,#0f1729);transition:border-color .2s,box-shadow .2s}
-.game:not(.locked){cursor:pointer}
-.game:not(.locked):hover{border-color:rgba(79,209,197,.65);box-shadow:0 14px 34px rgba(0,0,0,.4)}
-.game-top{display:flex;align-items:center;justify-content:space-between}
-.game-num{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent2)}
-.game-status{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:99px}
-.game-status.ok{color:#a7f3d0;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4)}
-.game-status.soon{color:var(--muted);background:#18223b;border:1px solid var(--line)}
-.game h3{margin:4px 0 0;font-size:21px}
-.game-tag{margin:0;font-weight:600;color:#dfe6f5}
-.game-desc{margin:0;font-size:13px;color:var(--muted);flex:1}
-.game-meta{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;padding:0}
-.game-meta li{font-size:12px;padding:4px 10px;border-radius:99px;background:#101a30;border:1px solid var(--line);color:#cdd6ea}
-.game-play{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;padding:12px 18px}
-.game-play svg{width:17px;height:17px}
-.game.locked{background:#0d1426}
-.game.locked h3,.game.locked .game-tag,.game.locked .game-desc,.game.locked .game-meta{opacity:.6}
+/* ---------- Le chapitre affiché et ses cartes ---------- */
+.chapitre { max-width: var(--menu-largeur); margin: 0 auto; padding: 60px var(--menu-marge) 0; scroll-margin-top: 16px; }
+.chapitre-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.chapitre-tete h2 { margin: 8px 0 0; font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+.chapitre-desc { margin: 10px 0 0; font-size: 1.06rem; color: var(--ink-2); }
+.chapitre-compte { margin: 0; font: 500 .75rem/1.4 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.chapitre-dispo { color: var(--ok); }
+.home-msg { min-height: 0; margin: 12px 0 0; font-size: .85rem; color: var(--warn); }
+.home-msg:empty { display: none; }
+
+.cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  padding-top: 28px;
+}
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 228px;
+  padding: 22px;
+  border: 1px solid rgba(255, 196, 214, .18);
+  border-radius: 18px;
+  background: var(--verre);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 18px 40px -26px rgba(0, 0, 0, .85);
+  color: var(--ink);
+  text-align: left;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: transform .3s cubic-bezier(.2, .7, .2, 1), border-color .3s ease, box-shadow .3s ease;
+  animation: monte-carte .8s cubic-bezier(.2, .7, .2, 1) backwards;
+  animation-delay: calc(var(--rang, 0) * 70ms);
+}
+@keyframes monte-carte { from { opacity: 0; transform: translateY(28px); } }
+button.carte:hover { transform: translateY(-6px); border-color: rgba(255, 92, 138, .65); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 26px 50px -24px rgba(0, 0, 0, .9); }
+button.carte:focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; }
+.carte-haut { display: flex; align-items: center; justify-content: space-between; }
+.carte-index { font: 500 .8rem/1 var(--mono); color: var(--muted); }
+/* Vignette colorée, posée sur son ombre (relief) */
+.carte-icone {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--teinte, var(--rose));
+  color: #2a0d1a;
+  box-shadow: 0 4px 0 var(--teinte-ombre, var(--rose-ombre));
+}
+.carte-icone svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.carte-titre { font-size: 1.45rem; font-weight: 600; line-height: 1.15; }
+.carte-desc { font-size: .95rem; line-height: 1.45; color: var(--ink-2); text-align: justify; hyphens: auto; }
+.carte-bas { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.carte-meta { font: 500 .68rem/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.carte-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--rose);
+  border-radius: 50%;
+  color: var(--rose);
+  transition: background-color .25s ease, color .25s ease;
+}
+.carte-go svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .25s ease; }
+button.carte:hover .carte-go { background: var(--rose); color: #2a0d1a; }
+button.carte:hover .carte-go svg { transform: translateX(3px); }
+/* Pas encore disponible : pointillés, cadenas, « Bientôt » */
+.carte--bientot { border-style: dashed; border-color: rgba(255, 196, 214, .26); background: rgba(15, 8, 14, .4); color: var(--ink-2); cursor: not-allowed; box-shadow: none; }
+.carte--bientot .carte-icone { background: none; border: 1px dashed rgba(255, 196, 214, .4); color: var(--muted); box-shadow: none; }
+.carte--bientot .carte-icone svg { width: 22px; height: 22px; }
+.carte--bientot .carte-titre { color: #ecd3dc; }
+.carte-bientot {
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 196, 138, .5);
+  border-radius: 999px;
+  font: 500 .68rem/1.2 var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+
+.menu-pied {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .4rem 1.5rem;
+  width: calc(100% - 2 * var(--menu-marge));
+  max-width: calc(var(--menu-largeur) - 2 * var(--menu-marge));
+  margin: 56px auto 0;
+  padding: 20px 0 36px;
+  border-top: 1px solid var(--line);
+  font: 500 .68rem/1.6 var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}

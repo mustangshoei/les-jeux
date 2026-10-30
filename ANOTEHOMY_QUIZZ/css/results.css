@@ -1,36 +1,36 @@
 /* ==========================================================================
    Anotehomy Quizz - results.css
-   Ecran de fin de partie : score, pourcentage, temps, recapitulatif.
+   Fin de partie : score, pourcentage, temps, récapitulatif des erreurs.
    ========================================================================== */
-.res-title{margin:0 0 18px;font-size:24px}
-.res-sub{margin:-10px 0 18px;color:var(--muted)}
-.res-sub b{color:var(--text)}
-.res-top{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.res-title { margin: 0 0 18px; font-size: 1.7rem; font-weight: 800; letter-spacing: -.01em; }
+.res-sub { margin: -10px 0 18px; color: var(--muted); }
+.res-sub b { color: var(--ink); }
+.res-top { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
 
-/* ---------- Anneau de reussite ---------- */
-.ring{width:140px;height:140px;position:relative}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ring circle{fill:none;stroke-width:12}
-.ring .bg{stroke:#1d2846}
-.ring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
-.ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-size:30px;font-weight:800}
+/* ---------- Anneau de réussite ---------- */
+.ring { position: relative; width: 140px; height: 140px; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 12; }
+.ring .bg { stroke: rgba(255, 196, 214, .12); }
+.ring .fg { stroke: var(--rose); stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.2, .8, .2, 1); }
+.ring .pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.9rem; font-weight: 800; }
 
 /* ---------- Indicateurs ---------- */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-.kpi{background:#0f1729;border:1px solid var(--line);border-radius:12px;padding:12px}
-.kpi b{font-size:22px;display:block;font-variant-numeric:tabular-nums}
-.kpi span{font-size:12px;color:var(--muted)}
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.kpi { padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--champ); }
+.kpi b { display: block; font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.kpi span { font: 500 .6rem/1.35 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
-/* ---------- Recapitulatif des erreurs ---------- */
-.res-sec{margin:24px 0 10px;font-size:15px}
-.errs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.errs li{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#0f1729;border:1px solid var(--line);border-left:3px solid var(--ko);border-radius:10px}
-.errs li.typo{border-left-color:var(--warn)}
-.errs .en{font-weight:700}
-.errs .en i{font-weight:400;color:var(--muted);font-size:12.5px;margin-left:6px}
-.errs .ea{font-size:12.5px;color:var(--muted);margin-top:2px}
-.errs .ea b{color:#ffb4b4;font-weight:600}
-.errs li.typo .ea b{color:#fde68a}
-.errs .btn{margin-left:auto;padding:7px 12px;font-size:12px;flex:none}
-.perfect{padding:16px;border-radius:12px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);color:#a7f3d0}
-.res-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap}
+/* ---------- Récapitulatif des erreurs ---------- */
+.res-sec { margin: 24px 0 10px; font: 600 .72rem/1.3 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--rose-txt); }
+.errs { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.errs li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-left: 3px solid var(--ko); border-radius: 10px; background: var(--champ); }
+.errs li.typo { border-left-color: var(--warn); }
+.errs .en { font-weight: 700; }
+.errs .en i { margin-left: 6px; font-size: .82rem; font-weight: 400; color: var(--muted); }
+.errs .ea { margin-top: 2px; font-size: .82rem; color: var(--muted); }
+.errs .ea b { font-weight: 600; color: #ff9eaa; }
+.errs li.typo .ea b { color: var(--warn); }
+.errs .btn { flex: none; margin-left: auto; padding: 7px 12px; font-size: .8rem; }
+.perfect { padding: 16px; border: 1px solid rgba(94, 232, 197, .4); border-radius: 12px; background: var(--ok-doux); color: var(--ok-txt); }
+.res-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 24px; }

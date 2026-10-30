@@ -45,9 +45,9 @@
   function updateButton() {
     const p = P.player(), b = $('acctBtn');
     b.innerHTML = avatar(p) + `<span class="acct-name">${esc(p.name)}</span>`;
-    const what = p.guest ? 'se connecter, creer un compte, statistiques' : 'compte, statistiques';
-    b.title = (p.guest ? 'Invite' : 'Compte : ' + p.name) + ' (' + what + ')';
-    b.setAttribute('aria-label', (p.guest ? 'Vous jouez en invite' : 'Compte : ' + p.name) + '. Ouvrir la fenetre du compte (' + what + ')');
+    const what = p.guest ? 'se connecter, créer un compte, statistiques' : 'compte, statistiques';
+    b.title = (p.guest ? 'Invité' : 'Compte : ' + p.name) + ' (' + what + ')';
+    b.setAttribute('aria-label', (p.guest ? 'Vous jouez en invité' : 'Compte : ' + p.name) + '. Ouvrir la fenêtre du compte (' + what + ')');
   }
 
   /* ---------------- Fenetre du compte ---------------- */
@@ -60,24 +60,24 @@
     const reg = view === 'register', played = P.stats().totals.played;
     return `<div class="acct-tabs" role="tablist">` +
         `<button type="button" role="tab" class="${reg ? '' : 'on'}" aria-selected="${!reg}" data-view="login">Se connecter</button>` +
-        `<button type="button" role="tab" class="${reg ? 'on' : ''}" aria-selected="${reg}" data-view="register">Creer un compte</button></div>` +
+        `<button type="button" role="tab" class="${reg ? 'on' : ''}" aria-selected="${reg}" data-view="register">Créer un compte</button></div>` +
       `<form class="acct-form" data-form="${view}">` +
         field('Nom', 'username', 'text', 'username', ` maxlength="${P.NAME_MAX}"`) +
         field('Mot de passe', 'password', 'password', reg ? 'new-password' : 'current-password', reg ? ` minlength="${P.PWD_MIN}"` : '') +
         (reg ? field('Confirmer le mot de passe', 'confirm', 'password', 'new-password') +
-          (played ? `<label class="acct-check"><input name="take" type="checkbox" checked><span>Reprendre les statistiques de l'invite de ce navigateur (${plural(played, 'partie')})</span></label>` : '') : '') +
+          (played ? `<label class="acct-check"><input name="take" type="checkbox" checked><span>Reprendre les statistiques de l'invité de ce navigateur (${plural(played, 'partie')})</span></label>` : '') : '') +
         errHtml() +
-        `<button type="submit" class="btn primary"${dis()}>${busy ? '...' : reg ? 'Creer mon compte' : 'Se connecter'}</button>` +
+        `<button type="submit" class="btn primary"${dis()}>${busy ? '…' : reg ? 'Créer mon compte' : 'Se connecter'}</button>` +
       `</form>` +
-      `<div class="acct-actions"><button type="button" class="btn" data-act="guest">Continuer en invite</button>` +
-        `<button type="button" class="btn" data-act="stats">Statistiques de l'invite</button></div>`;
+      `<div class="acct-actions"><button type="button" class="btn" data-act="guest">Continuer en invité</button>` +
+        `<button type="button" class="btn" data-act="stats">Statistiques de l'invité</button></div>`;
   }
 
   /* connecte : le compte et ses actions */
   function accountView() {
     const p = P.player(), t = P.stats().totals;
-    const state = P.pending() ? (P.serverAvailable() ? 'synchronisation...' : 'serveur injoignable : vos dernieres parties partiront des son retour')
-      : 'statistiques enregistrees sur le serveur';
+    const state = P.pending() ? (P.serverAvailable() ? 'synchronisation…' : 'serveur injoignable : vos dernières parties partiront dès son retour')
+      : 'statistiques enregistrées sur le serveur';
     let h = `<div class="acct-card">${avatar(p, true)}<div><b>${esc(p.name)}</b><small>${plural(t.played, 'partie')} - ${state}</small></div></div>`;
     const buttons = (label, cls) => `<div class="btn-row"><button type="submit" class="btn ${cls}"${dis()}>${label}</button><button type="button" class="btn ghost" data-act="cancel">Annuler</button></div>`;
     if (form === 'rename') {
@@ -90,8 +90,8 @@
         field('Confirmer le nouveau mot de passe', 'confirm', 'password', 'new-password') +
         errHtml() + buttons('Changer le mot de passe', 'primary') + `</form>`;
     } else if (form === 'delete') {
-      h += `<form class="acct-form danger" data-form="delete"><p>Supprimer le compte "${esc(p.name)}" et ses statistiques <b>dans tous les jeux</b> ? C'est definitif.</p>` +
-        field('Mot de passe', 'pwd', 'password', 'current-password') + errHtml() + buttons('Supprimer definitivement', 'danger') + `</form>`;
+      h += `<form class="acct-form danger" data-form="delete"><p>Supprimer le compte "${esc(p.name)}" et ses statistiques <b>dans tous les jeux</b> ? C'est définitif.</p>` +
+        field('Mot de passe', 'pwd', 'password', 'current-password') + errHtml() + buttons('Supprimer définitivement', 'danger') + `</form>`;
     } else if (message) {
       h += `<p class="acct-info" role="status">${esc(message)}</p>`;
     }
@@ -99,18 +99,18 @@
       `<button type="button" class="btn primary" data-act="stats">Mes statistiques</button>` +
       `<button type="button" class="btn" data-act="rename">Renommer</button>` +
       `<button type="button" class="btn" data-act="pwd">Mot de passe</button>` +
-      `<button type="button" class="btn" data-act="logout">Se deconnecter</button>` +
+      `<button type="button" class="btn" data-act="logout">Se déconnecter</button>` +
       `<button type="button" class="btn acct-danger" data-act="delete">Supprimer le compte</button></div>`;
   }
 
   function renderDialog() {
     const on = P.connected(), server = P.serverAvailable();
-    $('acctTitle').textContent = on ? 'Mon compte' : welcome ? 'Bienvenue sur Anotehomy Quizz !' : 'Compte';
+    $('acctTitle').textContent = on ? 'Mon compte' : welcome ? 'Bienvenue sur Anotehomy Quizz\u00a0!' : 'Compte';
     $('acctHelp').textContent = on
-      ? 'Vos statistiques vous suivent sur tous vos appareils. Ce compte sert aussi dans les autres jeux : vous restez connecte en changeant de jeu.'
+      ? 'Vos statistiques vous suivent sur tous vos appareils. Ce compte sert aussi dans les autres jeux : vous restez connecté en changeant de jeu.'
       : server
-        ? 'Connectez-vous pour retrouver vos statistiques sur tous vos appareils, ou continuez en invite (statistiques gardees dans ce navigateur). Un seul compte pour tous les jeux.'
-        : 'Vous jouez en invite : vos statistiques restent dans ce navigateur. Pour creer un compte (commun a tous les jeux), lancez les jeux avec game.bat, a la racine du dossier des jeux.';
+        ? 'Connectez-vous pour retrouver vos statistiques sur tous vos appareils, ou continuez en invité (statistiques gardées dans ce navigateur). Un seul compte pour tous les jeux.'
+        : 'Vous jouez en invité : vos statistiques restent dans ce navigateur. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, à la racine du dossier des jeux.';
     $('acctBody').innerHTML = on ? accountView() : server ? visitorView()
       : `<div class="acct-actions"><button type="button" class="btn primary" data-act="stats">Mes statistiques</button></div>`;
   }
@@ -160,10 +160,10 @@
       case 'register':
         if (mismatch(v('password'), v('confirm'))) return;
         return run(() => P.register(v('username'), v('password'), f.elements.take ? f.elements.take.checked : false), done);
-      case 'rename': return run(() => P.rename(v('name')), () => { form = null; message = 'Nom change.'; renderDialog(); });
+      case 'rename': return run(() => P.rename(v('name')), () => { form = null; message = 'Nom changé.'; renderDialog(); });
       case 'pwd':
         if (mismatch(v('new'), v('confirm'))) return;
-        return run(() => P.changePassword(v('old'), v('new')), () => { form = null; message = 'Mot de passe change. Vos autres appareils devront se reconnecter.'; renderDialog(); });
+        return run(() => P.changePassword(v('old'), v('new')), () => { form = null; message = 'Mot de passe changé. Vos autres appareils devront se reconnecter.'; renderDialog(); });
       case 'delete': return run(() => P.deleteAccount(v('pwd')), () => { form = null; message = ''; view = 'login'; renderDialog(); });
     }
   }
@@ -199,8 +199,8 @@
   function renderStats() {
     if ($('stats').hidden) return;
     const p = P.player(), s = P.stats(), t = s.totals;
-    const where = P.connected() ? `Statistiques enregistrees sur le serveur des jeux, sous votre compte "${esc(p.name)}".`
-      : 'Vous jouez en invite : statistiques enregistrees dans ce navigateur, sur cet appareil.';
+    const where = P.connected() ? `Statistiques enregistrées sur le serveur des jeux, sous votre compte "${esc(p.name)}".`
+      : 'Vous jouez en invité : statistiques enregistrées dans ce navigateur, sur cet appareil.';
     const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
 
     /* par jeu et par mode, dans l'ordre du catalogue */
@@ -212,14 +212,14 @@
     const rows = keys.map(k => {
       const [g, m] = k.split('|'), x = s.games[k], b = x.best;
       return `<tr><td>${esc(gameName(g))}</td><td>${MODES[m] || esc(m)}</td><td><b>${x.played}</b></td><td><b>${pct(x.ok, x.questions)}</b><small>${x.ok} / ${x.questions}</small></td>` +
-        `<td>${b ? `<b>${b.pct} %</b> (${b.ok} / ${b.n}) - ${fmt(b.time)}<small>${esc(b.detail || '')} - ${new Date(b.date).toLocaleDateString('fr-FR')}</small>` : '<span class="st-empty">aucune partie complete</span>'}</td></tr>`;
+        `<td>${b ? `<b>${b.pct} %</b> (${b.ok} / ${b.n}) - ${fmt(b.time)}<small>${esc(b.detail || '')} - ${new Date(b.date).toLocaleDateString('fr-FR')}</small>` : '<span class="st-empty">aucune partie complète</span>'}</td></tr>`;
     }).join('');
 
     /* elements a revoir, par jeu */
     const missed = order.concat(Object.keys(s.missed).filter(g => order.indexOf(g) < 0)).map(g => {
       const list = P.mostMissed(g, 12);
       return list.length ? `<p class="st-game">${esc(gameName(g))}</p><div class="subs">` +
-        list.map(x => `<span>${esc(x.name)} <small>ratee ${x.missed} fois sur ${x.seen}</small></span>`).join('') + '</div>' : '';
+        list.map(x => `<span>${esc(x.name)} <small>ratée ${x.missed} fois sur ${x.seen}</small></span>`).join('') + '</div>' : '';
     }).join('');
 
     const hist = s.history.slice(0, historyMax).map(h => {
@@ -231,16 +231,16 @@
 
     $('statsCard').innerHTML =
       `<div class="st-head">${avatar(p, true)}<div><h2 class="res-title">Statistiques de ${esc(p.name)}</h2><p class="st-sub">${where}</p></div></div>` +
-      (P.storageOk() ? '' : '<p class="fb-note">Ce navigateur refuse l\'enregistrement : les statistiques ne seront gardees que jusqu\'a la fermeture de la page.</p>') +
-      `<div class="kpis">${kpi(t.played, 'Parties jouees')}${kpi(duration(t.time), 'Temps de jeu')}${kpi(pct(t.ok, t.questions), 'Bonnes reponses')}${kpi(t.questions, 'Questions')}</div>` +
+      (P.storageOk() ? '' : '<p class="fb-note">Ce navigateur refuse l\'enregistrement : les statistiques ne seront gardées que jusqu\'à la fermeture de la page.</p>') +
+      `<div class="kpis">${kpi(t.played, 'Parties jouées')}${kpi(duration(t.time), 'Temps de jeu')}${kpi(pct(t.ok, t.questions), 'Bonnes réponses')}${kpi(t.questions, 'Questions')}</div>` +
       `<h3 class="res-sec">Par jeu et par mode</h3>` +
-      (rows ? `<div class="st-scroll"><table class="st-table"><thead><tr><th>Jeu</th><th>Mode</th><th>Parties</th><th>Reussite</th><th>Meilleure partie</th></tr></thead><tbody>${rows}</tbody></table></div>`
-        : '<p class="st-empty">Aucune partie pour l\'instant : elles apparaitront ici a la fin de chaque partie.</p>') +
-      `<h3 class="res-sec">A revoir</h3>` + (missed || '<p class="st-empty">Aucune erreur enregistree pour l\'instant.</p>') +
-      `<h3 class="res-sec">Dernieres parties</h3>` +
+      (rows ? `<div class="st-scroll"><table class="st-table"><thead><tr><th>Jeu</th><th>Mode</th><th>Parties</th><th>Réussite</th><th>Meilleure partie</th></tr></thead><tbody>${rows}</tbody></table></div>`
+        : '<p class="st-empty">Aucune partie pour l\'instant : elles apparaîtront ici à la fin de chaque partie.</p>') +
+      `<h3 class="res-sec">À revoir</h3>` + (missed || '<p class="st-empty">Aucune erreur enregistrée pour l\'instant.</p>') +
+      `<h3 class="res-sec">Dernières parties</h3>` +
       (hist ? `<div class="st-scroll"><table class="st-table"><thead><tr><th>Date</th><th>Jeu</th><th>Mode</th><th>Configuration</th><th>Score</th><th>Temps</th></tr></thead><tbody>${hist}</tbody></table></div>` +
         (s.history.length > historyMax ? `<button type="button" class="btn st-more" data-st="more">Afficher plus (${s.history.length - historyMax} de plus)</button>` : '') +
-        `<p class="st-sub">${plural(s.history.length, 'partie')} dans l'historique (les 500 dernieres sont gardees).</p>`
+        `<p class="st-sub">${plural(s.history.length, 'partie')} dans l'historique (les 500 dernières sont gardées).</p>`
         : '<p class="st-empty">Aucune partie pour l\'instant.</p>') +
       `<div class="res-actions"><button type="button" class="btn ghost acct-danger" data-st="reset">Effacer mes statistiques</button>` +
       `<button type="button" class="btn primary" data-st="close">Fermer</button></div>`;
@@ -252,7 +252,7 @@
       if (!b) return;
       if (b.dataset.st === 'close') closeStats();
       else if (b.dataset.st === 'more') { historyMax += HISTORY_STEP; renderStats(); }
-      else if (b.dataset.st === 'reset' && confirm('Effacer toutes les statistiques de "' + P.player().name + '" ? Le compte est garde. C\'est definitif.')) P.reset();
+      else if (b.dataset.st === 'reset' && confirm('Effacer toutes les statistiques de "' + P.player().name + '" ? Le compte est gardé. C\'est définitif.')) P.reset();
     });
     $('stats').addEventListener('click', e => { if (e.target === $('stats')) closeStats(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('stats').hidden && !$('acctDialog').open) closeStats(); });

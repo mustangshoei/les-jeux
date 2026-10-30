@@ -111,8 +111,8 @@
 
   /* mots de l'interface selon les objets cliquables : os (squelette) ou muscles */
   const WORDS = {
-    os: { one: ' os masque', many: ' os masques', pick: 'Choisir un os', hide: 'Masquer un os' },
-    muscle: { one: ' muscle masque', many: ' muscles masques', pick: 'Choisir un muscle', hide: 'Masquer un muscle' }
+    os: { one: ' os masqué', many: ' os masqués', pick: 'Choisir un os', hide: 'Masquer un os' },
+    muscle: { one: ' muscle masqué', many: ' muscles masqués', pick: 'Choisir un muscle', hide: 'Masquer un muscle' }
   };
   let words = WORDS.os;
   function setObjectWords(kind) {

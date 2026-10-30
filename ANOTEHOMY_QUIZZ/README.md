@@ -1,229 +1,272 @@
 # Anotehomy Quizz
 
-Apprendre l'anatomie humaine en jouant, sur un modele 3D, avec la nomenclature anatomique
+Apprendre l'anatomie humaine en jouant, sur un modèle 3D, avec la nomenclature anatomique
 internationale **TA2** (Terminologia Anatomica 2). HTML, CSS et JavaScript purs (rendu 3D : Three.js,
-fourni dans le dossier) : rien a installer, aucune connexion Internet necessaire.
+fourni dans le dossier) : rien à installer, aucune connexion Internet nécessaire.
 
-Anotehomy Quizz fait partie du dossier des jeux (voir le [README a la racine](../README.md)) : il partage
-avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif qui permet de jouer a
-plusieurs sur un reseau.
+Anotehomy Quizz fait partie du dossier des jeux (voir le [README à la racine](../README.md)) : il partage
+avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif qui permet de jouer à
+plusieurs sur un réseau.
 
-**Version 1.0.0** (numerotation MAJEUR.MINEUR.CORRECTIF : voir "Versions" dans le
-[README a la racine](../README.md#versions), et l'[historique](#versions) plus bas).
+**Version 2.0.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+[README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
 
-- **Seul, sur un ordinateur** : double-cliquez sur **`index.html`** (navigateur recent avec WebGL :
-  Chrome, Edge, Firefox, Safari). On joue en invite (statistiques gardees dans le navigateur), sans comptes.
-- **Avec les comptes** : double-cliquez sur **`game.bat`**, a la racine du dossier des jeux (Windows, il
+- **Seul, sur un ordinateur** : double-cliquez sur **`index.html`** (navigateur récent avec WebGL :
+  Chrome, Edge, Firefox, Safari). On joue en invité (statistiques gardées dans le navigateur), sans comptes.
+- **Avec les comptes** : double-cliquez sur **`game.bat`**, à la racine du dossier des jeux (Windows, il
   faut Python 3) : il lance le serveur des jeux et ouvre le navigateur. Ou, sur un NAS : lancez le serveur
-  des jeux (voir le README a la racine) et ouvrez
+  des jeux (voir le README à la racine) et ouvrez
   `http://<adresse-de-la-machine>:8080/ANOTEHOMY_QUIZZ/` (ou la page d'accueil `http://<adresse>:8080`,
   qui propose tous les jeux).
-- **Changer de jeu** : bouton **"Jeux"** en haut a droite, sur les ecrans d'accueil, de configuration et
-  de resultats (jamais pendant une partie). On reste connecte dans l'autre jeu.
+- **Changer de jeu** : bouton **« Jeux »** en haut à droite, sur le menu, la configuration et les
+  résultats (jamais pendant une partie). On reste connecté dans l'autre jeu.
 
-Anotehomy Quizz ne depend d'aucun autre jeu. Du dossier commun `../COMMUN/`, il utilise seulement
-`comptes.js` (les comptes), `jeux.js` et `jeux.css` (le bouton "Jeux") : si ces fichiers manquent ou
-plantent, le jeu se joue normalement, en invite et sans bouton "Jeux".
+Anotehomy Quizz ne dépend d'aucun autre jeu. Du dossier commun `../COMMUN/`, il utilise seulement
+`comptes.js` (les comptes), `jeux.js` et `jeux.css` (le bouton « Jeux ») : si ces fichiers manquent ou
+plantent, le jeu se joue normalement, en invité et sans bouton « Jeux ».
 
 ## Contenu du dossier
 
-Scripts classiques (pas de modules ES), charges dans l'ordre par `index.html`, pour que le jeu marche en
+Scripts classiques (pas de modules ES), chargés dans l'ordre par `index.html`, pour que le jeu marche en
 ouvrant directement le fichier. Chaque fichier range ses fonctions dans l'espace de noms `window.AQ`
 (`js/core/namespace.js`).
 
 ```
-index.html                  page unique : panneau lateral, scene 3D, ecrans superposes (accueil, configuration,
-                            resultats, statistiques), bouton de compte, fenetre du compte
-CREDITS.md                  credits et licences (modeles 3D, Three.js, algorithmes)
-css/                        apparence, un fichier par partie de l'ecran (base, layout, panel, stage, home,
-                            setup, results, account, responsive)
-js/main.js                  point d'entree : accueil immediat, chargement du modele 3D, raccourcis clavier
+index.html                  page unique : écran de jeu (panneau latéral + scène 3D), menu, configuration,
+                            résultats, statistiques, bouton de compte, fenêtre du compte
+CREDITS.md                  crédits et licences (modèles 3D, Three.js, polices, algorithmes)
+css/                        apparence, un fichier par partie de l'écran (base, layout, panel, stage, skeleton,
+                            home, setup, results, account, responsive)
+css/polices/                polices du thème (Bricolage Grotesque, IBM Plex Mono ; licence OFL)
+img/                        planches des chapitres du menu (images figées du modèle 3D), trame du fond
+js/main.js                  point d'entrée : menu immédiat, chargement du modèle 3D au lancement d'une partie,
+                            raccourcis clavier
 js/core/                    espace de noms AQ, utilitaires
-js/data/                    donnees : zones du corps, catalogue des os, decoupage des os, catalogue des muscles,
-                            catalogue des jeux (games.js), modeles 3D compresses (*-model.js, generes)
-js/engine/                  moteur 3D : modele, scene, camera, surbrillance, interactions, os isole, muscles
-js/game/                    logique de jeu : correction des reponses, configuration, partie, resultats, revision,
-                            et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js)
-js/account/profile.js       statistiques du joueur (invite ou compte commun)
-js/account/account.js       bouton de compte, fenetre du compte, ecran des statistiques
+js/data/                    données : zones du corps, catalogue des os, découpage des os, catalogue des muscles,
+                            catalogue du menu (games.js), modèles 3D compressés (*-model.js, générés)
+js/engine/                  moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles
+js/game/                    logique de jeu : menu, correction des réponses, configuration, partie, résultats,
+                            révision, et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js)
+js/account/profile.js       statistiques du joueur (invité ou compte commun)
+js/account/account.js       bouton de compte, fenêtre du compte, écran des statistiques
 js/vendor/three.min.js      Three.js r158 (licence MIT)
-tools/                      (facultatif) regeneration des modeles 3D, voir tools/README.md
+tools/                      (facultatif) régénération des modèles 3D, voir tools/README.md
 ```
 
-## Deroulement d'une partie
+## Le menu
 
-1. **Accueil** : choisir une categorie (**Les muscles**, **Les os** ; **Les vaisseaux sanguins** arrive
-   bientot et reste verrouillee), puis un jeu de la categorie.
-2. **Configuration** : ce qu'il faut deviner (zones du corps, os etudie...), le **nombre de questions**
-   (champ et curseur synchronises), le **mode de jeu** et les options.
-3. **Partie** : une question a la fois, retour immediat apres chaque reponse.
-4. **Resultats**, puis **revision** libre sur le modele 3D.
+Même construction que le menu de GéoNohyne Quizz (`js/game/home.js`, catalogue `js/data/games.js`) :
 
-Le squelette 3D se charge en arriere-plan pendant que l'accueil s'affiche ; les os detailles (osteologie)
-et les muscles ne sont charges qu'a la demande, a l'ouverture du jeu concerne.
+- **Trois chapitres** :
+  1. **Le corps humain** : les os du squelette, l'ostéologie descriptive, les muscles ; annoncés : les
+     organes, la splanchnologie descriptive (les parties de chaque organe, comme l'ostéologie pour les
+     os), les nerfs, les vaisseaux sanguins ;
+  2. **La langue médicale** : annoncés : les pathologies, les termes médicamenteux ;
+  3. **Apprendre la Vie** : annoncé : le module « Le corps humain » (explorer librement le corps et
+     consulter la fiche de chaque élément).
+- À droite, la **planche du chapitre** : une image figée tirée du modèle 3D (squelette, crâne, écorché),
+  avec quelques repères et une légende. Les planches sont des images : **aucune 3D ne tourne dans le
+  menu**.
+- Dessous, les **cartes** du chapitre : un clic ouvre la configuration du jeu. Les jeux annoncés restent
+  grisés (« Bientôt »).
+- Le dernier chapitre affiché est mémorisé (clé `anotehomy.menu.chapitre`) ; les flèches **←** **→**
+  changent de chapitre.
 
-## Nomenclature TA2 et correction des reponses
+## Déroulement d'une partie
 
-Toutes les reponses utilisent les **noms francais de la TA2** ; le nom latin TA2 est aussi accepte.
-Les **anciens termes** (rotule, perone, omoplate, astragale, grand fessier, trochiter...) sont reconnus et
-signales, mais **comptes faux**.
+1. **Menu** : choisir un chapitre, puis un jeu.
+2. **Configuration**, sur un seul écran, sans défilement : à gauche ce qu'il faut trouver (zones du corps,
+   os étudié…) et le **nombre de questions** (le nombre en grand, − et +, curseur, raccourcis 5, 10, 20,
+   30 et « Tous ») ; à droite la façon de jouer (**Nommage** ou **Ciblage**), les options, la
+   nomenclature et « Lancer la partie ». Sur téléphone, les deux colonnes s'empilent et l'écran défile.
+3. **Partie** : une question à la fois, retour immédiat après chaque réponse.
+4. **Résultats**, puis **révision** libre sur le modèle 3D.
 
-- Majuscules, accents, ponctuation, tirets et apostrophes ne comptent pas ; l'article du debut, le mot
-  "os" ou "muscle" en tete peuvent etre omis ("muscle grand dorsal" = "grand dorsal").
-- Les prepositions sont ignorees et les adjectifs d'os ramenes au nom de l'os : "trochlee humerale" =
-  "trochlee de l'humerus", "tuberosite tibiale" = "tuberosite du tibia".
-- **Tolerance aux fautes de frappe** (option, cochee par defaut) : 0 faute pour un nom de 4 lettres au
-  plus, 1 jusqu'a 7 lettres, 2 jusqu'a 12, 3 au-dela (une inversion de deux lettres = une faute).
-- La reponse est comparee a **tous** les noms connus du jeu (actuels et anciens) : elle n'est juste que si
-  le nom le plus proche est un nom TA2 de l'element demande. Nommer un autre element est signale ("vous
-  avez nomme un autre os : ...").
-- **Score** : 10 points par bonne reponse, 7 si elle a ete acceptee avec une faute de frappe.
+**La 3D ne démarre qu'au lancement d'une partie** : le squelette se charge au premier lancement
+(« Chargement du modèle 3D… »), les os détaillés (ostéologie) et les muscles au premier lancement du jeu
+concerné. Dès qu'on quitte la partie (menu, configuration), l'affichage 3D est **mis en pause** : rien ne
+tourne en arrière-plan.
+
+## Apparence
+
+Thème « Planches anatomiques » : sombre (prune profond), **rose framboise et blanc rosé** (le sang, les
+planches), menthe pour ce qui est juste, pêche pour le temps et les avertissements. Fond : papier
+d'électrocardiogramme (petits et grands carreaux), tracés cardiaques et globules très discrets
+(`img/trame.svg`). Polices locales : Bricolage Grotesque (textes) et IBM Plex Mono (repères, petites
+capitales). Les animations s'effacent si le système demande de réduire les mouvements.
+
+## Nomenclature TA2 et correction des réponses
+
+Toutes les réponses utilisent les **noms français de la TA2** ; le nom latin TA2 est aussi accepté.
+Les **anciens termes** (rotule, péroné, omoplate, astragale, grand fessier, trochiter…) sont reconnus et
+signalés, mais **comptés faux**.
+
+- Les noms s'affichent avec leurs accents, mais **majuscules, accents, ligatures, ponctuation, tirets et
+  apostrophes ne comptent pas** : « femur » = « fémur », « oeil » = « œil ». L'article du début, le mot
+  « os » ou « muscle » en tête peuvent être omis (« muscle grand dorsal » = « grand dorsal »).
+- Les prépositions sont ignorées et les adjectifs d'os ramenés au nom de l'os : « trochlée humérale » =
+  « trochlée de l'humérus », « tubérosité tibiale » = « tubérosité du tibia ».
+- **Tolérance aux fautes de frappe** (option, cochée par défaut) : 0 faute pour un nom de 4 lettres au
+  plus, 1 jusqu'à 7 lettres, 2 jusqu'à 12, 3 au-delà (une inversion de deux lettres = une faute).
+- La réponse est comparée à **tous** les noms connus du jeu (actuels et anciens) : elle n'est juste que si
+  le nom le plus proche est un nom TA2 de l'élément demandé. Nommer un autre élément est signalé (« vous
+  avez nommé un autre os : … »).
+- **Score** : 10 points par bonne réponse, 7 si elle a été acceptée avec une faute de frappe.
 
 Code : `js/game/matcher.js`.
 
 ## Modes de jeu (communs aux trois jeux)
 
-- **Mode A - Nommage** : un element s'illumine (en rouge ; en bleu pour les muscles) ; on tape son nom
-  dans le panneau de gauche, puis Valider (ou Entree). "Passer" compte la question comme ratee.
-  **Autocompletion** (option) : des 2 caracteres, les noms TA2 de **tous** les elements du jeu (pas
-  seulement ceux de la partie, pour ne pas donner d'indice) ; fleches pour choisir, Tab ou Entree pour
-  inserer, Echap pour fermer.
-- **Mode B - Ciblage** : le nom TA2 (et le nom latin) s'affiche ; on clique sur l'element, directement
-  sur le modele 3D. La vue se tourne d'elle-meme vers une face ou l'element est visible. "Je ne sais pas"
-  montre la reponse.
-- **Retour immediat** : correct ou non, la bonne reponse et son nom latin, une note eventuelle (faute de
-  frappe, ancien terme, numero ou cote faux). Question suivante apres 1,3 s (bonne reponse), 2,2 s (avec
-  une note) ou 3,4 s (erreur) ; **Entree** ou "Suivant" passent tout de suite.
-- **"Terminer la partie"** (panneau de gauche) arrete la partie et affiche les resultats.
-- **Resultats** : pourcentage de reussite (anneau), score en points, bonnes reponses, temps ; liste des
-  erreurs et des reponses acceptees avec une faute, chacune avec "Voir" (revision de cet element).
+- **Nommage** : un élément s'illumine (en rouge ; en bleu pour les muscles) ; on tape son nom dans le
+  panneau de gauche, puis Valider (ou Entrée). « Passer » compte la question comme ratée.
+  **Autocomplétion** (option) : dès 2 caractères, les noms TA2 de **tous** les éléments du jeu (pas
+  seulement ceux de la partie, pour ne pas donner d'indice), la saisie surlignée même tapée sans accent ;
+  flèches pour choisir, Tab ou Entrée pour insérer, Échap pour fermer.
+- **Ciblage** : le nom TA2 (et le nom latin) s'affiche ; on clique sur l'élément, directement sur le
+  modèle 3D. La vue se tourne d'elle-même vers une face où l'élément est visible. « Je ne sais pas »
+  montre la réponse.
+- **Retour immédiat** : correct ou non, la bonne réponse et son nom latin, une note éventuelle (faute de
+  frappe, ancien terme, numéro ou côté faux). Question suivante après 1,3 s (bonne réponse), 2,2 s (avec
+  une note) ou 3,4 s (erreur) ; **Entrée** ou « Suivant » passent tout de suite.
+- **« Terminer la partie »** (panneau de gauche) arrête la partie et affiche les résultats.
+- **Résultats** : pourcentage de réussite (anneau), score en points, bonnes réponses, temps ; liste des
+  erreurs et des réponses acceptées avec une faute, chacune avec « Voir » (révision de cet élément).
   Boutons : Menu principal, Nouvelle configuration, Rejouer.
-- **Revision** : apres "Voir", cliquer sur d'autres elements pour les identifier (nom au survol) ; le
-  panneau donne le nom latin, la zone, les anciens termes a ne plus utiliser et les parties connues.
-  "Retour aux resultats" revient au bilan.
+- **Révision** : après « Voir », cliquer sur d'autres éléments pour les identifier (nom au survol) ; le
+  panneau donne le nom latin, la zone, les anciens termes à ne plus utiliser et les parties connues.
+  « Retour aux résultats » revient au bilan.
 
 ## Jeu 1 : Les os du squelette
 
-Reconnaitre et localiser chaque os du corps humain. Code : `js/game/skeleton-game.js`, catalogue
+Reconnaître et localiser chaque os du corps humain. Code : `js/game/skeleton-game.js`, catalogue
 `js/data/bones.js`.
 
-- **Zones du corps** (a cocher, "Tout" / "Aucun") : membre inferieur, membre superieur, vertebres, crane,
-  pelvis, autre / squelette axial. Le nombre d'os disponibles s'affiche pour chaque zone.
-- Un os pair ou en serie est demande sur une de ses instances, tiree au hasard (droite ou gauche, un
-  niveau donne).
-- **Os en serie** (cotes, vertebres) : le numero, le niveau et le cote du corps sont lus dans la reponse :
-  "12e cote gauche", "douzieme cote gauche", "vertebre thoracique T9", "T9" ou "C4" seuls. "D9" (vertebre
-  dorsale) est l'ancienne nomenclature. Un bon os avec un mauvais numero ou un mauvais cote est compte faux,
-  avec un message.
-- **Option "Exiger le numero et le cote"** : sans elle, le nom general suffit ("cote") et le nom precis est
-  rappele ; avec elle, une reponse sans numero (ou sans cote) est "incomplete", donc fausse, et en mode
-  Ciblage il faut cliquer exactement sur l'instance demandee.
+- **Zones du corps** (à cocher, « Tout » / « Aucun ») : membre inférieur, membre supérieur, vertèbres,
+  crâne, pelvis, autre / squelette axial. Le nombre d'os disponibles s'affiche pour chaque zone.
+- Un os pair ou en série est demandé sur une de ses instances, tirée au hasard (droite ou gauche, un
+  niveau donné).
+- **Os en série** (côtes, vertèbres) : le numéro, le niveau et le côté du corps sont lus dans la réponse :
+  « 12e côte gauche », « douzième côte gauche », « vertèbre thoracique T9 », « T9 » ou « C4 » seuls. « D9 »
+  (vertèbre dorsale) est l'ancienne nomenclature. Un bon os avec un mauvais numéro ou un mauvais côté est
+  compté faux, avec un message.
+- **Option « Exiger le numéro et le côté »** : sans elle, le nom général suffit (« côte ») et le nom
+  précis est rappelé ; avec elle, une réponse sans numéro (ou sans côté) est « incomplète », donc fausse,
+  et en Ciblage il faut cliquer exactement sur l'instance demandée.
 
-## Jeu 2 : Osteologie descriptive
+## Jeu 2 : Ostéologie descriptive
 
-Nommer et localiser les parties d'un os : reliefs et reperes (processus, fosses, incisures,
-tuberosites...). Code : `js/game/osteo-game.js`, `js/game/osteo-setup.js`, decoupage `js/data/osteology.js`
+Nommer et localiser les parties d'un os : reliefs et repères (processus, fosses, incisures,
+tubérosités…). Code : `js/game/osteo-game.js`, `js/game/osteo-setup.js`, découpage `js/data/osteology.js`
 et `js/engine/segment.js`.
 
-- **Os a etudier** : **tire au hasard** parmi les zones cochees, ou **choisi** dans la liste (53 os
-  detailles, groupes par zone ; un os pair est montre du cote droit, un niveau representatif pour les
-  vertebres et les cotes). L'os est affiche **seul**, decoupe en parties, et rappele en permanence dans le
+- **Os à étudier** : **tiré au hasard** parmi les zones cochées, ou **choisi** dans la liste (53 os
+  détaillés, groupés par zone ; un os pair est montré du côté droit, un niveau représentatif pour les
+  vertèbres et les côtes). L'os est affiché **seul**, découpé en parties, et rappelé en permanence dans le
   panneau et sur la vue 3D.
-- **Nombre de parties** a trouver : au plus le nombre de parties de l'os (variable selon l'os tire).
-- **Os voisins estompes** (option, ou touche **V** pendant la partie) : situe l'os dans le squelette.
-- **Resultats** : en plus des boutons communs, "Rejouer cet os", "Autre os au hasard" (os tire au hasard)
-  et "Explorer l'os" : revision avec l'**atlas** (une couleur par partie, touche **C**), parties cliquables.
-- Le decoupage en parties est une approximation pedagogique realisee pour ce projet (voir CREDITS.md).
+- **Nombre de parties** à trouver : au plus le nombre de parties de l'os (variable selon l'os tiré).
+- **Os voisins estompés** (option, ou touche **V** pendant la partie) : situe l'os dans le squelette.
+- **Résultats** : en plus des boutons communs, « Rejouer cet os », « Autre os au hasard » (os tiré au
+  hasard) et « Explorer l'os » : révision avec l'**atlas** (une couleur par partie, touche **C**), parties
+  cliquables.
+- Le découpage en parties est une approximation pédagogique réalisée pour ce projet (voir CREDITS.md).
 
 ## Jeu 3 : Les muscles du corps humain
 
-Reconnaitre et localiser les muscles sur le corps en 3D. Code : `js/game/muscle-game.js`,
+Reconnaître et localiser les muscles sur le corps en 3D. Code : `js/game/muscle-game.js`,
 `js/game/muscle-setup.js`, catalogue `js/data/muscles.js`.
 
-- **194 muscles**, dont **93 principaux** (les muscles classiques des cours d'anatomie), dans 8 zones :
-  tete, cou, dos et nuque, thorax, abdomen, pelvis et perinee, membre superieur, membre inferieur.
-- **Muscles proposes** : principaux seulement, ou tous (y compris les petits muscles et les muscles
+- **194 muscles**, dont **101 principaux** (les muscles classiques des cours d'anatomie), dans 8 zones :
+  tête, cou, dos et nuque, thorax, abdomen, pelvis et périnée, membre supérieur, membre inférieur.
+- **Muscles proposés** : principaux seulement, ou tous (y compris les petits muscles et les muscles
   profonds).
-- **Mode Nommage** : le muscle (un cote au hasard) s'allume en bleu ; s'il est en partie cache, les
-  muscles qui le recouvrent sont masques automatiquement.
-- **Mode Ciblage** : rien n'est masque (ce serait un indice), mais un muscle profond est signale :
-  **Maj + clic** ecarte un muscle qui en cache un autre ; "Tout afficher" les fait reapparaitre.
-- Chefs et parties d'un muscle forment un seul objet cliquable par cote du corps.
+- **Nommage** : le muscle (un côté au hasard) s'allume en bleu ; s'il est en partie caché, les muscles
+  qui le recouvrent sont masqués automatiquement.
+- **Ciblage** : rien n'est masqué (ce serait un indice), mais un muscle profond est signalé :
+  **Maj + clic** écarte un muscle qui en cache un autre ; « Tout afficher » les fait réapparaître.
+- Chefs et parties d'un muscle forment un seul objet cliquable par côté du corps.
 
 ## Commandes de la vue 3D
 
-Le bouton **?** (ou la touche **H**) affiche l'aide ; elle s'ouvre seule a la premiere visite.
+Le bouton **?** (ou la touche **H**) affiche l'aide ; elle s'ouvre seule à la première visite.
 
 | Action | Souris | Tactile | Clavier |
 |---|---|---|---|
 | Tourner | glisser | 1 doigt | |
-| Deplacer | clic droit + glisser, ou Ctrl + glisser | 2 doigts | |
+| Déplacer | clic droit + glisser, ou Ctrl + glisser | 2 doigts | |
 | Zoomer | molette (vers le curseur) | pincer | **+** / **-** ; tout voir : **0** |
-| Choisir un element | clic | toucher | |
-| Masquer un element | Maj + clic | | |
-| Vues anterieure, posterieure, laterales | boutons de la barre du bas | | **1** **2** **3** **4** |
-| Question suivante | "Suivant" | | **Entree** |
+| Choisir un élément | clic | toucher | |
+| Masquer un élément | Maj + clic | | |
+| Vues antérieure, postérieure, latérales | boutons de la barre du bas | | **1** **2** **3** **4** |
+| Question suivante | « Suivant » | | **Entrée** |
 
-Barre du bas : vues, zoom, "voir tout", "recentrer sur l'element en cours" et, en osteologie, os voisins
-(**V**) et atlas des parties (**C**, en revision).
+Barre du bas : vues, zoom, « voir tout », « recentrer sur l'élément en cours » et, en ostéologie, os
+voisins (**V**) et atlas des parties (**C**, en révision).
 
 ## Compte et statistiques
 
-- **Bouton de compte** en haut a gauche (ecrans d'accueil, de configuration et de resultats) : il affiche
-  "Invite" ou le nom du compte connecte, et ouvre la fenetre du compte.
-- **Comptes** (seulement quand le jeu est ouvert depuis le serveur) : nom + mot de passe (4 caracteres au
-  moins), **communs a tous les jeux du dossier** : un compte cree ici sert aussi dans GeoNohyne Quizz, et
-  inversement. A l'arrivee, une fenetre propose de se connecter, de creer un compte ou de continuer en
-  invite (une fois par session du navigateur, tous jeux confondus). La connexion est memorisee et
-  partagee par les jeux : on reste connecte en changeant de jeu.
-- **Fenetre du compte** connecte : mes statistiques, renommer, changer le mot de passe (les autres
-  appareils devront se reconnecter), se deconnecter, supprimer le compte (mot de passe demande ; le compte
+- **Bouton de compte** en haut à gauche (menu, configuration et résultats) : il affiche « Invité » ou le
+  nom du compte connecté, et ouvre la fenêtre du compte.
+- **Comptes** (seulement quand le jeu est ouvert depuis le serveur) : nom + mot de passe (4 caractères au
+  moins), **communs à tous les jeux du dossier** : un compte créé ici sert aussi dans GéoNohyne Quizz, et
+  inversement. À l'arrivée, une fenêtre propose de se connecter, de créer un compte ou de continuer en
+  invité (une fois par session du navigateur, tous jeux confondus). La connexion est mémorisée et
+  partagée par les jeux : on reste connecté en changeant de jeu.
+- **Fenêtre du compte** connecté : mes statistiques, renommer, changer le mot de passe (les autres
+  appareils devront se reconnecter), se déconnecter, supprimer le compte (mot de passe demandé ; le compte
   et ses statistiques disparaissent de **tous** les jeux).
-- **Invite** : toujours possible ; statistiques gardees dans ce navigateur (`localStorage`, cle
-  `anotehomy.profil`). A la creation d'un compte, une case permet de **reprendre les statistiques de
-  l'invite**.
-- **Ce qui est enregistre** : chaque partie terminee (ou interrompue, marquee comme telle) : jeu, mode,
-  configuration (zones, os etudie), bonnes reponses, score, temps.
-- **Ecran des statistiques** (bouton "Mes statistiques" de la fenetre du compte) :
-  - totaux : parties, temps de jeu, taux de bonnes reponses, questions ;
-  - **par jeu et par mode** : parties, reussite moyenne, **meilleure partie** (meilleure reussite, puis le
-    plus de questions, puis le temps le plus court ; parties completes seulement) ;
-  - **a revoir** : pour chaque jeu, les elements les plus rates ("ratee 3 fois sur 4") ;
-  - **dernieres parties** (les 500 dernieres sont gardees) ;
-  - "Effacer mes statistiques" (le compte est garde).
-- Les statistiques d'Anotehomy Quizz sont rangees dans l'espace `anotehomy` du compte, sur le serveur :
+- **Invité** : toujours possible ; statistiques gardées dans ce navigateur (`localStorage`, clé
+  `anotehomy.profil`). À la création d'un compte, une case permet de **reprendre les statistiques de
+  l'invité**.
+- **Ce qui est enregistré** : chaque partie terminée (ou interrompue, marquée comme telle) : jeu, mode,
+  configuration (zones, os étudié), bonnes réponses, score, temps.
+- **Écran des statistiques** (bouton « Mes statistiques » de la fenêtre du compte) :
+  - totaux : parties, temps de jeu, taux de bonnes réponses, questions ;
+  - **par jeu et par mode** : parties, réussite moyenne, **meilleure partie** (meilleure réussite, puis le
+    plus de questions, puis le temps le plus court ; parties complètes seulement) ;
+  - **à revoir** : pour chaque jeu, les éléments les plus ratés (« ratée 3 fois sur 4 ») ; ceux
+    enregistrés avant la version 2.0.0 sous leur nom sans accent sont regroupés sous le nom actuel ;
+  - **dernières parties** (les 500 dernières sont gardées) ;
+  - « Effacer mes statistiques » (le compte est gardé).
+- Les statistiques d'Anotehomy Quizz sont rangées dans l'espace `anotehomy` du compte, sur le serveur :
   **rien n'est public** (pas de classement pour l'instant), seul le joueur les voit. Les autres jeux n'y
-  ont pas acces.
-- **Hors ligne** : si le serveur ne repond plus un moment, on continue de jouer avec son compte ; les
-  parties partent des son retour (copie dans le navigateur, cle `comptes.donnees.anotehomy`).
+  ont pas accès.
+- **Hors ligne** : si le serveur ne répond plus un moment, on continue de jouer avec son compte ; les
+  parties partent dès son retour (copie dans le navigateur, clé `comptes.donnees.anotehomy`).
 
 ## Ajouter un jeu dans Anotehomy Quizz
 
-1. Ajouter son entree dans `js/data/games.js` (categorie, `status: 'soon'` tant qu'il n'est pas pret :
-   la carte reste grisee "Bientot disponible").
-2. Ecrire son **adaptateur** dans `js/game/` (meme interface que `js/game/osteo-game.js`, decrite en tete
+1. Ajouter son entrée dans `js/data/games.js` : son chapitre (`chapter`), `status: 'soon'` tant qu'il
+   n'est pas prêt (la carte reste grisée, « Bientôt »), son pictogramme (`icon`) et sa couleur (`tint`),
+   pris dans `ICONS` et `TINTS` de `js/game/home.js`, ses textes (`name`, `tagline`, `desc`, `meta`). Le
+   déclarer aussi dans `../COMMUN/jeux.js` (ligne `anotehomy`, `modes`).
+2. Écrire son **adaptateur** dans `js/game/` (même interface que `js/game/osteo-game.js`, décrite en tête
    de ce fichier) et, si besoin, son bloc de configuration (`index.html` + un fichier `*-setup.js`).
-3. Ajouter les `<script defer>` dans `index.html` (l'ordre compte), puis passer `status` a `'ready'`.
+3. Ajouter les `<script defer>` dans `index.html` (l'ordre compte), puis passer `status` à `'ready'`.
 
-Le deroulement, la correction, les resultats et les statistiques sont communs : rien d'autre a ecrire.
+Le déroulement, la correction, les résultats et les statistiques sont communs : rien d'autre à écrire.
+Un nouveau chapitre se déclare dans `CHAPTERS` (`js/data/games.js`) et sa planche dans `PLANCHES`
+(`js/game/home.js` : image de `img/`, repères en pourcentage de l'image, légende).
 
-## Modeles 3D, outils et credits
+## Modèles 3D, outils et crédits
 
-- Squelette et os detailles : **BodyParts3D** (DBCLS, CC BY 4.0) ; muscles : **Z-Anatomy** (CC BY-SA 4.0,
-  `js/data/muscle-model.js` est donc distribue sous la meme licence) ; rendu : **Three.js** (MIT).
-  Details et modifications : `CREDITS.md`.
-- Les modeles compresses de `js/data/*-model.js` sont generes par les scripts de `tools/` (PowerShell +
-  C#, rien a installer) : **inutiles pour jouer**, ils servent a changer le niveau de detail ou la liste
+- Squelette et os détaillés : **BodyParts3D** (DBCLS, CC BY 4.0) ; muscles : **Z-Anatomy** (CC BY-SA 4.0,
+  `js/data/muscle-model.js` est donc distribué sous la même licence) ; rendu : **Three.js** (MIT) ;
+  polices : **Bricolage Grotesque** et **IBM Plex Mono** (OFL). Détails et modifications : `CREDITS.md`.
+- Les planches du menu (`img/chapitre-*.webp`) sont des rendus figés de ces modèles, faits une fois pour
+  toutes dans le navigateur ; elles suivent la licence du modèle dont elles viennent (voir `CREDITS.md`).
+- Les modèles compressés de `js/data/*-model.js` sont générés par les scripts de `tools/` (PowerShell +
+  C#, rien à installer) : **inutiles pour jouer**, ils servent à changer le niveau de détail ou la liste
   des os et des muscles. Mode d'emploi : `tools/README.md`.
 
 ## Versions
 
-Numerotation **MAJEUR.MINEUR.CORRECTIF** commune a tous les jeux (regles : "Versions" dans le
-[README a la racine](../README.md#versions)). A chaque nouvelle version : une ligne ici, et le numero dans
-`../COMMUN/jeux.js` (ligne `anotehomy`), d'ou il s'affiche dans le menu "Jeux" et sur la page d'accueil.
+Numérotation **MAJEUR.MINEUR.CORRECTIF** commune à tous les jeux (règles : « Versions » dans le
+[README à la racine](../README.md#versions)). À chaque nouvelle version : une ligne ici, et le numéro dans
+`../COMMUN/jeux.js` (ligne `anotehomy`), d'où il s'affiche dans le menu « Jeux » et sur la page d'accueil.
 
 | Version | Date | Changements |
 |---|---|---|
-| 1.0.0 | 28/10/2026 | Premiere version numerotee : les os du squelette, osteologie descriptive (53 os detailles), les muscles (194, dont 93 principaux), modes Nommage et Ciblage, comptes communs et statistiques. |
+| 2.0.0 | 30/10/2026 | Refonte graphique complète, inspirée de GéoNohyne Quizz : thème « Planches anatomiques » (rose et blanc sur fond sombre), menu en trois chapitres (Le corps humain, La langue médicale, Apprendre la Vie) avec une planche tirée du modèle 3D ; jeux annoncés (organes, splanchnologie descriptive, nerfs, vaisseaux sanguins, pathologies, termes médicamenteux, module « Le corps humain ») ; configuration sur un seul écran, sans défilement ; 3D chargée au lancement de la partie et en pause hors des parties ; accents dans tous les textes et tous les noms (toujours facultatifs dans les réponses). |
+| 1.0.0 | 28/10/2026 | Première version numérotée : les os du squelette, ostéologie descriptive (53 os détaillés), les muscles (194, dont 101 principaux), modes Nommage et Ciblage, comptes communs et statistiques. |

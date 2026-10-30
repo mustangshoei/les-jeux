@@ -264,15 +264,15 @@
         test: (t, B) => F(B, 'g', t) < 0.1 * B.L.len && t.nm > 0.55, grow: 0 }),
       P('facies_articularis_acromialis', 'surface articulaire acromiale', 'facies articularis acromialis', { alt: ['face articulaire acromiale'],
         test: (t, B) => F(B, 'g', t) > 0.92 * B.L.len && t.nm < -0.55, grow: 0 }),
-      P('extremitas_sternalis', 'extremite sternale', 'extremitas sternalis', { old: ['extremite interne', 'extremite mediale'],
+      P('extremitas_sternalis', 'extrémité sternale', 'extremitas sternalis', { old: ['extrémité interne', 'extrémité médiale'],
         test: (t, B) => F(B, 'g', t) < 0.14 * B.L.len, grow: 0 }),
-      P('extremitas_acromialis', 'extremite acromiale', 'extremitas acromialis', { old: ['extremite externe', 'extremite laterale'],
+      P('extremitas_acromialis', 'extrémité acromiale', 'extremitas acromialis', { old: ['extrémité externe', 'extrémité latérale'],
         test: (t, B) => F(B, 'g', t) > 0.88 * B.L.len, grow: 0 }),
-      P('tuberculum_conoideum', 'tubercule conoide', 'tuberculum conoideum', { old: ['tubercule coracoidien'],
+      P('tuberculum_conoideum', 'tubercule conoïde', 'tuberculum conoideum', { old: ['tubercule coracoïdien'],
         test: (t, B) => B.d(t, B.L.con) < 8, grow: 0 }),
-      P('linea_trapezoidea', 'ligne trapezoide', 'linea trapezoidea',
+      P('linea_trapezoidea', 'ligne trapézoïde', 'linea trapezoidea',
         { test: (t, B) => t.ny < -0.4 && F(B, 'g', t) > 0.74 * B.L.len && B.d(t, B.L.con) > 6, grow: 0 }),
-      P('sulcus_subclavius', 'sillon du muscle subclavier', 'sulcus musculi subclavii', { alt: ['sillon subclavier'], old: ['gouttiere du subclavier', 'gouttiere sous-claviere'],
+      P('sulcus_subclavius', 'sillon du muscle subclavier', 'sulcus musculi subclavii', { alt: ['sillon subclavier'], old: ['gouttière du subclavier', 'gouttière sous-clavière'],
         test: (t, B) => t.ny < -0.6 && F(B, 'g', t) > 0.32 * B.L.len && F(B, 'g', t) < 0.62 * B.L.len, grow: 0 }),
       P('corpus', 'corps de la clavicule', 'corpus claviculae', { alt: ['corps', 'diaphyse'],
         test: () => true })
@@ -321,33 +321,33 @@
         F(B, 'co', t) >= 42 && F(B, 'ac', t) >= 45, [L.supra, L.infra]);
     },
     parts: [
-      P('cavitas_glenoidalis', 'cavite glenoidale', 'cavitas glenoidalis', { alt: ['glene', 'cavite glenoide de la scapula'], old: ['cavite glenoide'],
+      P('cavitas_glenoidalis', 'cavité glénoïdale', 'cavitas glenoidalis', { alt: ['glène', 'cavité glénoïde de la scapula'], old: ['cavité glénoïde'],
         test: (t, B) => B.d(t, B.L.gl) < 18 && t.nm < -0.3, grow: 0.3 }),
-      P('processus_coracoideus', 'processus coracoide', 'processus coracoideus', { alt: ['coracoide'], old: ['apophyse coracoide'],
+      P('processus_coracoideus', 'processus coracoïde', 'processus coracoideus', { alt: ['coracoïde'], old: ['apophyse coracoïde'],
         test: (t, B) => F(B, 'co', t) < 42 && t.h > 0.6, grow: 0.3 }),
       P('acromion', 'acromion', 'acromion',
         { test: (t, B) => F(B, 'ac', t) < 45 && t.h > 0.7, grow: 0.3 }),
-      P('incisura_scapulae', 'incisure de la scapula', 'incisura scapulae', { alt: ['incisure supra-scapulaire', 'incisure suprascapulaire'], old: ['echancrure coracoidienne', 'echancrure de l omoplate'],
+      P('incisura_scapulae', 'incisure de la scapula', 'incisura scapulae', { alt: ['incisure supra-scapulaire', 'incisure suprascapulaire'], old: ['échancrure coracoïdienne', 'échancrure de l\'omoplate'],
         test: (t, B) => B.d(t, B.L.inc) < 7, grow: 0 }),
-      P('angulus_superior', 'angle superieur', 'angulus superior', { alt: ['angle superieur de la scapula'], old: ['angle supero-interne'],
+      P('angulus_superior', 'angle supérieur', 'angulus superior', { alt: ['angle supérieur de la scapula'], old: ['angle supéro-interne'],
         test: (t, B) => B.d(t, B.L.sa) < 14, grow: 0 }),
-      P('angulus_inferior', 'angle inferieur', 'angulus inferior', { alt: ['angle inferieur de la scapula'],
+      P('angulus_inferior', 'angle inférieur', 'angulus inferior', { alt: ['angle inférieur de la scapula'],
         test: (t, B) => B.d(t, B.L.ia) < 18, grow: 0 }),
-      P('collum', 'col de la scapula', 'collum scapulae', { alt: ['col'], old: ['col de l omoplate'],
+      P('collum', 'col de la scapula', 'collum scapulae', { alt: ['col'], old: ['col de l\'omoplate'],
         test: (t, B) => B.d(t, B.L.gl) < 27 && F(B, 'r', t) < 10, grow: 0.3 }),
-      P('spina_scapulae', 'epine de la scapula', 'spina scapulae', { alt: ['epine', 'epine scapulaire'], old: ['epine de l omoplate'],
+      P('spina_scapulae', 'épine de la scapula', 'spina scapulae', { alt: ['épine', 'épine scapulaire'], old: ['épine de l\'omoplate'],
         test: scapSpine, grow: 0 }),
-      P('margo_superior', 'bord superieur', 'margo superior', { alt: ['bord superieur de la scapula'], old: ['bord cervical'],
+      P('margo_superior', 'bord supérieur', 'margo superior', { alt: ['bord supérieur de la scapula'], old: ['bord cervical'],
         test: (t, B) => F(B, 'ol', t) < 5 && onArc(F(B, 'olA', t), B.L.aSa, B.L.aCo, B.L.aIa), grow: 0 }),
-      P('margo_medialis', 'bord medial', 'margo medialis', { alt: ['bord medial de la scapula'], old: ['bord spinal', 'bord interne', 'bord vertebral'],
+      P('margo_medialis', 'bord médial', 'margo medialis', { alt: ['bord médial de la scapula'], old: ['bord spinal', 'bord interne', 'bord vertébral'],
         test: (t, B) => F(B, 'ol', t) < 5 && onArc(F(B, 'olA', t), B.L.aSa, B.L.aIa, B.L.aGl), grow: 0 }),
-      P('margo_lateralis', 'bord lateral', 'margo lateralis', { alt: ['bord lateral de la scapula'], old: ['bord axillaire', 'bord externe'],
+      P('margo_lateralis', 'bord latéral', 'margo lateralis', { alt: ['bord latéral de la scapula'], old: ['bord axillaire', 'bord externe'],
         test: (t, B) => F(B, 'ol', t) < 6 && onArc(F(B, 'olA', t), B.L.aIa, B.L.aGl, B.L.aSa), grow: 0 }),
       P('fossa_subscapularis', 'fosse subscapulaire', 'fossa subscapularis', { alt: ['face costale'], old: ['fosse sous-scapulaire'],
         test: (t, B) => B.ndot(t, B.L.back) < -0.1, grow: 0.3 }),
-      P('fossa_supraspinata', 'fosse supra-epineuse', 'fossa supraspinata', { old: ['fosse sus-epineuse'],
+      P('fossa_supraspinata', 'fosse supra-épineuse', 'fossa supraspinata', { old: ['fosse sus-épineuse'],
         test: (t, B) => F(B, 'fos', t) === 0 }),
-      P('fossa_infraspinata', 'fosse infra-epineuse', 'fossa infraspinata', { old: ['fosse sous-epineuse'],
+      P('fossa_infraspinata', 'fosse infra-épineuse', 'fossa infraspinata', { old: ['fosse sous-épineuse'],
         test: (t, B) => F(B, 'fos', t) === 1 })
     ]
   });
@@ -366,33 +366,33 @@
       L.le = B.ext(B.dir(-1, 0, 0), t => t.h < 0.13);
     },
     parts: [
-      P('caput', 'tete de l\'humerus', 'caput humeri', { alt: ['tete', 'tete humerale'],
+      P('caput', 'tête de l\'humérus', 'caput humeri', { alt: ['tête', 'tête humérale'],
         test: (t, B) => { const h = B.L.head; return B.d(t, h.c) < h.r * 1.08 && B.dot(B.sub([t.x, t.y, t.z], h.c), B.L.headAxis) > -0.25 * h.r; } }),
-      P('tuberculum_majus', 'tubercule majeur', 'tuberculum majus', { alt: ['grand tubercule'], old: ['grosse tuberosite', 'trochiter'],
+      P('tuberculum_majus', 'tubercule majeur', 'tuberculum majus', { alt: ['grand tubercule'], old: ['grosse tubérosité', 'trochiter'],
         test: (t, B) => B.d(t, B.L.gt) < 22 && t.h > 0.82 }),
-      P('tuberculum_minus', 'tubercule mineur', 'tuberculum minus', { alt: ['petit tubercule'], old: ['petite tuberosite', 'trochin'],
+      P('tuberculum_minus', 'tubercule mineur', 'tuberculum minus', { alt: ['petit tubercule'], old: ['petite tubérosité', 'trochin'],
         test: (t, B) => B.d(t, B.L.lt) < 12 }),
-      P('collum_anatomicum', 'col anatomique', 'collum anatomicum', { alt: ['col anatomique de l\'humerus'],
+      P('collum_anatomicum', 'col anatomique', 'collum anatomicum', { alt: ['col anatomique de l\'humérus'],
         test: (t, B) => { const h = B.L.head; return B.d(t, h.c) < h.r * 1.22 && B.dot(B.sub([t.x, t.y, t.z], h.c), B.L.headAxis) > -0.5 * h.r; }, grow: 0 }),
-      P('sulcus_intertubercularis', 'sillon intertuberculaire', 'sulcus intertubercularis', { old: ['coulisse bicipitale', 'gouttiere bicipitale'],
+      P('sulcus_intertubercularis', 'sillon intertuberculaire', 'sulcus intertubercularis', { old: ['coulisse bicipitale', 'gouttière bicipitale'],
         test: (t, B) => t.h > 0.74 && t.h < B.hOf(B.L.lt) + 0.02 && t.nz > 0.35 && medOff(t, B, B.L.lt) < -4 && medOff(t, B, B.L.lt) > -16 }),
-      P('collum_chirurgicum', 'col chirurgical', 'collum chirurgicum', { alt: ['col chirurgical de l\'humerus'],
+      P('collum_chirurgicum', 'col chirurgical', 'collum chirurgicum', { alt: ['col chirurgical de l\'humérus'],
         test: t => t.h > 0.78 && t.h < 0.85 }),
-      P('tuberositas_deltoidea', 'tuberosite deltoidienne', 'tuberositas deltoidea', { old: ['v deltoidien', 'empreinte deltoidienne'],
+      P('tuberositas_deltoidea', 'tubérosité deltoïdienne', 'tuberositas deltoidea', { old: ['v deltoïdien', 'empreinte deltoïdienne'],
         test: (t, B) => B.d(t, B.L.dt) < 16 && t.nm < 0 }),
-      P('epicondylus_medialis', 'epicondyle medial', 'epicondylus medialis', { old: ['epitrochlee'],
+      P('epicondylus_medialis', 'épicondyle médial', 'epicondylus medialis', { old: ['épitrochlée'],
         test: (t, B) => B.d(t, B.L.me) < 13 }),
-      P('epicondylus_lateralis', 'epicondyle lateral', 'epicondylus lateralis',
+      P('epicondylus_lateralis', 'épicondyle latéral', 'epicondylus lateralis',
         { test: (t, B) => B.d(t, B.L.le) < 11 }),
-      P('fossa_olecrani', 'fosse olecranienne', 'fossa olecrani', { old: ['fossette olecranienne'],
+      P('fossa_olecrani', 'fosse olécrânienne', 'fossa olecrani', { old: ['fossette olécrânienne'],
         test: (t, B) => t.h > 0.05 && t.h < 0.15 && t.nz < -0.45 && Math.abs(t.x - B.L.dist[0]) < 13 }),
-      P('fossa_coronoidea', 'fosse coronoidienne', 'fossa coronoidea', { old: ['fossette coronoidienne'],
+      P('fossa_coronoidea', 'fosse coronoïdienne', 'fossa coronoidea', { old: ['fossette coronoïdienne'],
         test: (t, B) => t.h > 0.07 && t.h < 0.13 && t.nz > 0.45 && medOff(t, B, B.L.dist) > -2 && medOff(t, B, B.L.dist) < 12 }),
-      P('capitulum', 'capitulum', 'capitulum humeri', { alt: ['capitulum de l\'humerus'], old: ['condyle humeral'],
+      P('capitulum', 'capitulum', 'capitulum humeri', { alt: ['capitulum de l\'humérus'], old: ['condyle huméral'],
         test: (t, B) => t.h < 0.09 && medOff(t, B, B.L.dist) < -3 && t.nz > -0.25 }),
-      P('trochlea', 'trochlee', 'trochlea humeri', { alt: ['trochlee humerale', 'trochlee de l\'humerus'],
+      P('trochlea', 'trochlée', 'trochlea humeri', { alt: ['trochlée humérale', 'trochlée de l\'humérus'],
         test: (t, B) => t.h < 0.09 && medOff(t, B, B.L.dist) >= -3 }),
-      P('corpus', 'corps de l\'humerus', 'corpus humeri', { alt: ['corps', 'diaphyse', 'diaphyse humerale'],
+      P('corpus', 'corps de l\'humérus', 'corpus humeri', { alt: ['corps', 'diaphyse', 'diaphyse humérale'],
         test: t => t.h > 0.16 && t.h < 0.77 })
     ]
   });
@@ -408,23 +408,23 @@
       crest(B, 'io', B.dir(1, 0, 0), 0.2, 0.8);
     },
     parts: [
-      P('fovea_articularis', 'fovea articulaire', 'fovea articularis capitis radii', { alt: ['fovea articulaire de la tete du radius', 'fossette articulaire'], old: ['cupule radiale'],
+      P('fovea_articularis', 'fovea articulaire', 'fovea articularis capitis radii', { alt: ['fovea articulaire de la tête du radius', 'fossette articulaire'], old: ['cupule radiale'],
         test: (t, B) => F(B, 's', t) > 0.95 && B.ndot(t, B.L.ax) > 0.55, grow: 0 }),
-      P('circumferentia_articularis', 'circonference articulaire', 'circumferentia articularis radii', { alt: ['circonference articulaire de la tete du radius', 'pourtour articulaire'],
+      P('circumferentia_articularis', 'circonférence articulaire', 'circumferentia articularis radii', { alt: ['circonférence articulaire de la tête du radius', 'pourtour articulaire'],
         test: (t, B) => F(B, 's', t) > 0.935, grow: 0 }),
-      P('tuberositas', 'tuberosite radiale', 'tuberositas radii', { alt: ['tuberosite du radius'], old: ['tuberosite bicipitale'],
+      P('tuberositas', 'tubérosité radiale', 'tuberositas radii', { alt: ['tubérosité du radius'], old: ['tubérosité bicipitale'],
         test: (t, B) => B.d(t, B.L.tub) < 10, grow: 0 }),
       P('collum', 'col du radius', 'collum radii', { alt: ['col'],
         test: (t, B) => F(B, 's', t) > 0.87, grow: 0 }),
-      P('processus_styloideus', 'processus styloide du radius', 'processus styloideus radii', { alt: ['processus styloide'], old: ['apophyse styloide', 'apophyse styloide du radius'],
+      P('processus_styloideus', 'processus styloïde du radius', 'processus styloideus radii', { alt: ['processus styloïde'], old: ['apophyse styloïde', 'apophyse styloïde du radius'],
         test: (t, B) => B.d(t, B.L.sty) < 10, grow: 0 }),
       P('facies_articularis_carpalis', 'surface articulaire carpienne', 'facies articularis carpalis', { alt: ['face articulaire carpienne'],
         test: (t, B) => B.ndot(t, B.L.ax) < -0.6 && F(B, 's', t) < 0.05, grow: 0 }),
-      P('incisura_ulnaris', 'incisure ulnaire', 'incisura ulnaris', { alt: ['incisure ulnaire du radius'], old: ['cavite sigmoide du radius'],
+      P('incisura_ulnaris', 'incisure ulnaire', 'incisura ulnaris', { alt: ['incisure ulnaire du radius'], old: ['cavité sigmoïde du radius'],
         test: (t, B) => F(B, 's', t) < 0.07 && F(B, 'rm', t) > 0.6 && t.nm > 0.5, grow: 0 }),
-      P('tuberculum_dorsale', 'tubercule dorsal', 'tuberculum dorsale', { alt: ['tubercule dorsal du radius'], old: ['tubercule de lister'],
+      P('tuberculum_dorsale', 'tubercule dorsal', 'tuberculum dorsale', { alt: ['tubercule dorsal du radius'], old: ['tubercule de Lister'],
         test: (t, B) => B.d(t, B.L.dor) < 6, grow: 0 }),
-      P('margo_interosseus', 'bord interosseux', 'margo interosseus radii', { alt: ['bord interosseux du radius', 'bord medial'], old: ['crete interosseuse'],
+      P('margo_interosseus', 'bord interosseux', 'margo interosseus radii', { alt: ['bord interosseux du radius', 'bord médial'], old: ['crête interosseuse'],
         test: (t, B) => F(B, 'io', t) < 3.5, grow: 0 }),
       P('corpus', 'corps du radius', 'corpus radii', { alt: ['corps', 'diaphyse'],
         test: () => true })
@@ -448,21 +448,21 @@
       crest(B, 'io', B.dir(-1, 0, 0), 0.2, 0.75);
     },
     parts: [
-      P('incisura_trochlearis', 'incisure trochleaire', 'incisura trochlearis', { old: ['grande cavite sigmoide'],
+      P('incisura_trochlearis', 'incisure trochléaire', 'incisura trochlearis', { old: ['grande cavité sigmoïde'],
         test: (t, B) => { const c = B.L.tn; return B.d(t, c.c) < c.r * 1.7 && facesTo(t, B, c.c, 0.45); }, grow: 0 }),
-      P('incisura_radialis', 'incisure radiale', 'incisura radialis', { alt: ['incisure radiale de l\'ulna'], old: ['petite cavite sigmoide'],
+      P('incisura_radialis', 'incisure radiale', 'incisura radialis', { alt: ['incisure radiale de l\'ulna'], old: ['petite cavité sigmoïde'],
         test: (t, B) => B.d(t, B.L.rn) < 9 && t.nm < -0.35, grow: 0 }),
-      P('processus_coronoideus', 'processus coronoide', 'processus coronoideus', { alt: ['processus coronoide de l\'ulna'], old: ['apophyse coronoide'],
+      P('processus_coronoideus', 'processus coronoïde', 'processus coronoideus', { alt: ['processus coronoïde de l\'ulna'], old: ['apophyse coronoïde'],
         test: (t, B) => B.d(t, B.L.cor) < 13, grow: 0 }),
-      P('olecranon', 'olecrane', 'olecranon', { alt: ['olecrane de l\'ulna', 'olecranon'],
+      P('olecranon', 'olécrâne', 'olecranon', { alt: ['olécrâne de l\'ulna', 'olécranon'],
         test: (t, B) => F(B, 's', t) > 0.89 || (F(B, 's', t) > 0.84 && F(B, 'ra', t) < -0.3), grow: 0 }),
-      P('tuberositas', 'tuberosite de l\'ulna', 'tuberositas ulnae', { alt: ['tuberosite ulnaire'], old: ['tuberosite cubitale'],
+      P('tuberositas', 'tubérosité de l\'ulna', 'tuberositas ulnae', { alt: ['tubérosité ulnaire'], old: ['tubérosité cubitale'],
         test: (t, B) => B.d(t, B.L.tub) < 9, grow: 0 }),
-      P('processus_styloideus', 'processus styloide de l\'ulna', 'processus styloideus ulnae', { alt: ['processus styloide'], old: ['apophyse styloide', 'apophyse styloide du cubitus'],
+      P('processus_styloideus', 'processus styloïde de l\'ulna', 'processus styloideus ulnae', { alt: ['processus styloïde'], old: ['apophyse styloïde', 'apophyse styloïde du cubitus'],
         test: (t, B) => B.d(t, B.L.sty) < 7, grow: 0 }),
-      P('caput', 'tete de l\'ulna', 'caput ulnae', { alt: ['tete', 'tete ulnaire'], old: ['tete du cubitus'],
+      P('caput', 'tête de l\'ulna', 'caput ulnae', { alt: ['tête', 'tête ulnaire'], old: ['tête du cubitus'],
         test: (t, B) => F(B, 's', t) < 0.07, grow: 0 }),
-      P('margo_interosseus', 'bord interosseux', 'margo interosseus ulnae', { alt: ['bord interosseux de l\'ulna', 'bord lateral'], old: ['crete interosseuse'],
+      P('margo_interosseus', 'bord interosseux', 'margo interosseus ulnae', { alt: ['bord interosseux de l\'ulna', 'bord latéral'], old: ['crête interosseuse'],
         test: (t, B) => F(B, 'io', t) < 3.5, grow: 0 }),
       P('corpus', 'corps de l\'ulna', 'corpus ulnae', { alt: ['corps', 'diaphyse'],
         test: () => true })
@@ -510,30 +510,30 @@
   /* surface articulaire (nom descriptif) */
   const J = (id, name, bones, o = {}) => Object.assign({ id, name, latin: o.latin || 'facies articularis', bones }, o);
   const HAND_FACES = [
-    P('facies_palmaris', 'face palmaire', 'facies palmaris', { alt: ['face anterieure'], test: t => t.nz > 0.1 }),
-    P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face posterieure'], test: () => true })
+    P('facies_palmaris', 'face palmaire', 'facies palmaris', { alt: ['face antérieure'], test: t => t.nz > 0.1 }),
+    P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face postérieure'], test: () => true })
   ];
   const FOOT_FACES = [
-    P('facies_plantaris', 'face plantaire', 'facies plantaris', { alt: ['face inferieure'], test: t => t.ny < -0.1 }),
-    P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face superieure'], test: () => true })
+    P('facies_plantaris', 'face plantaire', 'facies plantaris', { alt: ['face inférieure'], test: t => t.ny < -0.1 }),
+    P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face supérieure'], test: () => true })
   ];
 
   /* Os de la main droite en position anatomique : paume en avant (+z), pouce en dehors,
      proximal = haut. */
   shortBone('os_scaphoideum', 'R', {
     landmarks(B) { B.L.tub = B.ext(B.dir(-0.4, -0.7, 1)); },
-    first: [P('tuberculum', 'tubercule du scaphoide', 'tuberculum ossis scaphoidei', { alt: ['tubercule de l\'os scaphoide', 'tubercule'],
+    first: [P('tuberculum', 'tubercule du scaphoïde', 'tuberculum ossis scaphoidei', { alt: ['tubercule de l\'os scaphoïde', 'tubercule'],
       test: (t, B) => B.d(t, B.L.tub) < 5, grow: 0 })],
     joints: [J('facies_radialis', 'surface articulaire radiale', [['radius']], { alt: ['surface articulaire pour le radius'] }),
       J('facies_lunata', 'surface articulaire pour le lunatum', [['os_lunatum']]),
       J('facies_capitata', 'surface articulaire pour le capitatum', [['os_capitatum']]),
-      J('facies_trapezii', 'surface articulaire pour le trapeze et le trapezoide', [['os_trapezium'], ['os_trapezoideum']], { alt: ['surface articulaire pour le trapeze'] })],
+      J('facies_trapezii', 'surface articulaire pour le trapèze et le trapézoïde', [['os_trapezium'], ['os_trapezoideum']], { alt: ['surface articulaire pour le trapèze'] })],
     faces: HAND_FACES
   });
   shortBone('os_lunatum', 'R', {
     /* interligne radio-lunaire large dans le modele (cartilage et disque articulaire absents) */
     joints: [J('facies_radialis', 'surface articulaire radiale', [['radius']], { alt: ['surface articulaire pour le radius'], d: 3, max: 9 }),
-      J('facies_scaphoidea', 'surface articulaire pour le scaphoide', [['os_scaphoideum']]),
+      J('facies_scaphoidea', 'surface articulaire pour le scaphoïde', [['os_scaphoideum']]),
       J('facies_triquetra', 'surface articulaire pour le triquetrum', [['os_triquetrum']]),
       J('facies_capitata', 'surface articulaire pour le capitatum et l\'hamatum', [['os_capitatum'], ['os_hamatum']], { alt: ['surface articulaire pour le capitatum'] })],
     faces: HAND_FACES
@@ -550,26 +550,26 @@
   });
   shortBone('os_trapezium', 'R', {
     landmarks(B) { B.L.tub = B.ext(B.dir(0.3, -0.3, 1)); },
-    first: [P('tuberculum', 'tubercule du trapeze', 'tuberculum ossis trapezii', { alt: ['tubercule de l\'os trapeze', 'tubercule'],
+    first: [P('tuberculum', 'tubercule du trapèze', 'tuberculum ossis trapezii', { alt: ['tubercule de l\'os trapèze', 'tubercule'],
       test: (t, B) => B.d(t, B.L.tub) < 5, grow: 0 })],
-    joints: [J('facies_metacarpalis_I', 'surface articulaire pour le metacarpien I', [['ossa_metacarpi', 'metacarpien I']], { alt: ['surface en selle', 'surface articulaire du pouce'] }),
-      J('facies_scaphoidea', 'surface articulaire pour le scaphoide', [['os_scaphoideum']]),
-      J('facies_trapezoidea', 'surface articulaire pour le trapezoide et le metacarpien II', [['os_trapezoideum'], ['ossa_metacarpi', 'metacarpien II']], { alt: ['surface articulaire pour le trapezoide'] })],
+    joints: [J('facies_metacarpalis_I', 'surface articulaire pour le métacarpien I', [['ossa_metacarpi', 'metacarpien I']], { alt: ['surface en selle', 'surface articulaire du pouce'] }),
+      J('facies_scaphoidea', 'surface articulaire pour le scaphoïde', [['os_scaphoideum']]),
+      J('facies_trapezoidea', 'surface articulaire pour le trapézoïde et le métacarpien II', [['os_trapezoideum'], ['ossa_metacarpi', 'metacarpien II']], { alt: ['surface articulaire pour le trapézoïde'] })],
     faces: HAND_FACES
   });
   shortBone('os_trapezoideum', 'R', {
-    joints: [J('facies_metacarpalis_II', 'surface articulaire pour le metacarpien II', [['ossa_metacarpi', 'metacarpien II']]),
-      J('facies_scaphoidea', 'surface articulaire pour le scaphoide', [['os_scaphoideum']]),
-      J('facies_trapezii', 'surface articulaire pour le trapeze', [['os_trapezium']]),
+    joints: [J('facies_metacarpalis_II', 'surface articulaire pour le métacarpien II', [['ossa_metacarpi', 'metacarpien II']]),
+      J('facies_scaphoidea', 'surface articulaire pour le scaphoïde', [['os_scaphoideum']]),
+      J('facies_trapezii', 'surface articulaire pour le trapèze', [['os_trapezium']]),
       J('facies_capitata', 'surface articulaire pour le capitatum', [['os_capitatum']])],
     faces: HAND_FACES
   });
   shortBone('os_capitatum', 'R', {
-    first: [P('caput', 'tete du capitatum', 'caput ossis capitati', { alt: ['tete de l\'os capitatum', 'tete'], old: ['tete du grand os'],
+    first: [P('caput', 'tête du capitatum', 'caput ossis capitati', { alt: ['tête de l\'os capitatum', 'tête'], old: ['tête du grand os'],
       test: t => t.h > 0.62, grow: 0 })],
-    joints: [J('facies_metacarpalis', 'surface articulaire pour les metacarpiens', [['ossa_metacarpi', 'metacarpien II'], ['ossa_metacarpi', 'metacarpien III'], ['ossa_metacarpi', 'metacarpien IV']], { alt: ['surface articulaire pour le metacarpien III'] }),
+    joints: [J('facies_metacarpalis', 'surface articulaire pour les métacarpiens', [['ossa_metacarpi', 'metacarpien II'], ['ossa_metacarpi', 'metacarpien III'], ['ossa_metacarpi', 'metacarpien IV']], { alt: ['surface articulaire pour le métacarpien III'] }),
       J('facies_hamata', 'surface articulaire pour l\'hamatum', [['os_hamatum']]),
-      J('facies_trapezoidea', 'surface articulaire pour le trapezoide', [['os_trapezoideum']])],
+      J('facies_trapezoidea', 'surface articulaire pour le trapézoïde', [['os_trapezoideum']])],
     faces: HAND_FACES
   });
   shortBone('os_hamatum', 'R', {
@@ -577,9 +577,9 @@
       B.L.hk = B.ext(B.dir(-0.2, -0.3, 1));
       B.field('hk', B.L.hk);
     },
-    first: [P('hamulus', 'hamulus de l\'hamatum', 'hamulus ossis hamati', { alt: ['hamulus de l\'os hamatum', 'hamulus', 'crochet de l\'hamatum'], old: ['apophyse unciforme', 'crochet de l os crochu'],
+    first: [P('hamulus', 'hamulus de l\'hamatum', 'hamulus ossis hamati', { alt: ['hamulus de l\'os hamatum', 'hamulus', 'crochet de l\'hamatum'], old: ['apophyse unciforme', 'crochet de l\'os crochu'],
       test: (t, B) => F(B, 'hk', t) < 9 && t.a > 0.5, grow: 0 })],
-    joints: [J('facies_metacarpalis', 'surface articulaire pour les metacarpiens IV et V', [['ossa_metacarpi', 'metacarpien IV'], ['ossa_metacarpi', 'metacarpien V']], { alt: ['surface articulaire pour les metacarpiens'] }),
+    joints: [J('facies_metacarpalis', 'surface articulaire pour les métacarpiens IV et V', [['ossa_metacarpi', 'metacarpien IV'], ['ossa_metacarpi', 'metacarpien V']], { alt: ['surface articulaire pour les métacarpiens'] }),
       J('facies_capitata', 'surface articulaire pour le capitatum', [['os_capitatum']]),
       J('facies_triquetra', 'surface articulaire pour le triquetrum et le lunatum', [['os_triquetrum'], ['os_lunatum']], { alt: ['surface articulaire pour le triquetrum'] })],
     faces: HAND_FACES
@@ -587,31 +587,31 @@
 
   /* ---------------- Metacarpiens et phalange ---------------- */
   OS('ossa_metacarpi', 'R', 'metacarpien I', {
-    title: 'premier metacarpien',
+    title: 'premier métacarpien',
     landmarks(B) { longAxis(B); },
     parts: [
-      P('basis', 'base du metacarpien I', 'basis ossis metacarpi I', { alt: ['base', 'base du premier metacarpien', 'base du metacarpien'],
+      P('basis', 'base du métacarpien I', 'basis ossis metacarpi I', { alt: ['base', 'base du premier métacarpien', 'base du métacarpien'],
         test: (t, B) => F(B, 's', t) > 0.8, grow: 0 }),
-      P('caput', 'tete du metacarpien I', 'caput ossis metacarpi I', { alt: ['tete', 'tete du premier metacarpien', 'tete du metacarpien'],
+      P('caput', 'tête du métacarpien I', 'caput ossis metacarpi I', { alt: ['tête', 'tête du premier métacarpien', 'tête du métacarpien'],
         test: (t, B) => F(B, 's', t) < 0.22, grow: 0 }),
-      P('corpus', 'corps du metacarpien I', 'corpus ossis metacarpi I', { alt: ['corps', 'corps du premier metacarpien', 'corps du metacarpien', 'diaphyse'],
+      P('corpus', 'corps du métacarpien I', 'corpus ossis metacarpi I', { alt: ['corps', 'corps du premier métacarpien', 'corps du métacarpien', 'diaphyse'],
         test: () => true })
     ]
   });
   OS('ossa_metacarpi', 'R', 'metacarpien III', {
-    title: 'troisieme metacarpien',
+    title: 'troisième métacarpien',
     landmarks(B) {
       longAxis(B);
       B.L.sty = B.ext(B.dir(-0.7, 0.5, -1), t => F(B, 's', t) > 0.75);
     },
     parts: [
-      P('processus_styloideus', 'processus styloide du metacarpien III', 'processus styloideus ossis metacarpi tertii', { alt: ['processus styloide', 'processus styloide du troisieme metacarpien'], old: ['apophyse styloide du troisieme metacarpien'],
+      P('processus_styloideus', 'processus styloïde du métacarpien III', 'processus styloideus ossis metacarpi tertii', { alt: ['processus styloïde', 'processus styloïde du troisième métacarpien'], old: ['apophyse styloïde du troisième métacarpien'],
         test: (t, B) => B.d(t, B.L.sty) < 4.5, grow: 0 }),
-      P('basis', 'base du metacarpien III', 'basis ossis metacarpi III', { alt: ['base', 'base du troisieme metacarpien', 'base du metacarpien'],
+      P('basis', 'base du métacarpien III', 'basis ossis metacarpi III', { alt: ['base', 'base du troisième métacarpien', 'base du métacarpien'],
         test: (t, B) => F(B, 's', t) > 0.84, grow: 0 }),
-      P('caput', 'tete du metacarpien III', 'caput ossis metacarpi III', { alt: ['tete', 'tete du troisieme metacarpien', 'tete du metacarpien'],
+      P('caput', 'tête du métacarpien III', 'caput ossis metacarpi III', { alt: ['tête', 'tête du troisième métacarpien', 'tête du métacarpien'],
         test: (t, B) => F(B, 's', t) < 0.18, grow: 0 }),
-      P('corpus', 'corps du metacarpien III', 'corpus ossis metacarpi III', { alt: ['corps', 'corps du troisieme metacarpien', 'corps du metacarpien', 'diaphyse'],
+      P('corpus', 'corps du métacarpien III', 'corpus ossis metacarpi III', { alt: ['corps', 'corps du troisième métacarpien', 'corps du métacarpien', 'diaphyse'],
         test: () => true })
     ]
   });
@@ -621,7 +621,7 @@
     parts: [
       P('basis', 'base de la phalange', 'basis phalangis', { alt: ['base', 'base de la phalange proximale'],
         test: (t, B) => F(B, 's', t) > 0.8, grow: 0 }),
-      P('caput', 'tete de la phalange', 'caput phalangis', { alt: ['tete', 'trochlee de la phalange', 'tete de la phalange proximale'],
+      P('caput', 'tête de la phalange', 'caput phalangis', { alt: ['tête', 'trochlée de la phalange', 'tête de la phalange proximale'],
         test: (t, B) => F(B, 's', t) < 0.2, grow: 0 }),
       P('corpus', 'corps de la phalange', 'corpus phalangis', { alt: ['corps', 'corps de la phalange proximale', 'diaphyse'],
         test: () => true })
@@ -670,45 +670,45 @@
       L.ipe = B.ext(B.dir(0.5, 1, 0.2), t => F(B, 'brim', t) < 4 && Math.abs(F(B, 'br', t) - L.brSplit) < 0.04);
     },
     parts: [
-      P('fossa_acetabuli', 'fosse acetabulaire', 'fossa acetabuli', { alt: ['fosse de l\'acetabulum'], old: ['arriere-fond du cotyle'],
+      P('fossa_acetabuli', 'fosse acétabulaire', 'fossa acetabuli', { alt: ['fosse de l\'acétabulum'], old: ['arrière-fond du cotyle'],
         test: (t, B) => F(B, 'ad', t) > 2.5, grow: 0 }),
-      P('facies_lunata', 'surface semi-lunaire', 'facies lunata', { alt: ['face semi-lunaire', 'surface articulaire de l\'acetabulum', 'acetabulum'], old: ['croissant articulaire du cotyle'],
+      P('facies_lunata', 'surface semi-lunaire', 'facies lunata', { alt: ['face semi-lunaire', 'surface articulaire de l\'acétabulum', 'acétabulum'], old: ['croissant articulaire du cotyle'],
         test: (t, B) => F(B, 'ad', t) > -90, grow: 0 }),
-      P('spina_iliaca_anterior_superior', 'epine iliaque antero-superieure', 'spina iliaca anterior superior', { alt: ['eias'],
+      P('spina_iliaca_anterior_superior', 'épine iliaque antéro-supérieure', 'spina iliaca anterior superior', { alt: ['eias'],
         test: (t, B) => B.d(t, B.L.asis) < 12, grow: 0 }),
-      P('spina_iliaca_anterior_inferior', 'epine iliaque antero-inferieure', 'spina iliaca anterior inferior', { alt: ['eiai'],
+      P('spina_iliaca_anterior_inferior', 'épine iliaque antéro-inférieure', 'spina iliaca anterior inferior', { alt: ['eiai'],
         test: (t, B) => B.d(t, B.L.aiis) < 10, grow: 0 }),
-      P('spina_iliaca_posterior_superior', 'epine iliaque postero-superieure', 'spina iliaca posterior superior', { alt: ['eips'],
+      P('spina_iliaca_posterior_superior', 'épine iliaque postéro-supérieure', 'spina iliaca posterior superior', { alt: ['eips'],
         test: (t, B) => B.d(t, B.L.psis) < 12, grow: 0 }),
-      P('spina_iliaca_posterior_inferior', 'epine iliaque postero-inferieure', 'spina iliaca posterior inferior', { alt: ['eipi'],
+      P('spina_iliaca_posterior_inferior', 'épine iliaque postéro-inférieure', 'spina iliaca posterior inferior', { alt: ['eipi'],
         test: (t, B) => B.d(t, B.L.piis) < 9, grow: 0 }),
-      P('tuber_ischiadicum', 'tuberosite ischiatique', 'tuber ischiadicum', { old: ['tuberosite sciatique', 'tuberosite de l ischion'],
+      P('tuber_ischiadicum', 'tubérosité ischiatique', 'tuber ischiadicum', { old: ['tubérosité sciatique', 'tubérosité de l\'ischion'],
         test: (t, B) => B.d(t, B.L.it) < 22, grow: 0 }),
-      P('spina_ischiadica', 'epine ischiatique', 'spina ischiadica', { old: ['epine sciatique'],
+      P('spina_ischiadica', 'épine ischiatique', 'spina ischiadica', { old: ['épine sciatique'],
         test: (t, B) => B.d(t, B.L.is) < 8, grow: 0 }),
-      P('incisura_ischiadica_major', 'grande incisure ischiatique', 'incisura ischiadica major', { old: ['grande echancrure sciatique'],
+      P('incisura_ischiadica_major', 'grande incisure ischiatique', 'incisura ischiadica major', { old: ['grande échancrure sciatique'],
         test: (t, B) => F(B, 'gsn', t) < 6, grow: 0 }),
-      P('incisura_ischiadica_minor', 'petite incisure ischiatique', 'incisura ischiadica minor', { old: ['petite echancrure sciatique'],
+      P('incisura_ischiadica_minor', 'petite incisure ischiatique', 'incisura ischiadica minor', { old: ['petite échancrure sciatique'],
         test: (t, B) => F(B, 'lsn', t) < 5, grow: 0 }),
       P('facies_symphysialis', 'face symphysaire', 'facies symphysialis', { alt: ['surface symphysaire'],
         test: (t, B) => B.d(t, B.L.sym) < 18 && t.nm > 0.5, grow: 0 }),
-      P('tuberculum_pubicum', 'tubercule pubien', 'tuberculum pubicum', { old: ['epine du pubis'],
+      P('tuberculum_pubicum', 'tubercule pubien', 'tuberculum pubicum', { old: ['épine du pubis'],
         test: (t, B) => B.d(t, B.L.pt) < 7, grow: 0 }),
-      P('eminentia_iliopubica', 'eminence ilio-pubienne', 'eminentia iliopubica', { old: ['eminence ilio-pectinee'],
+      P('eminentia_iliopubica', 'éminence ilio-pubienne', 'eminentia iliopubica', { old: ['éminence ilio-pectinée'],
         test: (t, B) => B.d(t, B.L.ipe) < 8, grow: 0 }),
-      P('linea_arcuata', 'ligne arquee', 'linea arcuata', { alt: ['ligne arquee de l\'ilium'], old: ['ligne innominee'],
+      P('linea_arcuata', 'ligne arquée', 'linea arcuata', { alt: ['ligne arquée de l\'ilium'], old: ['ligne innominée'],
         test: (t, B) => F(B, 'brim', t) < 4 && F(B, 'br', t) < B.L.brSplit, grow: 0 }),
-      P('pecten_ossis_pubis', 'pecten du pubis', 'pecten ossis pubis', { alt: ['ligne pectineale'], old: ['crete pectineale'],
+      P('pecten_ossis_pubis', 'pecten du pubis', 'pecten ossis pubis', { alt: ['ligne pectinéale'], old: ['crête pectinéale'],
         test: (t, B) => F(B, 'brim', t) < 4, grow: 0 }),
-      P('crista_iliaca', 'crete iliaque', 'crista iliaca',
+      P('crista_iliaca', 'crête iliaque', 'crista iliaca',
         { test: t => t.ny > 0.45 && t.h > 0.72, grow: 0 }),
       P('facies_auricularis', 'face auriculaire', 'facies auricularis', { alt: ['surface auriculaire', 'face auriculaire de l\'ilium'],
         test: t => t.nm > 0.4 && t.a < 0.35 && t.h > 0.55 && t.h < 0.85, grow: 0 }),
-      P('tuberositas_iliaca', 'tuberosite iliaque', 'tuberositas iliaca', { old: ['tuberosite iliaque posterieure'],
+      P('tuberositas_iliaca', 'tubérosité iliaque', 'tuberositas iliaca', { old: ['tubérosité iliaque postérieure'],
         test: t => t.nm > -0.2 && t.a < 0.3 && t.h > 0.7, grow: 0 }),
       P('fossa_iliaca', 'fosse iliaque', 'fossa iliaca', { old: ['fosse iliaque interne'],
         test: t => t.nm > 0.2 && t.h > 0.72 }),
-      P('facies_glutea', 'face gluteale', 'facies glutea', { alt: ['face glutea', 'face fessiere'], old: ['fosse iliaque externe'],
+      P('facies_glutea', 'face glutéale', 'facies glutea', { alt: ['face glutea', 'face fessière'], old: ['fosse iliaque externe'],
         test: t => t.nm < -0.2 && t.h > 0.55, grow: 0 }),
       /* corps et branches : croissance depuis des graines (le detroit superieur fait barriere) ;
          le corps de l'ilium a une graine au-dessus de l'acetabulum et une sous la ligne arquee */
@@ -719,9 +719,9 @@
         seed: B => B.surf(B.mix(B.L.acet.c, B.L.it, 0.5)) }),
       P('corpus_ossis_pubis', 'corps du pubis', 'corpus ossis pubis',
         { seed: B => B.surf(B.add(B.L.sym, B.dir(-1, 0, 0), 12)) }),
-      P('ramus_superior_ossis_pubis', 'branche superieure du pubis', 'ramus superior ossis pubis', { alt: ['branche superieure'], old: ['branche horizontale du pubis'],
+      P('ramus_superior_ossis_pubis', 'branche supérieure du pubis', 'ramus superior ossis pubis', { alt: ['branche supérieure'], old: ['branche horizontale du pubis'],
         seed: B => B.surf(B.mix(B.L.acet.c, B.L.pt, 0.55)) }),
-      P('ramus_ischiopubicus', 'branche ischio-pubienne', 'ramus ischiopubicus', { alt: ['branche inferieure du pubis', 'branche de l\'ischium'],
+      P('ramus_ischiopubicus', 'branche ischio-pubienne', 'ramus ischiopubicus', { alt: ['branche inférieure du pubis', 'branche de l\'ischium'],
         seed: B => B.surf(B.mix(B.L.symLow, B.L.it, 0.5)) })
     ]
   });
@@ -766,27 +766,27 @@
     parts: [
       P('promontorium', 'promontoire', 'promontorium', { alt: ['promontoire sacral'],
         test: (t, B) => B.d(t, B.L.prom) < 9, grow: 0 }),
-      P('basis', 'base du sacrum', 'basis ossis sacri', { alt: ['base', 'face superieure de s1'],
+      P('basis', 'base du sacrum', 'basis ossis sacri', { alt: ['base', 'face supérieure de s1'],
         test: (t, B) => B.ndot(t, B.L.up) > 0.55 && t.lat < 0.3 && F(B, 'su', t) > 0.8 && F(B, 'sw', t) > -5, grow: 0 }),
-      P('processus_articularis_superior', 'processus articulaire superieur', 'processus articularis superior', { alt: ['processus articulaires superieurs'], old: ['apophyse articulaire superieure'],
+      P('processus_articularis_superior', 'processus articulaire supérieur', 'processus articularis superior', { alt: ['processus articulaires supérieurs'], old: ['apophyse articulaire supérieure'],
         test: (t, B) => B.d(t, B.L.pasR) < 11 || B.d(t, B.L.pasL) < 11, grow: 0 }),
       P('cornu_sacrale', 'corne sacrale', 'cornu sacrale', { alt: ['cornes sacrales'], old: ['corne du sacrum'],
         test: (t, B) => B.d(t, B.L.corR) < 6 || B.d(t, B.L.corL) < 6, grow: 0 }),
       P('apex', 'apex du sacrum', 'apex ossis sacri', { alt: ['apex', 'sommet du sacrum'],
         test: (t, B) => F(B, 'su', t) < 0.07, grow: 0 }),
-      P('crista_sacralis_mediana', 'crete sacrale mediane', 'crista sacralis mediana', { alt: ['crete sacrale'], old: ['crete sacree'],
+      P('crista_sacralis_mediana', 'crête sacrale médiane', 'crista sacralis mediana', { alt: ['crête sacrale'], old: ['crête sacrée'],
         test: (t, B) => F(B, 'cm', t) < 5, grow: 0 }),
-      P('hiatus_sacralis', 'hiatus sacral', 'hiatus sacralis', { old: ['hiatus sacre'],
+      P('hiatus_sacralis', 'hiatus sacral', 'hiatus sacralis', { old: ['hiatus sacré'],
         test: (t, B) => t.lat < 0.14 && F(B, 'su', t) < 0.3 && B.ndot(t, B.L.fw) < 0.2 && F(B, 'sw', t) < 0, grow: 0 }),
       P('facies_auricularis', 'face auriculaire', 'facies auricularis', { alt: ['surface auriculaire'],
         test: (t, B) => t.lat > 0.7 && t.nm < -0.45 && F(B, 'su', t) > 0.45, grow: 0 }),
-      P('ala', 'aile du sacrum', 'ala ossis sacri', { alt: ['aile', 'ailes du sacrum'], old: ['aileron sacre', 'aileron'],
+      P('ala', 'aile du sacrum', 'ala ossis sacri', { alt: ['aile', 'ailes du sacrum'], old: ['aileron sacré', 'aileron'],
         test: (t, B) => t.lat > 0.3 && B.ndot(t, B.L.up) > 0.35 && F(B, 'su', t) > 0.6 }),
-      P('tuberositas_ossis_sacri', 'tuberosite sacrale', 'tuberositas ossis sacri', { alt: ['tuberosite du sacrum'],
+      P('tuberositas_ossis_sacri', 'tubérosité sacrale', 'tuberositas ossis sacri', { alt: ['tubérosité du sacrum'],
         test: (t, B) => t.lat > 0.55 && B.ndot(t, B.L.fw) < -0.3 && F(B, 'su', t) > 0.5, grow: 0 }),
-      P('facies_pelvica', 'face pelvienne', 'facies pelvica', { alt: ['face anterieure'],
+      P('facies_pelvica', 'face pelvienne', 'facies pelvica', { alt: ['face antérieure'],
         test: (t, B) => B.ndot(t, B.L.fw) > 0.3 }),
-      P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face posterieure'],
+      P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face postérieure'],
         test: (t, B) => B.ndot(t, B.L.fw) < -0.3 })
     ]
   });
@@ -804,9 +804,9 @@
         test: t => t.h > 0.78 && t.ny > 0.35, grow: 0 }),
       P('apex', 'apex du coccyx', 'apex ossis coccygis', { alt: ['apex', 'pointe du coccyx', 'sommet du coccyx'],
         test: t => t.h < 0.14, grow: 0 }),
-      P('facies_pelvica', 'face pelvienne', 'facies pelvica ossis coccygis', { alt: ['face anterieure'],
+      P('facies_pelvica', 'face pelvienne', 'facies pelvica ossis coccygis', { alt: ['face antérieure'],
         test: t => t.nz > 0.1 }),
-      P('facies_dorsalis', 'face dorsale', 'facies dorsalis ossis coccygis', { alt: ['face posterieure'],
+      P('facies_dorsalis', 'face dorsale', 'facies dorsalis ossis coccygis', { alt: ['face postérieure'],
         test: () => true })
     ]
   });
@@ -838,41 +838,41 @@
       L.tg = B.ext(B.dir(-0.6, 0, -1), t => t.h > hl - 0.08 && t.h < hl - 0.02);
     },
     parts: [
-      P('fovea', 'fovea de la tete du femur', 'fovea capitis femoris', { alt: ['fovea capitis', 'fovea'], old: ['fossette du ligament rond'],
+      P('fovea', 'fovea de la tête du fémur', 'fovea capitis femoris', { alt: ['fovea capitis', 'fovea'], old: ['fossette du ligament rond'],
         test: (t, B) => { const h = B.L.head; return B.d(t, B.add(h.c, B.dir(1, -0.15, -0.25), h.r)) < h.r * 0.3; } }),
-      P('caput', 'tete du femur', 'caput femoris', { alt: ['tete', 'tete femorale'],
+      P('caput', 'tête du fémur', 'caput femoris', { alt: ['tête', 'tête fémorale'],
         test: (t, B) => B.d(t, B.L.head.c) < B.L.head.r * 1.07 }),
       P('trochanter_major', 'grand trochanter', 'trochanter major',
         { test: (t, B) => B.d(t, B.L.gt) < 34 && t.m < B.mOf(B.L.gt) + 0.25 }),
       P('trochanter_minor', 'petit trochanter', 'trochanter minor',
         { test: (t, B) => B.d(t, B.L.lt) < 13 }),
-      P('crista_intertrochanterica', 'crete intertrochanterique', 'crista intertrochanterica', { old: ['ligne intertrochanterique posterieure'],
+      P('crista_intertrochanterica', 'crête intertrochantérique', 'crista intertrochanterica', { old: ['ligne intertrochantérique postérieure'],
         test: (t, B) => segDist(t, B.L.gtP, B.L.lt) < 6 && t.nz < -0.2, grow: 0 }),
-      P('linea_intertrochanterica', 'ligne intertrochanterique', 'linea intertrochanterica', { old: ['ligne intertrochanterique anterieure'],
+      P('linea_intertrochanterica', 'ligne intertrochantérique', 'linea intertrochanterica', { old: ['ligne intertrochantérique antérieure'],
         test: (t, B) => segDist(t, B.L.gtA, B.L.ltA) < 5 && t.nz > 0.2, grow: 0 }),
-      P('collum', 'col du femur', 'collum femoris', { alt: ['col', 'col femoral'],
+      P('collum', 'col du fémur', 'collum femoris', { alt: ['col', 'col fémoral'],
         test: (t, B) => t.h > B.hOf(B.L.lt) + 0.03 && t.m > 0.35 }),
-      P('tuberositas_glutea', 'tuberosite gluteale', 'tuberositas glutea', { alt: ['tuberosite glutea'], old: ['tuberosite fessiere', 'crete du grand fessier'],
+      P('tuberositas_glutea', 'tubérosité glutéale', 'tuberositas glutea', { alt: ['tubérosité glutea'], old: ['tubérosité fessière', 'crête du grand fessier'],
         test: (t, B) => B.d(t, B.L.tg) < 14 && t.nz < 0, grow: 0 }),
-      P('epicondylus_medialis', 'epicondyle medial', 'epicondylus medialis', { old: ['epicondyle interne'],
+      P('epicondylus_medialis', 'épicondyle médial', 'epicondylus medialis', { old: ['épicondyle interne'],
         test: (t, B) => B.d(t, B.L.me) < 15 }),
-      P('epicondylus_lateralis', 'epicondyle lateral', 'epicondylus lateralis', { old: ['epicondyle externe'],
+      P('epicondylus_lateralis', 'épicondyle latéral', 'epicondylus lateralis', { old: ['épicondyle externe'],
         test: (t, B) => B.d(t, B.L.le) < 14 }),
-      P('tuberculum_adductorium', 'tubercule de l\'adducteur', 'tuberculum adductorium', { alt: ['tubercule adducteur'], old: ['tubercule du grand adducteur', 'tubercule du troisieme adducteur'],
+      P('tuberculum_adductorium', 'tubercule de l\'adducteur', 'tuberculum adductorium', { alt: ['tubercule adducteur'], old: ['tubercule du grand adducteur', 'tubercule du troisième adducteur'],
         test: (t, B) => B.d(t, B.L.at) < 8 }),
-      P('facies_patellaris', 'face patellaire', 'facies patellaris', { alt: ['surface patellaire'], old: ['trochlee femorale'],
+      P('facies_patellaris', 'face patellaire', 'facies patellaris', { alt: ['surface patellaire'], old: ['trochlée fémorale'],
         test: (t, B) => t.h < 0.12 && t.h > 0.03 && t.nz > 0.45 && Math.abs(t.x - B.L.dist[0]) < 18 }),
-      P('fossa_intercondylaris', 'fosse intercondylaire', 'fossa intercondylaris', { old: ['echancrure intercondylienne'],
+      P('fossa_intercondylaris', 'fosse intercondylaire', 'fossa intercondylaris', { old: ['échancrure intercondylienne'],
         test: (t, B) => t.h < 0.09 && t.z < B.L.dist[2] && Math.abs(t.x - B.L.dist[0]) < 10 }),
-      P('facies_poplitea', 'surface poplitee', 'facies poplitea', { alt: ['face poplitee'], old: ['triangle poplite'],
+      P('facies_poplitea', 'surface poplitée', 'facies poplitea', { alt: ['face poplitée'], old: ['triangle poplité'],
         test: (t, B) => t.h > 0.11 && t.h < 0.24 && t.nz < -0.6 && Math.abs(t.x - B.L.dist[0]) < 18, grow: 0 }),
-      P('condylus_medialis', 'condyle medial', 'condylus medialis', { old: ['condyle interne'],
+      P('condylus_medialis', 'condyle médial', 'condylus medialis', { old: ['condyle interne'],
         test: (t, B) => t.h < 0.13 && isMed(t, B, B.L.dist) }),
-      P('condylus_lateralis', 'condyle lateral', 'condylus lateralis', { old: ['condyle externe'],
+      P('condylus_lateralis', 'condyle latéral', 'condylus lateralis', { old: ['condyle externe'],
         test: t => t.h < 0.13 }),
-      P('linea_aspera', 'ligne apre', 'linea aspera',
+      P('linea_aspera', 'ligne âpre', 'linea aspera',
         { test: t => t.h > 0.3 && t.h < 0.68 && t.nz < -0.8 }),
-      P('corpus', 'corps du femur', 'corpus femoris', { alt: ['corps', 'diaphyse', 'diaphyse femorale'],
+      P('corpus', 'corps du fémur', 'corpus femoris', { alt: ['corps', 'diaphyse', 'diaphyse fémorale'],
         test: t => t.h > 0.18 && t.h < 0.7 })
     ]
   });
@@ -884,9 +884,9 @@
         test: t => t.h < 0.12 }),
       P('basis', 'base de la patella', 'basis patellae', { alt: ['base'], old: ['base de la rotule'],
         test: t => t.h > 0.82 && t.ny > 0.3 }),
-      P('facies_articularis', 'face articulaire', 'facies articularis patellae', { alt: ['face articulaire de la patella', 'face posterieure'],
+      P('facies_articularis', 'face articulaire', 'facies articularis patellae', { alt: ['face articulaire de la patella', 'face postérieure'],
         test: t => t.nz < -0.3 }),
-      P('facies_anterior', 'face anterieure', 'facies anterior patellae', { alt: ['face anterieure de la patella'],
+      P('facies_anterior', 'face antérieure', 'facies anterior patellae', { alt: ['face antérieure de la patella'],
         test: () => true })
     ]
   });
@@ -909,42 +909,42 @@
       L.fPost = faceSeed(B, 'mm', 'mi', 0.5, B.dir(0, 0, -1));
     },
     parts: [
-      P('eminentia_intercondylaris', 'eminence intercondylaire', 'eminentia intercondylaris', { old: ['epines tibiales', 'massif des epines'],
+      P('eminentia_intercondylaris', 'éminence intercondylaire', 'eminentia intercondylaris', { old: ['épines tibiales', 'massif des épines'],
         test: (t, B) => Math.abs(t.x - B.L.top[0]) < 9 && t.h > 0.965 && t.ny > 0.3, grow: 0 }),
-      P('area_intercondylaris_anterior', 'aire intercondylaire anterieure', 'area intercondylaris anterior', { old: ['surface prespinale'],
+      P('area_intercondylaris_anterior', 'aire intercondylaire antérieure', 'area intercondylaris anterior', { old: ['surface préspinale'],
         test: (t, B) => Math.abs(t.x - B.L.top[0]) < 13 && t.h > 0.94 && t.ny > 0.45 && t.z > B.L.top[2] + 6, grow: 0 }),
-      P('area_intercondylaris_posterior', 'aire intercondylaire posterieure', 'area intercondylaris posterior', { old: ['surface retrospinale'],
+      P('area_intercondylaris_posterior', 'aire intercondylaire postérieure', 'area intercondylaris posterior', { old: ['surface rétrospinale'],
         test: (t, B) => Math.abs(t.x - B.L.top[0]) < 12 && t.h > 0.94 && t.ny > 0.45 && t.z < B.L.top[2] - 6, grow: 0 }),
-      P('facies_articularis_superior', 'surface articulaire superieure', 'facies articularis superior', { alt: ['face articulaire superieure', 'plateau tibial'], old: ['cavites glenoides du tibia'],
+      P('facies_articularis_superior', 'surface articulaire supérieure', 'facies articularis superior', { alt: ['face articulaire supérieure', 'plateau tibial'], old: ['cavités glénoïdes du tibia'],
         test: t => t.h > 0.93 && t.ny > 0.6, grow: 0 }),
-      P('tuberositas_tibiae', 'tuberosite tibiale', 'tuberositas tibiae', { alt: ['tuberosite du tibia'], old: ['tuberosite anterieure du tibia', 'tubercule tibial anterieur'],
+      P('tuberositas_tibiae', 'tubérosité tibiale', 'tuberositas tibiae', { alt: ['tubérosité du tibia'], old: ['tubérosité antérieure du tibia', 'tubercule tibial antérieur'],
         test: (t, B) => B.d(t, B.L.tt) < 15, grow: 0 }),
       P('facies_articularis_fibularis', 'surface articulaire fibulaire', 'facies articularis fibularis', { alt: ['face articulaire fibulaire'],
         test: t => t.nm < -0.4 && t.nz < -0.2 && t.h > 0.86 && t.h < 0.94, grow: 0 }),
-      P('condylus_medialis', 'condyle medial', 'condylus medialis', { alt: ['condyle medial du tibia'], old: ['plateau tibial interne', 'condyle interne'],
+      P('condylus_medialis', 'condyle médial', 'condylus medialis', { alt: ['condyle médial du tibia'], old: ['plateau tibial interne', 'condyle interne'],
         test: (t, B) => t.h > 0.88 && isMed(t, B, B.L.top), grow: 0 }),
-      P('condylus_lateralis', 'condyle lateral', 'condylus lateralis', { alt: ['condyle lateral du tibia'], old: ['plateau tibial externe', 'condyle externe'],
+      P('condylus_lateralis', 'condyle latéral', 'condylus lateralis', { alt: ['condyle latéral du tibia'], old: ['plateau tibial externe', 'condyle externe'],
         test: t => t.h > 0.88, grow: 0 }),
-      P('facies_articularis_malleoli_medialis', 'surface articulaire malleolaire', 'facies articularis malleoli medialis', { alt: ['face articulaire de la malleole mediale', 'surface articulaire de la malleole'],
+      P('facies_articularis_malleoli_medialis', 'surface articulaire malléolaire', 'facies articularis malleoli medialis', { alt: ['face articulaire de la malléole médiale', 'surface articulaire de la malléole'],
         test: (t, B) => B.d(t, B.L.mm) < 20 && t.nm < -0.5 && t.h < 0.1, grow: 0 }),
-      P('malleolus_medialis', 'malleole mediale', 'malleolus medialis', { old: ['malleole interne'],
+      P('malleolus_medialis', 'malléole médiale', 'malleolus medialis', { old: ['malléole interne'],
         test: (t, B) => B.d(t, B.L.mm) < 16 && medOff(t, B, B.L.dist) > 5, grow: 0 }),
-      P('incisura_fibularis', 'incisure fibulaire', 'incisura fibularis', { old: ['echancrure peroniere'],
+      P('incisura_fibularis', 'incisure fibulaire', 'incisura fibularis', { old: ['échancrure péronière'],
         test: t => t.nm < -0.5 && t.h < 0.08, grow: 0 }),
-      P('facies_articularis_inferior', 'surface articulaire inferieure', 'facies articularis inferior', { alt: ['face articulaire inferieure'], old: ['pilon tibial'],
+      P('facies_articularis_inferior', 'surface articulaire inférieure', 'facies articularis inferior', { alt: ['face articulaire inférieure'], old: ['pilon tibial'],
         test: t => t.ny < -0.55 && t.h < 0.04, grow: 0 }),
-      P('margo_anterior', 'bord anterieur', 'margo anterior', { alt: ['bord anterieur du tibia'], old: ['crete tibiale'],
+      P('margo_anterior', 'bord antérieur', 'margo anterior', { alt: ['bord antérieur du tibia'], old: ['crête tibiale'],
         test: (t, B) => F(B, 'ma', t) < 3.5, grow: 0 }),
-      P('margo_medialis', 'bord medial', 'margo medialis', { alt: ['bord medial du tibia'], old: ['bord interne'],
+      P('margo_medialis', 'bord médial', 'margo medialis', { alt: ['bord médial du tibia'], old: ['bord interne'],
         test: (t, B) => F(B, 'mm', t) < 3.5, grow: 0 }),
-      P('margo_interosseus', 'bord interosseux', 'margo interosseus', { alt: ['bord interosseux du tibia', 'bord lateral'], old: ['bord externe'],
+      P('margo_interosseus', 'bord interosseux', 'margo interosseus', { alt: ['bord interosseux du tibia', 'bord latéral'], old: ['bord externe'],
         test: (t, B) => F(B, 'mi', t) < 3.5, grow: 0 }),
       /* faces de la diaphyse : croissance depuis une graine, les bords faisant barriere */
-      P('facies_medialis', 'face mediale', 'facies medialis', { alt: ['face mediale du tibia'], old: ['face interne'],
+      P('facies_medialis', 'face médiale', 'facies medialis', { alt: ['face médiale du tibia'], old: ['face interne'],
         seed: B => B.L.fMed }),
-      P('facies_lateralis', 'face laterale', 'facies lateralis', { alt: ['face laterale du tibia'], old: ['face externe'],
+      P('facies_lateralis', 'face latérale', 'facies lateralis', { alt: ['face latérale du tibia'], old: ['face externe'],
         seed: B => B.L.fLat }),
-      P('facies_posterior', 'face posterieure', 'facies posterior', { alt: ['face posterieure du tibia'],
+      P('facies_posterior', 'face postérieure', 'facies posterior', { alt: ['face postérieure du tibia'],
         seed: B => B.L.fPost })
     ]
   });
@@ -957,23 +957,23 @@
       crest(B, 'mi', B.dir(1, 0, 0.3), 0.2, 0.75);
     },
     parts: [
-      P('apex_capitis', 'apex de la tete de la fibula', 'apex capitis fibulae', { alt: ['apex de la tete'], old: ['apophyse styloide du perone'],
+      P('apex_capitis', 'apex de la tête de la fibula', 'apex capitis fibulae', { alt: ['apex de la tête'], old: ['apophyse styloïde du péroné'],
         test: (t, B) => B.d(t, B.L.apex) < 6, grow: 0 }),
-      P('facies_articularis_capitis', 'surface articulaire de la tete', 'facies articularis capitis fibulae', { alt: ['face articulaire de la tete de la fibula'],
+      P('facies_articularis_capitis', 'surface articulaire de la tête', 'facies articularis capitis fibulae', { alt: ['face articulaire de la tête de la fibula'],
         test: t => t.h > 0.93 && t.nm > 0.35 && t.ny > 0.25, grow: 0 }),
-      P('caput', 'tete de la fibula', 'caput fibulae', { alt: ['tete'], old: ['tete du perone'],
+      P('caput', 'tête de la fibula', 'caput fibulae', { alt: ['tête'], old: ['tête du péroné'],
         test: t => t.h > 0.93, grow: 0 }),
-      P('collum', 'col de la fibula', 'collum fibulae', { alt: ['col'], old: ['col du perone'],
+      P('collum', 'col de la fibula', 'collum fibulae', { alt: ['col'], old: ['col du péroné'],
         test: t => t.h > 0.87, grow: 0 }),
-      P('facies_articularis_malleoli', 'surface articulaire malleolaire', 'facies articularis malleoli lateralis', { alt: ['face articulaire de la malleole laterale'],
+      P('facies_articularis_malleoli', 'surface articulaire malléolaire', 'facies articularis malleoli lateralis', { alt: ['face articulaire de la malléole latérale'],
         test: t => t.h < 0.1 && t.nm > 0.55 && t.nz > -0.3, grow: 0 }),
-      P('fossa_malleoli', 'fosse de la malleole laterale', 'fossa malleoli lateralis', { alt: ['fosse malleolaire'], old: ['fossette malleolaire'],
+      P('fossa_malleoli', 'fosse de la malléole latérale', 'fossa malleoli lateralis', { alt: ['fosse malléolaire'], old: ['fossette malléolaire'],
         test: t => t.nm > 0.3 && t.nz < -0.3 && t.h < 0.09, grow: 0 }),
-      P('malleolus_lateralis', 'malleole laterale', 'malleolus lateralis', { old: ['malleole externe', 'malleole peroniere'],
+      P('malleolus_lateralis', 'malléole latérale', 'malleolus lateralis', { old: ['malléole externe', 'malléole péronière'],
         test: t => t.h < 0.12, grow: 0 }),
-      P('margo_interosseus', 'bord interosseux', 'margo interosseus fibulae', { alt: ['bord interosseux de la fibula'], old: ['crete interosseuse'],
+      P('margo_interosseus', 'bord interosseux', 'margo interosseus fibulae', { alt: ['bord interosseux de la fibula'], old: ['crête interosseuse'],
         test: (t, B) => F(B, 'mi', t) < 3, grow: 0 }),
-      P('corpus', 'corps de la fibula', 'corpus fibulae', { alt: ['corps', 'diaphyse'], old: ['corps du perone'],
+      P('corpus', 'corps de la fibula', 'corpus fibulae', { alt: ['corps', 'diaphyse'], old: ['corps du péroné'],
         test: () => true })
     ]
   });
@@ -985,25 +985,25 @@
       B.L.pp = B.ext(B.dir(0, 0, -1));
     },
     parts: [
-      P('processus_lateralis', 'processus lateral du talus', 'processus lateralis tali', { alt: ['processus lateral'],
+      P('processus_lateralis', 'processus latéral du talus', 'processus lateralis tali', { alt: ['processus latéral'],
         test: (t, B) => B.d(t, B.L.pl) < 9, grow: 0 }),
-      P('processus_posterior', 'processus posterieur du talus', 'processus posterior tali', { alt: ['processus posterieur'], old: ['tubercule posterieur de l astragale'],
+      P('processus_posterior', 'processus postérieur du talus', 'processus posterior tali', { alt: ['processus postérieur'], old: ['tubercule postérieur de l\'astragale'],
         test: (t, B) => B.d(t, B.L.pp) < 9, grow: 0 }),
       P('facies_articularis_navicularis', 'surface articulaire naviculaire', 'facies articularis navicularis', { alt: ['face articulaire naviculaire'],
         test: t => t.a > 0.82 && t.nz > 0.4, grow: 0 }),
-      P('caput', 'tete du talus', 'caput tali', { alt: ['tete'], old: ['tete de l astragale'],
+      P('caput', 'tête du talus', 'caput tali', { alt: ['tête'], old: ['tête de l\'astragale'],
         test: t => t.a > 0.78, grow: 0 }),
-      P('trochlea', 'trochlee du talus', 'trochlea tali', { alt: ['trochlee', 'face superieure de la trochlee'], old: ['poulie astragalienne'],
+      P('trochlea', 'trochlée du talus', 'trochlea tali', { alt: ['trochlée', 'face supérieure de la trochlée'], old: ['poulie astragalienne'],
         test: t => t.ny > 0.55 && t.a < 0.7, grow: 0 }),
-      P('facies_malleolaris_medialis', 'face malleolaire mediale', 'facies malleolaris medialis',
+      P('facies_malleolaris_medialis', 'face malléolaire médiale', 'facies malleolaris medialis',
         { test: t => t.nm > 0.6 && t.h > 0.4 && t.a < 0.7, grow: 0 }),
-      P('facies_malleolaris_lateralis', 'face malleolaire laterale', 'facies malleolaris lateralis',
+      P('facies_malleolaris_lateralis', 'face malléolaire latérale', 'facies malleolaris lateralis',
         { test: t => t.nm < -0.6 && t.h > 0.3 && t.a < 0.7, grow: 0 }),
-      P('facies_articularis_calcanea_posterior', 'surface articulaire calcaneenne posterieure', 'facies articularis calcanea posterior', { alt: ['face articulaire calcaneenne posterieure'],
+      P('facies_articularis_calcanea_posterior', 'surface articulaire calcanéenne postérieure', 'facies articularis calcanea posterior', { alt: ['face articulaire calcanéenne postérieure'],
         test: t => t.ny < -0.45 && t.a < 0.5, grow: 0 }),
       P('sulcus_tali', 'sillon du talus', 'sulcus tali', { old: ['sillon astragalien'],
         test: t => t.ny < -0.3 && t.a >= 0.5 && t.a < 0.62, grow: 0 }),
-      P('collum', 'col du talus', 'collum tali', { alt: ['col'], old: ['col de l astragale'],
+      P('collum', 'col du talus', 'collum tali', { alt: ['col'], old: ['col de l\'astragale'],
         test: t => t.a > 0.6 }),
       P('corpus', 'corps du talus', 'corpus tali', { alt: ['corps'],
         test: () => true })
@@ -1017,23 +1017,23 @@
       B.L.tf = B.ext(B.dir(-1, 0, 0), t => t.a > 0.4 && t.a < 0.75 && t.h > 0.2 && t.h < 0.7);
     },
     parts: [
-      P('tuber_calcanei', 'tuberosite du calcaneus', 'tuber calcanei', { alt: ['tuberosite calcaneenne'], old: ['tuberosite posterieure du calcaneum'],
+      P('tuber_calcanei', 'tubérosité du calcanéus', 'tuber calcanei', { alt: ['tubérosité calcanéenne'], old: ['tubérosité postérieure du calcanéum'],
         test: t => t.a < 0.22, grow: 0 }),
       P('facies_articularis_talaris_media', 'face articulaire talaire moyenne', 'facies articularis talaris media', { alt: ['surface articulaire talaire moyenne'],
         test: (t, B) => B.d(t, B.L.sus) < 15 && t.ny > 0.5, grow: 0 }),
-      P('sustentaculum_tali', 'sustentaculum du talus', 'sustentaculum tali', { alt: ['sustentaculum tali'], old: ['petite apophyse du calcaneum'],
+      P('sustentaculum_tali', 'sustentaculum du talus', 'sustentaculum tali', { alt: ['sustentaculum tali'], old: ['petite apophyse du calcanéum'],
         test: (t, B) => B.d(t, B.L.sus) < 13, grow: 0 }),
-      P('trochlea_fibularis', 'trochlee fibulaire', 'trochlea fibularis', { old: ['tubercule des peroniers', 'trochlee peroniere'],
+      P('trochlea_fibularis', 'trochlée fibulaire', 'trochlea fibularis', { old: ['tubercule des péroniers', 'trochlée péronière'],
         test: (t, B) => B.d(t, B.L.tf) < 7, grow: 0 }),
-      P('facies_articularis_cuboidea', 'face articulaire cuboidienne', 'facies articularis cuboidea', { alt: ['surface articulaire cuboidienne'],
+      P('facies_articularis_cuboidea', 'face articulaire cuboïdienne', 'facies articularis cuboidea', { alt: ['surface articulaire cuboïdienne'],
         test: t => t.nz > 0.55 && t.a > 0.85, grow: 0 }),
-      P('facies_articularis_talaris_posterior', 'face articulaire talaire posterieure', 'facies articularis talaris posterior', { alt: ['surface articulaire talaire posterieure', 'thalamus'],
+      P('facies_articularis_talaris_posterior', 'face articulaire talaire postérieure', 'facies articularis talaris posterior', { alt: ['surface articulaire talaire postérieure', 'thalamus'],
         test: t => t.ny > 0.5 && t.a > 0.35 && t.a < 0.65, grow: 0 }),
-      P('facies_articularis_talaris_anterior', 'face articulaire talaire anterieure', 'facies articularis talaris anterior', { alt: ['surface articulaire talaire anterieure'],
+      P('facies_articularis_talaris_anterior', 'face articulaire talaire antérieure', 'facies articularis talaris anterior', { alt: ['surface articulaire talaire antérieure'],
         test: t => t.ny > 0.45 && t.a > 0.74 && t.m > 0.45, grow: 0 }),
-      P('sulcus_calcanei', 'sillon du calcaneus', 'sulcus calcanei', { old: ['sillon calcaneen'],
+      P('sulcus_calcanei', 'sillon du calcanéus', 'sulcus calcanei', { old: ['sillon calcanéen'],
         test: t => t.ny > 0.2 && t.a >= 0.62 && t.a < 0.74, grow: 0 }),
-      P('corpus', 'corps du calcaneus', 'corpus calcanei', { alt: ['corps'],
+      P('corpus', 'corps du calcanéus', 'corpus calcanei', { alt: ['corps'],
         test: () => true })
     ]
   });
@@ -1042,11 +1042,11 @@
   /* pied droit : orteils en avant (+z), plante en bas, medial = vers l'axe du corps */
   shortBone('os_naviculare', 'R', {
     landmarks(B) { B.L.tub = B.ext(B.dir(1, -0.5, 0)); },
-    first: [P('tuberositas', 'tuberosite de l\'os naviculaire', 'tuberositas ossis navicularis', { alt: ['tuberosite du naviculaire', 'tuberosite'], old: ['tubercule du scaphoide tarsien'],
+    first: [P('tuberositas', 'tubérosité de l\'os naviculaire', 'tuberositas ossis navicularis', { alt: ['tubérosité du naviculaire', 'tubérosité'], old: ['tubercule du scaphoïde tarsien'],
       test: (t, B) => B.d(t, B.L.tub) < 7, grow: 0 })],
     joints: [J('facies_talaris', 'surface articulaire pour le talus', [['talus']], { alt: ['surface articulaire talaire'] }),
-      J('facies_cuneiformes', 'surfaces articulaires pour les cuneiformes', [['os_cuneiforme_mediale'], ['os_cuneiforme_intermedium'], ['os_cuneiforme_laterale']], { alt: ['surface articulaire pour les cuneiformes'] }),
-      J('facies_cuboidea', 'surface articulaire pour le cuboide', [['os_cuboideum']])],
+      J('facies_cuneiformes', 'surfaces articulaires pour les cunéiformes', [['os_cuneiforme_mediale'], ['os_cuneiforme_intermedium'], ['os_cuneiforme_laterale']], { alt: ['surface articulaire pour les cunéiformes'] }),
+      J('facies_cuboidea', 'surface articulaire pour le cuboïde', [['os_cuboideum']])],
     faces: FOOT_FACES
   });
   shortBone('os_cuboideum', 'R', {
@@ -1058,55 +1058,55 @@
          contact (le cuneiforme lateral du modele deborde sur la face dorsale) */
       B.L.cun = B.centroid(t => F(B, 'j2', t) < 1.5 && t.nm > 0.35);
     },
-    first: [P('tuberositas', 'tuberosite de l\'os cuboide', 'tuberositas ossis cuboidei', { alt: ['tuberosite du cuboide', 'tuberosite'],
+    first: [P('tuberositas', 'tubérosité de l\'os cuboïde', 'tuberositas ossis cuboidei', { alt: ['tubérosité du cuboïde', 'tubérosité'],
       test: (t, B) => B.d(t, B.L.tub) < 6, grow: 0 }),
-      P('sulcus_fibularis', 'sillon du tendon du muscle long fibulaire', 'sulcus tendinis musculi fibularis longi', { alt: ['sillon du long fibulaire', 'sillon du cuboide'], old: ['gouttiere du long peronier', 'sillon du long peronier'],
+      P('sulcus_fibularis', 'sillon du tendon du muscle long fibulaire', 'sulcus tendinis musculi fibularis longi', { alt: ['sillon du long fibulaire', 'sillon du cuboïde'], old: ['gouttière du long péronier', 'sillon du long péronier'],
         test: (t, B) => B.d(t, B.L.sul) < 5.5 && t.ny < 0, grow: 0 })],
-    joints: [J('facies_calcanea', 'surface articulaire pour le calcaneus', [['calcaneus']], { alt: ['surface articulaire calcaneenne'] }),
-      J('facies_metatarsalis', 'surface articulaire pour les metatarsiens IV et V', [['ossa_metatarsi', 'metatarsien IV'], ['ossa_metatarsi', 'metatarsien V']], { alt: ['surface articulaire pour les metatarsiens'] }),
-      J('facies_cuneiformis', 'surface articulaire pour le cuneiforme lateral et le naviculaire', [['os_cuneiforme_laterale'], ['os_naviculare']], { alt: ['surface articulaire pour le cuneiforme lateral'],
+    joints: [J('facies_calcanea', 'surface articulaire pour le calcanéus', [['calcaneus']], { alt: ['surface articulaire calcanéenne'] }),
+      J('facies_metatarsalis', 'surface articulaire pour les métatarsiens IV et V', [['ossa_metatarsi', 'metatarsien IV'], ['ossa_metatarsi', 'metatarsien V']], { alt: ['surface articulaire pour les métatarsiens'] }),
+      J('facies_cuneiformis', 'surface articulaire pour le cunéiforme latéral et le naviculaire', [['os_cuneiforme_laterale'], ['os_naviculare']], { alt: ['surface articulaire pour le cunéiforme latéral'],
         test: (t, B) => t.nm > 0.2 && B.d(t, B.L.cun) < 7 })],
     faces: FOOT_FACES
   });
   shortBone('os_cuneiforme_mediale', 'R', {
     joints: [J('facies_navicularis', 'surface articulaire pour le naviculaire', [['os_naviculare']]),
-      J('facies_metatarsalis_I', 'surface articulaire pour le metatarsien I', [['ossa_metatarsi', 'metatarsien I']]),
-      J('facies_lateralis', 'surface articulaire pour le cuneiforme intermediaire et le metatarsien II', [['os_cuneiforme_intermedium'], ['ossa_metatarsi', 'metatarsien II']], { alt: ['surface articulaire pour le cuneiforme intermediaire'] })],
-    faces: [P('facies_medialis', 'face mediale', 'facies medialis', { test: t => t.nm > 0.5 }),
-      P('facies_plantaris', 'face plantaire', 'facies plantaris', { alt: ['face inferieure', 'bord plantaire'], test: t => t.ny < -0.3 }),
-      P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face superieure'], test: () => true })]
+      J('facies_metatarsalis_I', 'surface articulaire pour le métatarsien I', [['ossa_metatarsi', 'metatarsien I']]),
+      J('facies_lateralis', 'surface articulaire pour le cunéiforme intermédiaire et le métatarsien II', [['os_cuneiforme_intermedium'], ['ossa_metatarsi', 'metatarsien II']], { alt: ['surface articulaire pour le cunéiforme intermédiaire'] })],
+    faces: [P('facies_medialis', 'face médiale', 'facies medialis', { test: t => t.nm > 0.5 }),
+      P('facies_plantaris', 'face plantaire', 'facies plantaris', { alt: ['face inférieure', 'bord plantaire'], test: t => t.ny < -0.3 }),
+      P('facies_dorsalis', 'face dorsale', 'facies dorsalis', { alt: ['face supérieure'], test: () => true })]
   });
   OS('ossa_metatarsi', 'R', 'metatarsien I', {
-    title: 'premier metatarsien',
+    title: 'premier métatarsien',
     landmarks(B) {
       footAxis(B);
       B.L.tub = B.ext(B.dir(-0.6, -1, 0), t => F(B, 's', t) > 0.72);
     },
     parts: [
-      P('tuberositas', 'tuberosite du metatarsien I', 'tuberositas ossis metatarsi primi', { alt: ['tuberosite du premier metatarsien', 'tuberosite'],
+      P('tuberositas', 'tubérosité du métatarsien I', 'tuberositas ossis metatarsi primi', { alt: ['tubérosité du premier métatarsien', 'tubérosité'],
         test: (t, B) => B.d(t, B.L.tub) < 6, grow: 0 }),
-      P('basis', 'base du metatarsien I', 'basis ossis metatarsi I', { alt: ['base', 'base du premier metatarsien', 'base du metatarsien'],
+      P('basis', 'base du métatarsien I', 'basis ossis metatarsi I', { alt: ['base', 'base du premier métatarsien', 'base du métatarsien'],
         test: (t, B) => F(B, 's', t) > 0.8, grow: 0 }),
-      P('caput', 'tete du metatarsien I', 'caput ossis metatarsi I', { alt: ['tete', 'tete du premier metatarsien', 'tete du metatarsien'],
+      P('caput', 'tête du métatarsien I', 'caput ossis metatarsi I', { alt: ['tête', 'tête du premier métatarsien', 'tête du métatarsien'],
         test: (t, B) => F(B, 's', t) < 0.24, grow: 0 }),
-      P('corpus', 'corps du metatarsien I', 'corpus ossis metatarsi I', { alt: ['corps', 'corps du premier metatarsien', 'corps du metatarsien', 'diaphyse'],
+      P('corpus', 'corps du métatarsien I', 'corpus ossis metatarsi I', { alt: ['corps', 'corps du premier métatarsien', 'corps du métatarsien', 'diaphyse'],
         test: () => true })
     ]
   });
   OS('ossa_metatarsi', 'R', 'metatarsien V', {
-    title: 'cinquieme metatarsien',
+    title: 'cinquième métatarsien',
     landmarks(B) {
       footAxis(B);
       B.L.tub = B.ext(B.dir(-1, -0.2, -0.6), t => F(B, 's', t) > 0.7);
     },
     parts: [
-      P('tuberositas', 'tuberosite du metatarsien V', 'tuberositas ossis metatarsi quinti', { alt: ['tuberosite du cinquieme metatarsien', 'tuberosite', 'processus styloide du cinquieme metatarsien'], old: ['apophyse styloide du cinquieme metatarsien'],
+      P('tuberositas', 'tubérosité du métatarsien V', 'tuberositas ossis metatarsi quinti', { alt: ['tubérosité du cinquième métatarsien', 'tubérosité', 'processus styloïde du cinquième métatarsien'], old: ['apophyse styloïde du cinquième métatarsien'],
         test: (t, B) => B.d(t, B.L.tub) < 7, grow: 0 }),
-      P('basis', 'base du metatarsien V', 'basis ossis metatarsi V', { alt: ['base', 'base du cinquieme metatarsien', 'base du metatarsien'],
+      P('basis', 'base du métatarsien V', 'basis ossis metatarsi V', { alt: ['base', 'base du cinquième métatarsien', 'base du métatarsien'],
         test: (t, B) => F(B, 's', t) > 0.82, grow: 0 }),
-      P('caput', 'tete du metatarsien V', 'caput ossis metatarsi V', { alt: ['tete', 'tete du cinquieme metatarsien', 'tete du metatarsien'],
+      P('caput', 'tête du métatarsien V', 'caput ossis metatarsi V', { alt: ['tête', 'tête du cinquième métatarsien', 'tête du métatarsien'],
         test: (t, B) => F(B, 's', t) < 0.2, grow: 0 }),
-      P('corpus', 'corps du metatarsien V', 'corpus ossis metatarsi V', { alt: ['corps', 'corps du cinquieme metatarsien', 'corps du metatarsien', 'diaphyse'],
+      P('corpus', 'corps du métatarsien V', 'corpus ossis metatarsi V', { alt: ['corps', 'corps du cinquième métatarsien', 'corps du métatarsien', 'diaphyse'],
         test: () => true })
     ]
   });
@@ -1114,7 +1114,7 @@
   /* ======================================================================
      VERTEBRES
      ====================================================================== */
-  const SPINOUS = ['processus epineux', 'processus spinosus', { old: ['apophyse epineuse'] }];
+  const SPINOUS = ['processus epineux', 'processus spinosus', { old: ['apophyse épineuse'] }];
   const TRANSV = { old: ['apophyse transverse'] };
   /* processus articulaires : de chaque cote, point le plus haut (superieur) et le plus bas
      (inferieur) de l'arc, en arriere du corps (a < aMax) et hors ligne mediane */
@@ -1134,25 +1134,25 @@
       L.tp = B.ext(B.dxyz(0, 0, -1));
     },
     parts: [
-      P('tuberculum_anterius', 'tubercule anterieur', 'tuberculum anterius atlantis', { alt: ['tubercule anterieur de l\'atlas'],
+      P('tuberculum_anterius', 'tubercule antérieur', 'tuberculum anterius atlantis', { alt: ['tubercule antérieur de l\'atlas'],
         test: (t, B) => B.d(t, B.L.ta) < 6, grow: 0 }),
-      P('tuberculum_posterius', 'tubercule posterieur', 'tuberculum posterius atlantis', { alt: ['tubercule posterieur de l\'atlas'],
+      P('tuberculum_posterius', 'tubercule postérieur', 'tuberculum posterius atlantis', { alt: ['tubercule postérieur de l\'atlas'],
         test: (t, B) => B.d(t, B.L.tp) < 7, grow: 0 }),
       P('fovea_dentis', 'fovea de la dent', 'fovea dentis', { alt: ['fossette de la dent', 'surface articulaire pour la dent'],
         test: t => t.nz < -0.5 && t.a > 0.65 && t.lat < 0.3, grow: 0 }),
-      P('facies_articularis_superior', 'face articulaire superieure', 'facies articularis superior', { alt: ['surface articulaire superieure'], old: ['cavite glenoide de l atlas'],
+      P('facies_articularis_superior', 'face articulaire supérieure', 'facies articularis superior', { alt: ['surface articulaire supérieure'], old: ['cavité glénoïde de l\'atlas'],
         test: t => t.ny > 0.6 && t.lat > 0.32 && t.lat < 0.7 && t.a > 0.35 && t.a < 0.72, grow: 0 }),
-      P('facies_articularis_inferior', 'face articulaire inferieure', 'facies articularis inferior', { alt: ['surface articulaire inferieure'],
+      P('facies_articularis_inferior', 'face articulaire inférieure', 'facies articularis inferior', { alt: ['surface articulaire inférieure'],
         test: t => t.ny < -0.6 && t.lat > 0.3 && t.lat < 0.7 && t.a > 0.3 && t.a < 0.75, grow: 0 }),
       P('processus_transversus', 'processus transverse', 'processus transversus', Object.assign({
         test: t => t.lat > 0.74, grow: 0 }, TRANSV)),
-      P('sulcus_arteriae_vertebralis', 'sillon de l\'artere vertebrale', 'sulcus arteriae vertebralis', { old: ['gouttiere de l artere vertebrale'],
+      P('sulcus_arteriae_vertebralis', 'sillon de l\'artère vertébrale', 'sulcus arteriae vertebralis', { old: ['gouttière de l\'artère vertébrale'],
         test: t => t.ny > 0.35 && t.a > 0.2 && t.a < 0.42 && t.lat > 0.3 && t.lat < 0.6, grow: 0 }),
-      P('arcus_anterior', 'arc anterieur', 'arcus anterior atlantis', { alt: ['arc anterieur de l\'atlas'],
+      P('arcus_anterior', 'arc antérieur', 'arcus anterior atlantis', { alt: ['arc antérieur de l\'atlas'],
         test: t => t.a > 0.72 && t.lat < 0.35, grow: 0 }),
-      P('arcus_posterior', 'arc posterieur', 'arcus posterior atlantis', { alt: ['arc posterieur de l\'atlas'],
+      P('arcus_posterior', 'arc postérieur', 'arcus posterior atlantis', { alt: ['arc postérieur de l\'atlas'],
         test: t => t.a < 0.38 && t.lat < 0.55, grow: 0 }),
-      P('massa_lateralis', 'masse laterale', 'massa lateralis atlantis', { alt: ['masses laterales'],
+      P('massa_lateralis', 'masse latérale', 'massa lateralis atlantis', { alt: ['masses latérales'],
         test: () => true })
     ]
   });
@@ -1160,19 +1160,19 @@
   /* ---------------- Axis (C2) ---------------- */
   OS('axis', null, 'C2', {
     parts: [
-      P('dens', 'dent de l\'axis', 'dens axis', { alt: ['dent', 'processus odontoide'], old: ['apophyse odontoide'],
+      P('dens', 'dent de l\'axis', 'dens axis', { alt: ['dent', 'processus odontoïde'], old: ['apophyse odontoïde'],
         test: t => t.h > 0.6 && t.lat < 0.3 && t.a > 0.4 }),
-      P('facies_articularis_superior', 'face articulaire superieure', 'facies articularis superior', { alt: ['surface articulaire superieure'],
+      P('facies_articularis_superior', 'face articulaire supérieure', 'facies articularis superior', { alt: ['surface articulaire supérieure'],
         test: t => t.ny > 0.45 && t.lat > 0.25 && t.lat < 0.75 && t.h > 0.35 && t.h < 0.75 }),
       P('processus_transversus', 'processus transverse', 'processus transversus', Object.assign({
         test: t => t.lat > 0.8 }, TRANSV)),
       P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({
         test: t => t.a < 0.25 && t.lat < 0.35 }, SPINOUS[2])),
-      P('processus_articularis_inferior', 'processus articulaire inferieur', 'processus articularis inferior', { old: ['apophyse articulaire inferieure'],
+      P('processus_articularis_inferior', 'processus articulaire inférieur', 'processus articularis inferior', { old: ['apophyse articulaire inférieure'],
         test: t => t.ny < -0.4 && t.a > 0.25 && t.a < 0.55 && t.lat > 0.25 }),
-      P('corpus', 'corps de l\'axis', 'corpus axis', { alt: ['corps', 'corps vertebral'],
+      P('corpus', 'corps de l\'axis', 'corpus axis', { alt: ['corps', 'corps vertébral'],
         test: t => t.h < 0.6 && t.a > 0.55 && t.lat < 0.4 }),
-      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertebrale', 'lames'],
+      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertébrale', 'lames'],
         test: t => t.a < 0.5 && t.lat < 0.6 })
     ]
   });
@@ -1189,26 +1189,26 @@
     parts: [
       P('uncus', 'uncus du corps', 'uncus corporis', { alt: ['uncus', 'processus unciforme'], old: ['apophyse semi-lunaire', 'crochet'],
         test: (t, B) => nearPair(t, B, 'un', 4), grow: 0 }),
-      P('processus_articularis_superior', 'processus articulaire superieur', 'processus articularis superior', { old: ['apophyse articulaire superieure'],
+      P('processus_articularis_superior', 'processus articulaire supérieur', 'processus articularis superior', { old: ['apophyse articulaire supérieure'],
         test: (t, B) => nearPair(t, B, 'sap', 6), grow: 0 }),
-      P('processus_articularis_inferior', 'processus articulaire inferieur', 'processus articularis inferior', { old: ['apophyse articulaire inferieure'],
+      P('processus_articularis_inferior', 'processus articulaire inférieur', 'processus articularis inferior', { old: ['apophyse articulaire inférieure'],
         test: (t, B) => nearPair(t, B, 'iap', 6), grow: 0 }),
-      P('corpus', 'corps vertebral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertebre'],
+      P('corpus', 'corps vertébral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertèbre'],
         test: t => t.a > 0.62 && t.lat < 0.42, grow: 0 }),
       P('processus_transversus', 'processus transverse', 'processus transversus', Object.assign({ alt: ['processus transverse et foramen transversaire'],
         test: t => t.lat > 0.62 && t.a > 0.45, grow: 0 }, TRANSV)),
-      P('pediculus', 'pedicule', 'pediculus arcus vertebrae', { alt: ['pedicule vertebral', 'pedicules'],
+      P('pediculus', 'pédicule', 'pediculus arcus vertebrae', { alt: ['pédicule vertébral', 'pédicules'],
         test: t => t.lat > 0.3 && t.lat < 0.62 && t.a > 0.45 && t.a < 0.65, grow: 0 }),
-      P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({ alt: ['processus epineux bifide'],
+      P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({ alt: ['processus épineux bifide'],
         test: t => t.a < 0.15, grow: 0 }, SPINOUS[2])),
-      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertebrale', 'lames'],
+      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertébrale', 'lames'],
         test: () => true })
     ]
   });
 
   /* ---------------- Vertebre proeminente (C7) ---------------- */
   OS('vertebra_cervicalis', null, 'C7', {
-    title: 'vertebre proeminente (C7)',
+    title: 'vertèbre proéminente (C7)',
     landmarks(B) {
       artProcesses(B, 0.6, 0.25, 0.8);
       const L = B.L;
@@ -1219,19 +1219,19 @@
     parts: [
       P('uncus', 'uncus du corps', 'uncus corporis', { alt: ['uncus', 'processus unciforme'], old: ['apophyse semi-lunaire', 'crochet'],
         test: (t, B) => nearPair(t, B, 'un', 4), grow: 0 }),
-      P('processus_articularis_superior', 'processus articulaire superieur', 'processus articularis superior', { old: ['apophyse articulaire superieure'],
+      P('processus_articularis_superior', 'processus articulaire supérieur', 'processus articularis superior', { old: ['apophyse articulaire supérieure'],
         test: (t, B) => nearPair(t, B, 'sap', 6), grow: 0 }),
-      P('processus_articularis_inferior', 'processus articulaire inferieur', 'processus articularis inferior', { old: ['apophyse articulaire inferieure'],
+      P('processus_articularis_inferior', 'processus articulaire inférieur', 'processus articularis inferior', { old: ['apophyse articulaire inférieure'],
         test: (t, B) => nearPair(t, B, 'iap', 6), grow: 0 }),
-      P('corpus', 'corps vertebral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertebre'],
+      P('corpus', 'corps vertébral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertèbre'],
         test: t => t.a > 0.68 && t.lat < 0.4, grow: 0 }),
       P('processus_transversus', 'processus transverse', 'processus transversus', Object.assign({ alt: ['processus transverse et foramen transversaire'],
         test: t => t.lat > 0.6 && t.a > 0.45, grow: 0 }, TRANSV)),
-      P('pediculus', 'pedicule', 'pediculus arcus vertebrae', { alt: ['pedicule vertebral', 'pedicules'],
+      P('pediculus', 'pédicule', 'pediculus arcus vertebrae', { alt: ['pédicule vertébral', 'pédicules'],
         test: t => t.lat > 0.28 && t.lat < 0.6 && t.a > 0.5 && t.a < 0.7, grow: 0 }),
-      P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({ alt: ['processus epineux de la vertebre proeminente'],
+      P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({ alt: ['processus épineux de la vertèbre proéminente'],
         test: t => t.a < 0.3 && t.lat < 0.25, grow: 0 }, SPINOUS[2])),
-      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertebrale', 'lames'],
+      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertébrale', 'lames'],
         test: () => true })
     ]
   });
@@ -1246,25 +1246,25 @@
       artProcesses(B, 0.5, 0.12, 0.5);
     },
     parts: [
-      P('fovea_costalis_superior', 'fossette costale superieure', 'fovea costalis superior', { old: ['demi-facette costale superieure'],
+      P('fovea_costalis_superior', 'fossette costale supérieure', 'fovea costalis superior', { old: ['demi-facette costale supérieure'],
         test: (t, B) => t.lat > 0.3 && t.lat < 0.52 && t.a > 0.48 && t.a < 0.66 && t.h > B.L.bodyHi - 0.09 && Math.abs(t.nx) > 0.35 }),
-      P('fovea_costalis_inferior', 'fossette costale inferieure', 'fovea costalis inferior', { old: ['demi-facette costale inferieure'],
+      P('fovea_costalis_inferior', 'fossette costale inférieure', 'fovea costalis inferior', { old: ['demi-facette costale inférieure'],
         test: (t, B) => t.lat > 0.3 && t.lat < 0.52 && t.a > 0.48 && t.a < 0.66 && t.h < B.L.bodyLo + 0.09 && Math.abs(t.nx) > 0.35 }),
-      P('corpus', 'corps vertebral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertebre'],
+      P('corpus', 'corps vertébral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertèbre'],
         test: t => t.a > 0.55 && t.lat < 0.45 }),
       P('fovea_costalis_processus_transversi', 'fossette costale du processus transverse', 'fovea costalis processus transversi', { alt: ['fossette costale transversaire'],
         test: t => t.lat > 0.7 && t.nz > 0.35 }),
       P('processus_transversus', 'processus transverse', 'processus transversus', Object.assign({
         test: t => t.lat > 0.55 && t.a < 0.5 }, TRANSV)),
-      P('processus_articularis_superior', 'processus articulaire superieur', 'processus articularis superior', { old: ['apophyse articulaire superieure'],
+      P('processus_articularis_superior', 'processus articulaire supérieur', 'processus articularis superior', { old: ['apophyse articulaire supérieure'],
         test: (t, B) => nearPair(t, B, 'sap', 8), grow: 0 }),
-      P('processus_articularis_inferior', 'processus articulaire inferieur', 'processus articularis inferior', { old: ['apophyse articulaire inferieure'],
+      P('processus_articularis_inferior', 'processus articulaire inférieur', 'processus articularis inferior', { old: ['apophyse articulaire inférieure'],
         test: (t, B) => nearPair(t, B, 'iap', 8), grow: 0 }),
-      P('pediculus', 'pedicule', 'pediculus arcus vertebrae', { alt: ['pedicule vertebral', 'pedicules'],
+      P('pediculus', 'pédicule', 'pediculus arcus vertebrae', { alt: ['pédicule vertébral', 'pédicules'],
         test: t => t.a > 0.42 && t.a < 0.58 && t.lat > 0.3 && t.lat < 0.55, grow: 0 }),
       P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({
         test: t => (t.a < 0.25 && t.lat < 0.2) || t.h < 0.3, grow: 0 }, SPINOUS[2])),
-      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertebrale', 'lames'],
+      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertébrale', 'lames'],
         test: () => true })
     ]
   });
@@ -1278,19 +1278,19 @@
     parts: [
       P('processus_mammillaris', 'processus mamillaire', 'processus mammillaris', { old: ['tubercule mamillaire'],
         test: (t, B) => B.d(t, B.L.mamR) < 5 || B.d(t, B.L.mamL) < 5 }),
-      P('corpus', 'corps vertebral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertebre'],
+      P('corpus', 'corps vertébral', 'corpus vertebrae', { alt: ['corps', 'corps de la vertèbre'],
         test: t => t.a > 0.5 && t.lat < 0.5 }),
       P('processus_costiformis', 'processus costiforme', 'processus costiformis', { alt: ['processus costal', 'processus transverse'], old: ['apophyse costiforme', 'apophyse transverse'],
         test: t => t.lat > 0.55 && t.a > 0.3 && t.a < 0.55 }),
-      P('processus_articularis_superior', 'processus articulaire superieur', 'processus articularis superior', { old: ['apophyse articulaire superieure'],
+      P('processus_articularis_superior', 'processus articulaire supérieur', 'processus articularis superior', { old: ['apophyse articulaire supérieure'],
         test: t => t.lat > 0.2 && t.lat < 0.5 && t.a < 0.4 && t.h > 0.55 }),
-      P('processus_articularis_inferior', 'processus articulaire inferieur', 'processus articularis inferior', { old: ['apophyse articulaire inferieure'],
+      P('processus_articularis_inferior', 'processus articulaire inférieur', 'processus articularis inferior', { old: ['apophyse articulaire inférieure'],
         test: t => t.lat > 0.1 && t.lat < 0.35 && t.a < 0.35 && t.h < 0.4 }),
-      P('pediculus', 'pedicule', 'pediculus arcus vertebrae', { alt: ['pedicule vertebral', 'pedicules'],
+      P('pediculus', 'pédicule', 'pediculus arcus vertebrae', { alt: ['pédicule vertébral', 'pédicules'],
         test: t => t.a > 0.38 && t.a < 0.52 && t.lat > 0.3 && t.lat < 0.55 }),
       P('processus_spinosus', SPINOUS[0], SPINOUS[1], Object.assign({
         test: t => t.a < 0.22 && t.lat < 0.15 }, SPINOUS[2])),
-      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertebrale', 'lames'],
+      P('lamina', 'lame', 'lamina arcus vertebrae', { alt: ['lame vertébrale', 'lames'],
         test: t => t.a > 0.2 && t.a < 0.4 && t.lat < 0.35 })
     ]
   });
@@ -1317,22 +1317,22 @@
         test: (t, B) => t.el === B.L.manu && t.h > 0.94 && t.lat < 0.3, grow: 0 }),
       P('incisura_clavicularis', 'incisure claviculaire', 'incisura clavicularis', { alt: ['incisures claviculaires'],
         test: (t, B) => t.el === B.L.manu && t.lat > 0.45 && t.h > 0.86, grow: 0 }),
-      P('angulus_sterni', 'angle sternal', 'angulus sterni', { alt: ['angle du sternum'], old: ['angle de louis'],
+      P('angulus_sterni', 'angle sternal', 'angulus sterni', { alt: ['angle du sternum'], old: ['angle de Louis'],
         test: (t, B) => t.nz > 0.4 && Math.abs(t.h - B.L.hj) < 0.025, grow: 0 }),
       P('incisurae_costales', 'incisures costales', 'incisurae costales', { alt: ['incisure costale'],
         test: (t, B) => (t.el === B.L.body || (t.el === B.L.manu && t.h < 0.86)) && Math.abs(t.nx) > 0.75, grow: 0 }),
-      P('manubrium', 'manubrium sternal', 'manubrium sterni', { alt: ['manubrium', 'manubrium du sternum'], old: ['poignee du sternum'],
+      P('manubrium', 'manubrium sternal', 'manubrium sterni', { alt: ['manubrium', 'manubrium du sternum'], old: ['poignée du sternum'],
         test: (t, B) => t.el === B.L.manu }),
       P('corpus', 'corps du sternum', 'corpus sterni', { alt: ['corps'], old: ['lame du sternum'],
         test: (t, B) => t.el === B.L.body }),
-      P('processus_xiphoideus', 'processus xiphoide', 'processus xiphoideus', { alt: ['xiphoide'], old: ['appendice xiphoide'],
+      P('processus_xiphoideus', 'processus xiphoïde', 'processus xiphoideus', { alt: ['xiphoïde'], old: ['appendice xiphoïde'],
         test: (t, B) => t.el === B.L.xiph })
     ]
   });
 
   /* ---------------- Cote (6e cote droite) ---------------- */
   OS('costa', 'R', 'cote 6', {
-    title: 'sixieme cote',
+    title: 'sixième côte',
     landmarks(B) {
       const L = B.L;
       /* longueur le long de la cote depuis la tete (os courbe) */
@@ -1344,20 +1344,20 @@
       L.tub = B.ext(B.dir(0, 0.3, -1), t => F(B, 'g', t) > 24 && F(B, 'g', t) < 45);
     },
     parts: [
-      P('caput', 'tete de la cote', 'caput costae', { alt: ['tete'],
+      P('caput', 'tête de la côte', 'caput costae', { alt: ['tête'],
         test: (t, B) => F(B, 'g', t) < 13 }),
-      P('tuberculum', 'tubercule de la cote', 'tuberculum costae', { alt: ['tubercule', 'tubercule costal'],
+      P('tuberculum', 'tubercule de la côte', 'tuberculum costae', { alt: ['tubercule', 'tubercule costal'],
         test: (t, B) => B.d(t, B.L.tub) < 8 }),
-      P('collum', 'col de la cote', 'collum costae', { alt: ['col'],
+      P('collum', 'col de la côte', 'collum costae', { alt: ['col'],
         test: (t, B) => F(B, 'g', t) < 30 }),
-      P('angulus', 'angle de la cote', 'angulus costae', { alt: ['angle costal'],
+      P('angulus', 'angle de la côte', 'angulus costae', { alt: ['angle costal'],
         test: (t, B) => F(B, 'g', t) > 55 && F(B, 'g', t) < 72 }),
-      P('extremitas_anterior', 'extremite anterieure', 'extremitas anterior costae', { alt: ['extremite sternale', 'extremite anterieure de la cote'],
+      P('extremitas_anterior', 'extrémité antérieure', 'extremitas anterior costae', { alt: ['extrémité sternale', 'extrémité antérieure de la côte'],
         test: (t, B) => F(B, 'g', t) > B.L.len - 15 }),
-      P('sulcus_costae', 'sillon de la cote', 'sulcus costae', { alt: ['sillon costal'], old: ['gouttiere costale'],
+      P('sulcus_costae', 'sillon de la côte', 'sulcus costae', { alt: ['sillon costal'], old: ['gouttière costale'],
         test: (t, B) => { const g = F(B, 'g', t); if (g < 75 || g > B.L.len - 40) return false;
           const d = B.unit([B.max[0] - t.x, 0, B.cen[2] - t.z]); return t.ny < -0.4 && t.nx * d[0] + t.nz * d[2] > 0.35; }, grow: 0 }),
-      P('corpus', 'corps de la cote', 'corpus costae', { alt: ['corps'],
+      P('corpus', 'corps de la côte', 'corpus costae', { alt: ['corps'],
         test: () => true })
     ]
   });
@@ -1371,7 +1371,7 @@
     parts: [
       P('cornu_minus', 'petite corne', 'cornu minus', { alt: ['petites cornes'],
         test: (t, B) => B.d(t, B.L.lcR) < 3.5 || B.d(t, B.L.lcL) < 3.5, grow: 0 }),
-      P('corpus', 'corps de l\'os hyoide', 'corpus ossis hyoidei', { alt: ['corps'],
+      P('corpus', 'corps de l\'os hyoïde', 'corpus ossis hyoidei', { alt: ['corps'],
         test: t => t.lat < 0.42 && t.a > 0.45, grow: 0 }),
       P('cornu_majus', 'grande corne', 'cornu majus', { alt: ['grandes cornes'],
         test: () => true })
@@ -1390,19 +1390,19 @@
       B.L.angL = B.ext(B.dxyz(0.5, -1, -1), t => leftSide(t, B));
     },
     parts: [
-      P('protuberantia_mentalis', 'protuberance mentonniere', 'protuberantia mentalis', { alt: ['menton', 'eminence mentonniere'],
+      P('protuberantia_mentalis', 'protubérance mentonnière', 'protuberantia mentalis', { alt: ['menton', 'éminence mentonnière'],
         test: (t, B) => B.d(t, B.L.ment) < 13 && t.lat < 0.3 }),
-      P('processus_condylaris', 'processus condylaire', 'processus condylaris', { alt: ['condyle de la mandibule', 'tete de la mandibule'], old: ['condyle mandibulaire'],
+      P('processus_condylaris', 'processus condylaire', 'processus condylaris', { alt: ['condyle de la mandibule', 'tête de la mandibule'], old: ['condyle mandibulaire'],
         test: t => t.h > 0.78 && t.a < 0.22 }),
-      P('processus_coronoideus', 'processus coronoide', 'processus coronoideus', { alt: ['processus coronoide de la mandibule'], old: ['apophyse coronoide'],
+      P('processus_coronoideus', 'processus coronoïde', 'processus coronoideus', { alt: ['processus coronoïde de la mandibule'], old: ['apophyse coronoïde'],
         test: t => t.h > 0.7 && t.a > 0.22 && t.a < 0.45 && t.lat > 0.5 }),
-      P('incisura_mandibulae', 'incisure de la mandibule', 'incisura mandibulae', { alt: ['incisure mandibulaire'], old: ['echancrure sigmoide'],
+      P('incisura_mandibulae', 'incisure de la mandibule', 'incisura mandibulae', { alt: ['incisure mandibulaire'], old: ['échancrure sigmoïde'],
         test: t => t.h > 0.6 && t.h < 0.8 && t.a > 0.15 && t.a < 0.3 && t.ny > 0.2 && t.lat > 0.55 }),
       P('angulus_mandibulae', 'angle de la mandibule', 'angulus mandibulae', { alt: ['angle mandibulaire'], old: ['gonion'],
         test: (t, B) => B.d(t, B.L.angR) < 14 || B.d(t, B.L.angL) < 14 }),
       P('ramus_mandibulae', 'branche de la mandibule', 'ramus mandibulae', { alt: ['branche', 'ramus'], old: ['branche montante'],
         test: t => t.a < 0.38 && t.lat > 0.6 }),
-      P('pars_alveolaris', 'partie alveolaire', 'pars alveolaris mandibulae', { alt: ['processus alveolaire', 'arcade alveolaire'],
+      P('pars_alveolaris', 'partie alvéolaire', 'pars alveolaris mandibulae', { alt: ['processus alvéolaire', 'arcade alvéolaire'],
         test: t => t.ny > 0.35 && t.a > 0.3 && t.h > 0.3 }),
       P('corpus', 'corps de la mandibule', 'corpus mandibulae', { alt: ['corps'],
         test: t => t.a > 0.3 && t.h < 0.55 })
@@ -1429,25 +1429,25 @@
     parts: [
       P('foramen_infraorbitale', 'foramen infra-orbitaire', 'foramen infraorbitale', { old: ['trou sous-orbitaire'],
         test: (t, B) => B.d(t, B.L.iof) < 5, grow: 0 }),
-      P('spina_nasalis_anterior', 'epine nasale anterieure', 'spina nasalis anterior', { old: ['epine nasale anterieure et inferieure'],
+      P('spina_nasalis_anterior', 'épine nasale antérieure', 'spina nasalis anterior', { old: ['épine nasale antérieure et inférieure'],
         test: (t, B) => B.d(t, B.L.ens) < 5, grow: 0 }),
       P('processus_frontalis', 'processus frontal', 'processus frontalis maxillae', { old: ['apophyse montante'],
         test: t => t.h > 0.72 && t.m > 0.55, grow: 0 }),
       P('processus_zygomaticus', 'processus zygomatique', 'processus zygomaticus maxillae', { old: ['apophyse pyramidale', 'apophyse zygomatique'],
         test: (t, B) => B.d(t, B.L.zyg) < 12, grow: 0 }),
-      P('facies_orbitalis', 'face orbitaire', 'facies orbitalis maxillae', { alt: ['face orbitaire du maxillaire', 'face superieure'],
+      P('facies_orbitalis', 'face orbitaire', 'facies orbitalis maxillae', { alt: ['face orbitaire du maxillaire', 'face supérieure'],
         test: t => t.ny > 0.5 && t.h > 0.55 && t.m < 0.75, grow: 0 }),
       P('processus_palatinus', 'processus palatin', 'processus palatinus', { old: ['apophyse palatine'],
         test: t => t.m > 0.8 && t.h < 0.3, grow: 0 }),
-      P('processus_alveolaris', 'processus alveolaire', 'processus alveolaris', { alt: ['arcade alveolaire'], old: ['bord alveolaire'],
+      P('processus_alveolaris', 'processus alvéolaire', 'processus alveolaris', { alt: ['arcade alvéolaire'], old: ['bord alvéolaire'],
         test: t => t.h < 0.2, grow: 0 }),
-      P('tuber_maxillae', 'tuberosite du maxillaire', 'tuber maxillae', { alt: ['tuberosite maxillaire'],
+      P('tuber_maxillae', 'tubérosité du maxillaire', 'tuber maxillae', { alt: ['tubérosité maxillaire'],
         test: (t, B) => B.d(t, B.L.tub) < 12, grow: 0 }),
-      P('facies_nasalis', 'face nasale', 'facies nasalis maxillae', { alt: ['face mediale', 'face nasale du maxillaire'],
+      P('facies_nasalis', 'face nasale', 'facies nasalis maxillae', { alt: ['face médiale', 'face nasale du maxillaire'],
         test: t => t.nm > 0.5 && t.m > 0.6 && t.h >= 0.2, grow: 0 }),
-      P('facies_anterior', 'face anterieure', 'facies anterior maxillae', { alt: ['face anterieure du maxillaire', 'face jugale'], old: ['fosse canine'],
+      P('facies_anterior', 'face antérieure', 'facies anterior maxillae', { alt: ['face antérieure du maxillaire', 'face jugale'], old: ['fosse canine'],
         test: t => t.nz > 0.35, grow: 0 }),
-      P('facies_infratemporalis', 'face infratemporale', 'facies infratemporalis maxillae', { alt: ['face posterieure'], old: ['face zygomatique'],
+      P('facies_infratemporalis', 'face infratemporale', 'facies infratemporalis maxillae', { alt: ['face postérieure'], old: ['face zygomatique'],
         test: t => t.nz < -0.25 }),
       P('corpus', 'corps du maxillaire', 'corpus maxillae', { alt: ['corps'],
         test: () => true })
@@ -1470,19 +1470,19 @@
         test: (t, B) => B.d(t, B.L.gla) < 10 && F(B, 'out', t) > 0, grow: 0 }),
       P('processus_zygomaticus', 'processus zygomatique', 'processus zygomaticus ossis frontalis', { old: ['apophyse orbitaire externe'],
         test: (t, B) => B.d(t, B.L.zR) < 13 || B.d(t, B.L.zL) < 13, grow: 0 }),
-      P('pars_nasalis', 'partie nasale', 'pars nasalis ossis frontalis', { old: ['echancrure nasale', 'epine nasale du frontal'],
+      P('pars_nasalis', 'partie nasale', 'pars nasalis ossis frontalis', { old: ['échancrure nasale', 'épine nasale du frontal'],
         test: t => t.lat < 0.18 && t.h < 0.25, grow: 0 }),
-      P('pars_orbitalis', 'partie orbitaire', 'pars orbitalis ossis frontalis', { alt: ['lame orbitaire du frontal', 'face orbitaire'], old: ['voute orbitaire'],
+      P('pars_orbitalis', 'partie orbitaire', 'pars orbitalis ossis frontalis', { alt: ['lame orbitaire du frontal', 'face orbitaire'], old: ['voûte orbitaire'],
         test: t => t.ny < -0.35 && t.h < 0.3 && t.lat > 0.12, grow: 0 }),
-      P('facies_interna', 'face interne', 'facies interna ossis frontalis', { alt: ['face endocranienne'],
+      P('facies_interna', 'face interne', 'facies interna ossis frontalis', { alt: ['face endocrânienne'],
         test: (t, B) => F(B, 'out', t) < -0.25, grow: 0 }),
       P('margo_supraorbitalis', 'bord supra-orbitaire', 'margo supraorbitalis', { old: ['arcade orbitaire', 'rebord sus-orbitaire'],
         test: t => t.h > 0.18 && t.h < 0.32 && t.lat > 0.15 && t.lat < 0.8 && t.nz > 0.2, grow: 0 }),
-      P('arcus_superciliaris', 'arcade sourciliere', 'arcus superciliaris', { alt: ['arcades sourcilieres'],
+      P('arcus_superciliaris', 'arcade sourcilière', 'arcus superciliaris', { alt: ['arcades sourcilières'],
         test: t => t.h > 0.3 && t.h < 0.45 && t.lat > 0.15 && t.lat < 0.55 && t.nz > 0.5, grow: 0 }),
-      P('tuber_frontale', 'tuberosite frontale', 'tuber frontale', { alt: ['tuber frontal', 'tuberosites frontales'], old: ['bosse frontale'],
+      P('tuber_frontale', 'tubérosité frontale', 'tuber frontale', { alt: ['tuber frontal', 'tubérosités frontales'], old: ['bosse frontale'],
         test: (t, B) => (B.d(t, B.L.tR) < 18 || B.d(t, B.L.tL) < 18) && F(B, 'out', t) > 0, grow: 0 }),
-      P('squama', 'ecaille frontale', 'squama frontalis', { alt: ['ecaille', 'ecaille du frontal', 'face externe'],
+      P('squama', 'écaille frontale', 'squama frontalis', { alt: ['écaille', 'écaille du frontal', 'face externe'],
         test: () => true })
     ]
   });
@@ -1506,27 +1506,27 @@
       ['af', 'as', 'ao', 'am'].forEach(k => { L['a_' + k] = angleOf(B, 'ol', L[k]); });
     },
     parts: [
-      P('facies_interna', 'face interne', 'facies interna ossis parietalis', { alt: ['face endocranienne'],
+      P('facies_interna', 'face interne', 'facies interna ossis parietalis', { alt: ['face endocrânienne'],
         test: (t, B) => F(B, 'out', t) < -0.2 && F(B, 'ol', t) > 4, grow: 0.5 }),
-      P('angulus_frontalis', 'angle frontal', 'angulus frontalis', { old: ['angle antero-superieur'],
+      P('angulus_frontalis', 'angle frontal', 'angulus frontalis', { old: ['angle antéro-supérieur'],
         test: (t, B) => F(B, 'af', t) < 24, grow: 0 }),
-      P('angulus_sphenoidalis', 'angle sphenoidal', 'angulus sphenoidalis', { old: ['angle antero-inferieur'],
+      P('angulus_sphenoidalis', 'angle sphénoïdal', 'angulus sphenoidalis', { old: ['angle antéro-inférieur'],
         test: (t, B) => F(B, 'as', t) < 20, grow: 0 }),
-      P('angulus_occipitalis', 'angle occipital', 'angulus occipitalis', { old: ['angle postero-superieur'],
+      P('angulus_occipitalis', 'angle occipital', 'angulus occipitalis', { old: ['angle postéro-supérieur'],
         test: (t, B) => F(B, 'ao', t) < 24, grow: 0 }),
-      P('angulus_mastoideus', 'angle mastoidien', 'angulus mastoideus', { old: ['angle postero-inferieur'],
+      P('angulus_mastoideus', 'angle mastoïdien', 'angulus mastoideus', { old: ['angle postéro-inférieur'],
         test: (t, B) => F(B, 'am', t) < 20, grow: 0 }),
-      P('margo_sagittalis', 'bord sagittal', 'margo sagittalis', { old: ['bord superieur', 'bord interne'],
+      P('margo_sagittalis', 'bord sagittal', 'margo sagittalis', { old: ['bord supérieur', 'bord interne'],
         test: (t, B) => F(B, 'ol', t) < 6 && onArc(F(B, 'olA', t), B.L.a_af, B.L.a_ao, B.L.a_am), grow: 0 }),
-      P('margo_squamosus', 'bord squameux', 'margo squamosus', { old: ['bord inferieur', 'bord temporal'],
+      P('margo_squamosus', 'bord squameux', 'margo squamosus', { old: ['bord inférieur', 'bord temporal'],
         test: (t, B) => F(B, 'ol', t) < 6 && onArc(F(B, 'olA', t), B.L.a_as, B.L.a_am, B.L.a_af), grow: 0 }),
-      P('margo_frontalis', 'bord frontal', 'margo frontalis', { old: ['bord anterieur'],
+      P('margo_frontalis', 'bord frontal', 'margo frontalis', { old: ['bord antérieur'],
         test: (t, B) => F(B, 'ol', t) < 6 && onArc(F(B, 'olA', t), B.L.a_af, B.L.a_as, B.L.a_am), grow: 0 }),
-      P('margo_occipitalis', 'bord occipital', 'margo occipitalis', { old: ['bord posterieur'],
+      P('margo_occipitalis', 'bord occipital', 'margo occipitalis', { old: ['bord postérieur'],
         test: (t, B) => F(B, 'ol', t) < 6, grow: 0 }),
-      P('tuber_parietale', 'tuber parietal', 'tuber parietale', { alt: ['tuberosite parietale'], old: ['bosse parietale'],
+      P('tuber_parietale', 'tuber pariétal', 'tuber parietale', { alt: ['tubérosité pariétale'], old: ['bosse pariétale'],
         test: (t, B) => B.d(t, B.L.tub) < 20 && F(B, 'out', t) > 0, grow: 0 }),
-      P('facies_externa', 'face externe', 'facies externa ossis parietalis', { alt: ['face exocranienne'],
+      P('facies_externa', 'face externe', 'facies externa ossis parietalis', { alt: ['face exocrânienne'],
         test: () => true })
     ]
   });
@@ -1548,21 +1548,21 @@
       L.mea = B.bestCup([0, 4, 8].map(d => B.add(m0, B.dir(-1, 0, 0), d)), 10, 2, 7, 0.4);
     },
     parts: [
-      P('processus_styloideus', 'processus styloide', 'processus styloideus', { alt: ['processus styloide du temporal'], old: ['apophyse styloide'],
+      P('processus_styloideus', 'processus styloïde', 'processus styloideus', { alt: ['processus styloïde du temporal'], old: ['apophyse styloïde'],
         test: (t, B) => F(B, 'sty', t) < 16, grow: 0 }),
-      P('processus_mastoideus', 'processus mastoide', 'processus mastoideus', { alt: ['mastoide'], old: ['apophyse mastoide'],
+      P('processus_mastoideus', 'processus mastoïde', 'processus mastoideus', { alt: ['mastoïde'], old: ['apophyse mastoïde'],
         test: (t, B) => B.d(t, B.L.mas) < 17, grow: 0 }),
-      P('fossa_mandibularis', 'fosse mandibulaire', 'fossa mandibularis', { old: ['cavite glenoide du temporal'],
+      P('fossa_mandibularis', 'fosse mandibulaire', 'fossa mandibularis', { old: ['cavité glénoïde du temporal'],
         test: (t, B) => { const c = B.L.fos; return B.d(t, c.c) < c.r * 1.2 && facesTo(t, B, c.c, 0.5) && t.ny < 0; }, grow: 0 }),
-      P('meatus_acusticus_externus', 'meat acoustique externe', 'meatus acusticus externus', { old: ['conduit auditif externe'],
+      P('meatus_acusticus_externus', 'méat acoustique externe', 'meatus acusticus externus', { old: ['conduit auditif externe'],
         test: (t, B) => { const c = B.L.mea; return B.d(t, c.c) < c.r * 1.8 && facesTo(t, B, c.c, 0.3); }, grow: 0 }),
       P('processus_zygomaticus', 'processus zygomatique', 'processus zygomaticus ossis temporalis', { old: ['apophyse zygomatique'],
         test: (t, B) => F(B, 'zyg', t) < 32 && t.h < 0.6, grow: 0 }),
       P('pars_tympanica', 'partie tympanique', 'pars tympanica', { old: ['os tympanal'],
         test: t => t.h < 0.38 && t.m < 0.45 && t.a > 0.3 && t.a < 0.55, grow: 0 }),
-      P('pars_petrosa', 'partie petreuse', 'pars petrosa', { old: ['rocher', 'pyramide petreuse'],
+      P('pars_petrosa', 'partie pétreuse', 'pars petrosa', { old: ['rocher', 'pyramide pétreuse'],
         test: t => t.m > 0.55 && t.h < 0.6 }),
-      P('pars_squamosa', 'partie squameuse', 'pars squamosa', { old: ['ecaille du temporal', 'ecaille temporale'],
+      P('pars_squamosa', 'partie squameuse', 'pars squamosa', { old: ['écaille du temporal', 'écaille temporale'],
         test: () => true })
     ]
   });
@@ -1580,20 +1580,20 @@
       L.fm = B.mix(L.cR, L.cL, 0.5);
     },
     parts: [
-      P('condylus_occipitalis', 'condyle occipital', 'condylus occipitalis', { alt: ['condyles occipitaux'], old: ['condyle de l occipital'],
+      P('condylus_occipitalis', 'condyle occipital', 'condylus occipitalis', { alt: ['condyles occipitaux'], old: ['condyle de l\'occipital'],
         test: (t, B) => (B.d(t, B.L.cR) < 12 || B.d(t, B.L.cL) < 12) && t.ny < 0, grow: 0 }),
-      P('facies_interna', 'face interne', 'facies interna ossis occipitalis', { alt: ['face endocranienne'],
+      P('facies_interna', 'face interne', 'facies interna ossis occipitalis', { alt: ['face endocrânienne'],
         test: (t, B) => F(B, 'out', t) < -0.25 && t.a < 0.7, grow: 0.5 }),
-      P('protuberantia_occipitalis_externa', 'protuberance occipitale externe', 'protuberantia occipitalis externa', { alt: ['inion'],
+      P('protuberantia_occipitalis_externa', 'protubérance occipitale externe', 'protuberantia occipitalis externa', { alt: ['inion'],
         test: (t, B) => B.d(t, B.L.pro) < 10, grow: 0 }),
       /* crete occipitale externe : ligne mediane de la face externe, sous la protuberance */
-      P('crista_occipitalis_externa', 'crete occipitale externe', 'crista occipitalis externa',
+      P('crista_occipitalis_externa', 'crête occipitale externe', 'crista occipitalis externa',
         { test: (t, B) => Math.abs(t.x - B.cen[0]) < 3 && F(B, 'out', t) > 0.2 && t.h < B.hOf(B.L.pro) - 0.03 && t.z < B.L.fm[2] - 10, grow: 0 }),
       P('pars_basilaris', 'partie basilaire', 'pars basilaris ossis occipitalis', { alt: ['clivus'], old: ['apophyse basilaire'],
         test: t => t.a > 0.75 && t.lat < 0.3, grow: 0 }),
-      P('pars_lateralis', 'partie laterale', 'pars lateralis ossis occipitalis', { alt: ['parties laterales'], old: ['masses laterales de l occipital'],
+      P('pars_lateralis', 'partie latérale', 'pars lateralis ossis occipitalis', { alt: ['parties latérales'], old: ['masses latérales de l\'occipital'],
         test: t => t.lat > 0.2 && t.a > 0.45 && t.h < 0.35 }),
-      P('squama', 'ecaille occipitale', 'squama occipitalis', { alt: ['ecaille', 'ecaille de l\'occipital'],
+      P('squama', 'écaille occipitale', 'squama occipitalis', { alt: ['écaille', 'écaille de l\'occipital'],
         test: (t, B) => F(B, 'out', t) > 0.2 })
     ]
   });
@@ -1613,14 +1613,14 @@
     parts: [
       P('sella_turcica', 'selle turcique', 'sella turcica', { alt: ['selle', 'fosse hypophysaire'],
         test: t => t.lat < 0.12 && t.ny > 0.5 && t.h > 0.6 && t.a > 0.3 && t.a < 0.7, grow: 0 }),
-      P('dorsum_sellae', 'dos de la selle', 'dorsum sellae', { alt: ['lame quadrilatere'],
+      P('dorsum_sellae', 'dos de la selle', 'dorsum sellae', { alt: ['lame quadrilatère'],
         test: (t, B) => B.d(t, B.L.dorsum) < 8, grow: 0 }),
-      P('processus_pterygoideus', 'processus pterygoide', 'processus pterygoideus', { alt: ['processus pterygoidiens'], old: ['apophyse pterygoide'],
+      P('processus_pterygoideus', 'processus ptérygoïde', 'processus pterygoideus', { alt: ['processus ptérygoïdiens'], old: ['apophyse ptérygoïde'],
         test: t => t.h < 0.3 && t.lat < 0.45, grow: 0 }),
-      P('corpus', 'corps du sphenoide', 'corpus ossis sphenoidalis', { alt: ['corps'],
+      P('corpus', 'corps du sphénoïde', 'corpus ossis sphenoidalis', { alt: ['corps'],
         test: t => t.lat < 0.16 && t.h > 0.3, grow: 0.3 }),
       /* ailes : croissance depuis leurs extremites */
-      P('ala_minor', 'petite aile', 'ala minor', { alt: ['petites ailes'], old: ['apophyse d ingrassias'],
+      P('ala_minor', 'petite aile', 'ala minor', { alt: ['petites ailes'], old: ['apophyse d\'Ingrassias'],
         seed: B => [B.L.amiR, B.L.amiL] }),
       P('ala_major', 'grande aile', 'ala major', { alt: ['grandes ailes'],
         seed: B => [B.L.amaR, B.L.amaL] })
@@ -1632,7 +1632,7 @@
     parts: [
       P('crista_galli', 'crista galli', 'crista galli', { alt: ['apophyse crista galli'], old: ['apophyse crista-galli'],
         test: t => t.lat < 0.12 && t.h > 0.78, grow: 0 }),
-      P('lamina_cribrosa', 'lame criblee', 'lamina cribrosa', { alt: ['lame criblee de l\'ethmoide'],
+      P('lamina_cribrosa', 'lame criblée', 'lamina cribrosa', { alt: ['lame criblée de l\'ethmoïde'],
         test: t => t.ny > 0.5 && t.h > 0.7 && t.lat < 0.28, grow: 0 }),
       P('lamina_perpendicularis', 'lame perpendiculaire', 'lamina perpendicularis', { alt: ['lame verticale'],
         test: t => t.lat < 0.1 && t.h < 0.75, grow: 0 }),
@@ -1640,7 +1640,7 @@
         test: t => t.lat > 0.72 && t.nm < -0.55, grow: 0 }),
       P('concha_nasalis_media', 'cornet nasal moyen', 'concha nasalis media', { alt: ['cornet moyen'],
         test: t => t.lat > 0.12 && t.lat < 0.6 && t.h < 0.4 && (t.nm > 0.4 || t.ny < -0.5), grow: 0 }),
-      P('labyrinthus', 'labyrinthe ethmoidal', 'labyrinthus ethmoidalis', { alt: ['labyrinthe'], old: ['masses laterales de l ethmoide'],
+      P('labyrinthus', 'labyrinthe ethmoïdal', 'labyrinthus ethmoidalis', { alt: ['labyrinthe'], old: ['masses latérales de l\'ethmoïde'],
         test: () => true })
     ]
   });
@@ -1656,7 +1656,7 @@
         { test: t => t.nm > 0.25 && t.nz < 0.15 && t.ny > -0.2 && t.h > 0.4, grow: 0 }),
       P('facies_temporalis', 'face temporale', 'facies temporalis',
         { test: t => t.nz < -0.3, grow: 0 }),
-      P('facies_lateralis', 'face laterale', 'facies lateralis', { alt: ['face externe', 'face jugale'],
+      P('facies_lateralis', 'face latérale', 'facies lateralis', { alt: ['face externe', 'face jugale'],
         test: () => true })
     ]
   });
@@ -1679,17 +1679,17 @@
       B.L.ne = B.unit(s);
     },
     parts: [
-      P('margo_superior', 'bord superieur', 'margo superior ossis nasalis', { alt: ['bord frontal', 'bord superieur de l\'os nasal'],
+      P('margo_superior', 'bord supérieur', 'margo superior ossis nasalis', { alt: ['bord frontal', 'bord supérieur de l\'os nasal'],
         test: (t, B) => t.h > 0.93 || (nasalRim(t, B) && F(B, 'fr', t) < 2.5), grow: 0 }),
-      P('margo_medialis', 'bord medial', 'margo medialis ossis nasalis', { alt: ['bord interne', 'bord medial de l\'os nasal'],
+      P('margo_medialis', 'bord médial', 'margo medialis ossis nasalis', { alt: ['bord interne', 'bord médial de l\'os nasal'],
         test: (t, B) => nasalRim(t, B) && F(B, 'na', t) < 2.5, grow: 0 }),
-      P('margo_lateralis', 'bord lateral', 'margo lateralis ossis nasalis', { alt: ['bord maxillaire', 'bord lateral de l\'os nasal'],
+      P('margo_lateralis', 'bord latéral', 'margo lateralis ossis nasalis', { alt: ['bord maxillaire', 'bord latéral de l\'os nasal'],
         test: (t, B) => nasalRim(t, B) && F(B, 'mx', t) < 2.5, grow: 0 }),
-      P('margo_inferior', 'bord inferieur', 'margo inferior ossis nasalis', { alt: ['bord libre', 'bord inferieur de l\'os nasal'],
+      P('margo_inferior', 'bord inférieur', 'margo inferior ossis nasalis', { alt: ['bord libre', 'bord inférieur de l\'os nasal'],
         test: t => t.h < 0.1, grow: 0 }),
-      P('facies_externa', 'face externe', 'facies externa ossis nasalis', { alt: ['face anterieure'],
+      P('facies_externa', 'face externe', 'facies externa ossis nasalis', { alt: ['face antérieure'],
         test: (t, B) => B.ndot(t, B.L.ne) > 0 }),
-      P('facies_interna', 'face interne', 'facies interna ossis nasalis', { alt: ['face posterieure', 'face nasale'],
+      P('facies_interna', 'face interne', 'facies interna ossis nasalis', { alt: ['face postérieure', 'face nasale'],
         test: () => true })
     ]
   });
@@ -1705,13 +1705,13 @@
     parts: [
       P('hamulus_lacrimalis', 'hamulus lacrymal', 'hamulus lacrimalis', { alt: ['crochet lacrymal', 'hamulus de l\'os lacrymal'],
         test: (t, B) => B.d(t, B.L.ham) < 3.2, grow: 0 }),
-      P('crista_lacrimalis_posterior', 'crete lacrymale posterieure', 'crista lacrimalis posterior', { alt: ['crete lacrymale'],
+      P('crista_lacrimalis_posterior', 'crête lacrymale postérieure', 'crista lacrimalis posterior', { alt: ['crête lacrymale'],
         test: (t, B) => t.nm < -0.2 && t.h > 0.1 && Math.abs(t.z - B.L.crz(t.h)) < 1.1, grow: 0 }),
-      P('sulcus_lacrimalis', 'sillon lacrymal', 'sulcus lacrimalis ossis lacrimalis', { alt: ['sillon lacrymal de l\'os lacrymal', 'gouttiere lacrymale'],
+      P('sulcus_lacrimalis', 'sillon lacrymal', 'sulcus lacrimalis ossis lacrimalis', { alt: ['sillon lacrymal de l\'os lacrymal', 'gouttière lacrymale'],
         test: (t, B) => t.nm < -0.2 && t.z > B.L.crz(t.h), grow: 0 }),
-      P('facies_orbitalis', 'face orbitaire', 'facies orbitalis ossis lacrimalis', { alt: ['face laterale'],
+      P('facies_orbitalis', 'face orbitaire', 'facies orbitalis ossis lacrimalis', { alt: ['face latérale'],
         test: t => t.nm < -0.2 }),
-      P('facies_nasalis', 'face nasale', 'facies nasalis ossis lacrimalis', { alt: ['face mediale'],
+      P('facies_nasalis', 'face nasale', 'facies nasalis ossis lacrimalis', { alt: ['face médiale'],
         test: () => true })
     ]
   });
@@ -1724,7 +1724,7 @@
     parts: [
       P('processus_orbitalis', 'processus orbitaire', 'processus orbitalis ossis palatini', { alt: ['processus orbitaire de l\'os palatin'], old: ['apophyse orbitaire'],
         test: (t, B) => B.d(t, B.L.orb) < 5, grow: 0 }),
-      P('processus_sphenoidalis', 'processus sphenoidal', 'processus sphenoidalis ossis palatini', { alt: ['processus sphenoidal de l\'os palatin'], old: ['apophyse sphenoidale'],
+      P('processus_sphenoidalis', 'processus sphénoïdal', 'processus sphenoidalis ossis palatini', { alt: ['processus sphénoïdal de l\'os palatin'], old: ['apophyse sphénoïdale'],
         test: (t, B) => B.d(t, B.L.sph) < 4.5, grow: 0 }),
       P('processus_pyramidalis', 'processus pyramidal', 'processus pyramidalis ossis palatini', { alt: ['processus pyramidal de l\'os palatin'], old: ['apophyse pyramidale du palatin'],
         test: (t, B) => B.d(t, B.L.pyr) < 6, grow: 0 }),
@@ -1738,11 +1738,11 @@
     parts: [
       P('ala_vomeris', 'aile du vomer', 'ala vomeris', { alt: ['ailes du vomer'],
         test: t => t.h > 0.78 && t.a < 0.42, grow: 0 }),
-      P('crista_choanalis', 'crete choanale du vomer', 'crista choanalis vomeris', { alt: ['bord posterieur du vomer', 'crete choanale'],
+      P('crista_choanalis', 'crête choanale du vomer', 'crista choanalis vomeris', { alt: ['bord postérieur du vomer', 'crête choanale'],
         test: t => t.a < 0.07, grow: 0 }),
-      P('margo_inferior', 'bord inferieur', 'margo inferior vomeris', { alt: ['bord inferieur du vomer'],
+      P('margo_inferior', 'bord inférieur', 'margo inferior vomeris', { alt: ['bord inférieur du vomer'],
         test: t => t.h < 0.06 || t.ny < -0.7, grow: 0 }),
-      P('facies_lateralis', 'face laterale', 'facies lateralis vomeris', { alt: ['faces laterales du vomer', 'lame du vomer'],
+      P('facies_lateralis', 'face latérale', 'facies lateralis vomeris', { alt: ['faces latérales du vomer', 'lame du vomer'],
         test: () => true })
     ]
   });
@@ -1753,15 +1753,15 @@
       B.L.eth = B.ext(B.dir(0.3, 1, -0.3), t => t.a > 0.2 && t.a < 0.5);
     },
     parts: [
-      P('processus_lacrimalis', 'processus lacrymal', 'processus lacrimalis conchae', { alt: ['processus lacrymal du cornet inferieur'], old: ['apophyse lacrymale'],
+      P('processus_lacrimalis', 'processus lacrymal', 'processus lacrimalis conchae', { alt: ['processus lacrymal du cornet inférieur'], old: ['apophyse lacrymale'],
         test: (t, B) => B.d(t, B.L.lac) < 3.5, grow: 0 }),
-      P('processus_maxillaris', 'processus maxillaire', 'processus maxillaris conchae', { alt: ['processus maxillaire du cornet inferieur'], old: ['apophyse auriculaire'],
+      P('processus_maxillaris', 'processus maxillaire', 'processus maxillaris conchae', { alt: ['processus maxillaire du cornet inférieur'], old: ['apophyse auriculaire'],
         test: (t, B) => B.d(t, B.L.max) < 4.5, grow: 0 }),
-      P('processus_ethmoidalis', 'processus ethmoidal', 'processus ethmoidalis conchae', { alt: ['processus ethmoidal du cornet inferieur'], old: ['apophyse ethmoidale'],
+      P('processus_ethmoidalis', 'processus ethmoïdal', 'processus ethmoidalis conchae', { alt: ['processus ethmoïdal du cornet inférieur'], old: ['apophyse ethmoïdale'],
         test: (t, B) => B.d(t, B.L.eth) < 3.5, grow: 0 }),
-      P('facies_medialis', 'face mediale', 'facies medialis conchae', { alt: ['face convexe', 'face interne'],
+      P('facies_medialis', 'face médiale', 'facies medialis conchae', { alt: ['face convexe', 'face interne'],
         test: t => t.nm > 0.15 }),
-      P('facies_lateralis', 'face laterale', 'facies lateralis conchae', { alt: ['face concave', 'face externe'],
+      P('facies_lateralis', 'face latérale', 'facies lateralis conchae', { alt: ['face concave', 'face externe'],
         test: () => true })
     ]
   });

@@ -294,47 +294,80 @@
 <!-- ===================== JEU : LA LISTE DES DÉPARTEMENTS ===================== -->
 <section id="screen-liste" class="screen page hidden">
 
-  <!-- Étape 1 : quoi deviner, le périmètre (toute la France ou une seule région), le tri, la carte -->
-  <div id="liste-options" class="liste-options">
-    <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+  <!-- Étape 1 : les options, sur un seul écran sans défilement (même présentation que l'écran de choix
+       des quiz) : à gauche quoi deviner, l'ordre et la carte ; à droite le périmètre, sur une mini-carte -->
+  <div id="liste-options" class="setup liste-options">
+    <header class="setup-tete">
+      <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+      <h2 class="setup-titre">La Liste des Départements</h2>
+    </header>
 
-    <div class="panel liste-panel">
-      <h2>La Liste des Départements</h2>
-      <p class="lead">Citez tous les noms de la liste, le plus vite possible. Tapez un nom puis Entrée : il se
-        place tout seul sur sa ligne, inutile de dire à quel département va une préfecture. Majuscules, accents,
-        espaces, tirets et apostrophes ne comptent pas.</p>
-
-      <div class="liste-ordre">
-        <p class="liste-ordre__titre">À deviner</p>
-        <div class="mode-switch liste-deviner" role="group" aria-label="À deviner">
-          <button type="button" class="mode-btn is-active" data-liste-deviner="tout" aria-pressed="true">Départements et préfectures</button>
-          <button type="button" class="mode-btn" data-liste-deviner="dep" aria-pressed="false">Départements</button>
-          <button type="button" class="mode-btn" data-liste-deviner="pref" aria-pressed="false">Préfectures</button>
+    <div class="setup-colonnes setup-colonnes--deux">
+      <section class="setup-col" aria-labelledby="liste-col-nom">
+        <div class="setup-col__tete">
+          <h3 id="liste-col-nom" class="setup-col__nom">Votre liste</h3>
         </div>
-        <p id="liste-deviner-aide" class="setup-aide liste-deviner-aide"></p>
-      </div>
+        <p class="setup-aide">Tapez un nom puis Entrée : il se place tout seul sur sa ligne, inutile de dire à quel
+          département va une préfecture. Majuscules, accents, espaces, tirets et apostrophes ne comptent pas.</p>
 
-      <div class="groupes">
-        <div class="groupes-head"><span>Périmètre</span></div>
-        <div id="liste-perimetres" class="groupes-liste" role="radiogroup" aria-label="Périmètre"></div>
-      </div>
+        <div class="setup-souple liste-options__reglages">
+          <div class="setup-bloc">
+            <span class="setup-etiquette">À deviner</span>
+            <div class="choix-cartes choix-cartes--trois" role="group" aria-label="À deviner">
+              <button type="button" class="mode-btn choix-carte is-active" data-liste-deviner="tout" aria-pressed="true">
+                <span class="choix-carte__icone" aria-hidden="true">📝</span>
+                <span class="choix-carte__titre">Les deux</span>
+                <span class="choix-carte__desc">Départements et préfectures, sans les associer</span>
+              </button>
+              <button type="button" class="mode-btn choix-carte" data-liste-deviner="dep" aria-pressed="false">
+                <span class="choix-carte__icone" aria-hidden="true">🗺️</span>
+                <span class="choix-carte__titre">Départements</span>
+                <span class="choix-carte__desc">Seulement leurs noms</span>
+              </button>
+              <button type="button" class="mode-btn choix-carte" data-liste-deviner="pref" aria-pressed="false">
+                <span class="choix-carte__icone" aria-hidden="true">🏛️</span>
+                <span class="choix-carte__titre">Préfectures</span>
+                <span class="choix-carte__desc">Les départements sont écrits d'avance</span>
+              </button>
+            </div>
+          </div>
 
-      <!-- Tri : seulement pour toute la France (une seule région se trie forcément par code) -->
-      <div id="liste-ordre-wrap" class="liste-ordre">
-        <p class="liste-ordre__titre">Ordre de la liste</p>
-        <div class="mode-switch" role="group" aria-label="Ordre de la liste">
-          <button type="button" class="mode-btn is-active" data-liste-ordre="code" aria-pressed="true">Par code</button>
-          <button type="button" class="mode-btn" data-liste-ordre="region" aria-pressed="false">Par région, puis par code</button>
+          <!-- Tri : seulement pour toute la France (une seule région se trie forcément par code) -->
+          <div id="liste-ordre-wrap" class="setup-bloc">
+            <span class="setup-etiquette">Ordre de la liste</span>
+            <div class="onglets onglets--large" role="group" aria-label="Ordre de la liste">
+              <button type="button" class="mode-btn onglet-btn is-active" data-liste-ordre="code" aria-pressed="true">Par code</button>
+              <button type="button" class="mode-btn onglet-btn" data-liste-ordre="region" aria-pressed="false">Par région, puis par code</button>
+            </div>
+          </div>
+
+          <div class="setup-bloc">
+            <span class="setup-etiquette">Carte</span>
+            <label class="interrupteur">
+              <input id="liste-carte-option" type="checkbox" role="switch">
+              <span class="interrupteur__piste" aria-hidden="true"></span>
+              <span class="interrupteur__texte"><b>Afficher une carte</b> à côté de la liste : chaque département passe
+                au vert quand tout ce qui le concerne est trouvé (hachuré à moitié). Ni noms ni clic : à vous de savoir
+                lequel c'est.</span>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <label class="checkbox-row liste-option-carte">
-        <input id="liste-carte-option" type="checkbox">
-        <span><b>Afficher une carte</b> à côté de la liste : chaque département passe au vert quand tout ce qui le
-          concerne est trouvé (hachuré à moitié). Ni noms ni clic : à vous de savoir lequel c'est.</span>
-      </label>
+        <button id="liste-lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
+      </section>
 
-      <button id="liste-lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
+      <section class="setup-col" aria-labelledby="liste-perimetre-nom">
+        <div class="setup-col__tete">
+          <h3 id="liste-perimetre-nom" class="setup-col__nom">Périmètre</h3>
+          <span id="liste-perimetre-compte" class="setup-etiquette"></span>
+        </div>
+        <div class="setup-bloc setup-bloc--souple">
+          <div class="groupes-choix">
+            <div class="groupes-choix__carte"><div id="liste-mini-carte" class="mini-carte-place"></div></div>
+            <div id="liste-perimetres" class="groupes-liste" role="radiogroup" aria-label="Périmètre"></div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 

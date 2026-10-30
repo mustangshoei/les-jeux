@@ -21,7 +21,7 @@
   function openBone(def, opts = {}) {
     closeBone();
     const src = NS.osteoPart(def.bone, def.side, def.label);
-    if (!src) throw new Error('Os detaille introuvable : ' + def.bone);
+    if (!src) throw new Error('Os détaillé introuvable : ' + def.bone);
     const seg = NS.segment({ positions: src.positions, indices: src.indices, tags: src.tags, side: def.side }, def);
     const M = seg.M;
     const geom = new THREE.BufferGeometry();

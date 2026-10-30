@@ -1675,7 +1675,7 @@ body[data-points="1"] .legende-points { display: inline-flex !important; }
 #screen-liste { max-width: 52rem; }
 
 /* Étape 1 : le périmètre */
-.liste-options { max-width: 40rem; margin: 0 auto; }
+.liste-options { max-width: none; margin: 0; }
 .liste-panel { margin-top: 1rem; }
 .liste-panel .groupes { margin-top: 1.75rem; }
 .groupes-saut { flex-basis: 100%; height: 0; }        /* « Toute la France » seule sur sa ligne */
@@ -2448,7 +2448,7 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .options { display: flex; flex-wrap: wrap; gap: clamp(.3rem, .8vh, .5rem) 1.2rem; }
 
 /* Au hasard : le nombre en grand, − et +, raccourcis, curseur */
-.nombre { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: clamp(.3rem, 1.1vh, .7rem); }
+.nombre { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: clamp(.7rem, 2.8vh, 1.7rem); }
 .nombre.hidden { display: none; }
 .nombre__ligne { display: flex; align-items: center; justify-content: center; gap: clamp(.4rem, 1.2vw, .8rem); }
 .nombre__pas {
@@ -2494,9 +2494,9 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .nombre__raccourcis button:hover { border-color: var(--coral); color: var(--ink); }
 .nombre__raccourcis button.is-active { border-color: var(--coral); background: var(--coral); color: #0b2530; }
 .nombre__raccourcis button[hidden] { display: none; }
-.nombre__curseur { display: flex; align-items: center; gap: .7rem; font: 500 .72rem var(--mono); color: var(--muted); }
+.nombre__curseur { display: flex; align-items: center; gap: .7rem; padding: 0 clamp(0rem, 2vw, 1.5rem); font: 500 .72rem var(--mono); color: var(--muted); }
 .nombre__curseur #count-range { flex: 1; width: auto; margin: 0; }
-.nombre .interrupteur { justify-content: center; }
+.nombre .interrupteur { justify-content: center; margin-top: clamp(0rem, 1vh, .6rem); }
 
 /* Par groupes et périmètre du record : la mini-carte (cliquable) à gauche, la liste à droite */
 .groupes-choix { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: .8rem; }
@@ -2505,6 +2505,17 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .groupes-choix--large { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
 .groupes-choix--large .groupes-liste { grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); overflow-y: visible; }
 .groupes-choix__carte .mini-carte-place { flex: 1; }
+
+/* La Liste des Départements : ses options reprennent l'écran de choix des quiz (une page, sans défilement) */
+#screen-liste:has(> #liste-options:not(.hidden)) { max-width: none; padding: 0; }
+.liste-options.hidden { display: none; }
+.choix-cartes--trois { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.choix-cartes--trois .choix-carte { grid-template-columns: minmax(0, 1fr); row-gap: .15rem; text-align: center; justify-items: center; }
+.choix-cartes--trois .choix-carte__icone { grid-row: auto; }
+.onglets--large { display: flex; }
+.onglets--large .onglet-btn { flex: 1; }
+.liste-options__reglages { justify-content: space-evenly; }
+.liste-options .groupes-choix { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
 .groupes-choix .groupes-head { flex-wrap: wrap; gap: 0 .5rem; font-size: .8rem; }
 .groupes-choix .groupes-head .btn-link { padding: .1rem .2rem; font-size: .84rem; }
 .groupes-choix .groupes-liste {
@@ -2534,7 +2545,7 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .groupes-choix .chip-check small { flex: none; opacity: .75; font-variant-numeric: tabular-nums; }
 .groupes-choix .chip-check.is-survol span { border-color: var(--coral); color: var(--ink); }
 .mini-carte-place { min-height: 0; display: flex; align-items: center; justify-content: center; }
-.mini-carte { display: block; width: 100%; height: 100%; }
+.mini-carte { display: block; width: 100%; height: 100%; border-radius: 12px; }
 .mini-zone { fill: var(--terre); stroke: var(--bg); stroke-width: .6; vector-effect: non-scaling-stroke; cursor: pointer; transition: fill .15s ease, stroke .15s ease; }
 .mini-zone.is-choisi { fill: var(--coral); }
 .mini-zone.is-survol { fill: var(--coral-pale); }
@@ -2542,6 +2553,16 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .mini-zone--ligne.is-choisi { fill: none; stroke: var(--coral); }
 .mini-zone--ligne.is-survol { fill: none; stroke: var(--coral-pale); }
 .mini-zone--hors { fill: rgba(29, 75, 87, .45); cursor: default; }
+/* Cartes à fond (Fleuves & Océans, mers du monde) : la terre et les pays voisins en décor ; les mers en
+   dessous, sombres, teintées quand elles sont choisies (pas d'aplat) ; les cours d'eau en corail */
+.mini-terre { fill: #1a3a42; stroke: #142f36; stroke-width: .4; vector-effect: non-scaling-stroke; pointer-events: none; }
+.mini-decor { fill: #143843; pointer-events: none; }
+.mini-decor--fond { fill: #0a2530; }
+.mini-zone--dessous { fill: #0b2a36; stroke: rgba(5, 32, 43, .6); stroke-width: .8; }
+.mini-zone--dessous.is-choisi { fill: #2a86a6; }
+.mini-zone--dessous.is-survol { fill: #3a9cbf; }
+.mini-zone--ligne { stroke: #3f7f93; stroke-width: 1.1; }
+.mini-zone--ligne.is-choisi { stroke: var(--coral); stroke-width: 1.5; }
 #partie-record .record-scores { flex: none; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0; gap: .4rem; }
 #partie-record .record-ligne { padding: .35rem .65rem; }
 #partie-record .record-ligne span { flex-basis: 100%; font-size: .78rem; }
@@ -2599,4 +2620,68 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 }
 @media (prefers-reduced-motion: reduce) {
   .interrupteur__piste, .interrupteur__piste::after, .mini-zone, .choix-carte { transition: none; }
+}
+
+/* ==========================================================================
+   Fleuves & Océans (quiz et Apprendre) : une carte lisible.
+   - Les mers prolongent le fond : plus de cadre sombre à gauche et à droite.
+   - Au repos, les cours d'eau sont discrets (les fleuves un peu plus que les rivières).
+   - Trouvé (menthe), raté (corail), demandé (sable) : un trait épais et un halo, qui ressortent nettement.
+   - Les mers trouvées ou ratées sont teintées, pas peintes d'un aplat qui écrase la carte.
+   ========================================================================== */
+#map[data-carte="france-hydrographie"] { background: #0d3445; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"] {
+  fill: #0d3445;
+  stroke: rgba(5, 32, 43, .55);         /* limites entre mers à peine marquées ; le bord extérieur se fond */
+  stroke-width: .8;
+  vector-effect: non-scaling-stroke;
+  transition: fill .25s ease;
+}
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="idle"]:hover { fill: #13495e; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"].hors-quiz[data-state="idle"]:hover { fill: #0d3445; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="right"]    { fill: #1f6b67; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="ok"]       { fill: #1a5a58; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="wrong"]    { fill: #7a3b31; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="ko"]       { fill: #4e2f2d; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="reveal"]   { fill: #6b5a2c; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="question"] { fill: #6b5a2c; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="selected"] { fill: #7a3b31; }
+#map[data-carte="france-hydrographie"] .zone[data-type="mer"][data-state="voisin"]   { fill: #1a5a58; }
+
+/* Cours d'eau au repos : discrets */
+#map[data-carte="france-hydrographie"] .ligne-trait { stroke: #3f8ba3; stroke-width: 1.2; opacity: .8; }
+#map[data-carte="france-hydrographie"] .zone.ligne[data-type="fleuve"] .ligne-trait { stroke: #6fbcd3; stroke-width: 2; opacity: .95; }
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="idle"]:hover .ligne-trait { stroke: var(--sand); opacity: 1; }
+#map[data-carte="france-hydrographie"] .zone.ligne.hors-quiz[data-state="idle"]:hover .ligne-trait { stroke: #3f8ba3; opacity: .8; }
+#map[data-carte="france-hydrographie"] .zone.ligne.hors-quiz[data-type="fleuve"][data-state="idle"]:hover .ligne-trait { stroke: #6fbcd3; }
+
+/* États : trait épais, halo de la même couleur */
+#map[data-carte="france-hydrographie"] .zone.ligne:not([data-state="idle"]) .ligne-trait { opacity: 1; }
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="right"] .ligne-trait,
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="ok"] .ligne-trait {
+  stroke: var(--mint);
+  stroke-width: 3.6;
+  filter: drop-shadow(0 0 3px rgba(94, 234, 212, .75));
+}
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="wrong"] .ligne-trait,
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="ko"] .ligne-trait {
+  stroke: var(--coral);
+  stroke-width: 3.6;
+  filter: drop-shadow(0 0 3px rgba(255, 122, 89, .7));
+}
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="question"] .ligne-trait,
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="reveal"] .ligne-trait {
+  stroke-width: 4.6;
+  filter: drop-shadow(0 0 4px rgba(242, 197, 107, .85));
+}
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="question"] .ligne-trait { stroke: var(--sand); }
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="selected"] .ligne-trait {
+  stroke: var(--coral);
+  stroke-width: 4;
+  filter: drop-shadow(0 0 3px rgba(255, 122, 89, .7));
+}
+#map[data-carte="france-hydrographie"] .zone.ligne[data-state="voisin"] .ligne-trait {
+  stroke: var(--mint);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 2px rgba(94, 234, 212, .6));
 }

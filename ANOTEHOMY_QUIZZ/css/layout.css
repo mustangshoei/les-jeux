@@ -1,18 +1,56 @@
 /* ==========================================================================
    Anotehomy Quizz - layout.css
-   Grille principale (panneau lateral + scene) et conteneurs plein ecran.
+   Écran de jeu (panneau latéral + scène 3D), écrans pleins (menu, configuration) et écrans superposés
+   (résultats, statistiques).
    ========================================================================== */
-#app{display:grid;grid-template-columns:minmax(300px,360px) 1fr;height:100vh;height:100dvh}
+#app { display: grid; grid-template-columns: minmax(300px, 360px) 1fr; height: 100vh; height: 100dvh; }
 
-/* ---------- Panneau lateral gauche ---------- */
-#panel{background:linear-gradient(180deg,#131c31,#0f172a);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px;padding:18px;overflow-y:auto;z-index:2}
-.brand{display:flex;align-items:center;gap:12px}
-.brand h1{font-size:18px;margin:0;letter-spacing:.2px}
-.brand p{margin:0;color:var(--muted);font-size:12px}
-.panel-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+/* ---------- Panneau latéral gauche ---------- */
+#panel {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(36, 17, 30, .94), rgba(19, 10, 17, .96));
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -.01em; line-height: 1.15; }
+.brand h1 span { color: var(--rose); }
+.brand p { margin: 2px 0 0; font: 500 .66rem/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.panel-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
 
-/* ---------- Ecrans superposes (configuration, resultats) ---------- */
-.overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:5vh 16px;background:rgba(5,9,18,.66);backdrop-filter:blur(7px);animation:fade .35s ease}
-.card{width:100%;max-width:780px;background:linear-gradient(180deg,#141e35,#10182c);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.55);margin:auto}
+/* ---------- Écrans pleins : menu et configuration ----------
+   Ils recouvrent l'écran de jeu, caché (et sa 3D en pause, js/engine/scene.js) : on voit le fond du
+   thème (css/base.css) à travers eux. */
+.overlay.ecran { display: block; padding: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; animation: none; }
+body:has(> .ecran:not([hidden])) #app { visibility: hidden; }
 
-@keyframes fade{from{opacity:0}to{opacity:1}}
+/* ---------- Écrans superposés à la partie : résultats, statistiques ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: max(5vh, 66px) 16px 5vh;
+  background: rgba(12, 6, 11, .72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  animation: fade .35s ease;
+}
+.card {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--verre), linear-gradient(180deg, #24131f, #190d16);
+  box-shadow: var(--shadow);
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }

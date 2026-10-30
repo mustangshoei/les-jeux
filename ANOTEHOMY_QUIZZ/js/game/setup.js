@@ -17,19 +17,17 @@
   const isMuscleGame = () => gameId() === 'muscles-localisation';
   const kind = () => isOsteoGame() ? 'osteo' : isMuscleGame() ? 'muscles' : 'bones';
 
-  /* textes des modes, titre du nombre de questions et credits selon le jeu */
-  const BP3D = 'Modele anatomique 3D : <b>BodyParts3D</b>, (c) The Database Center for Life Science, licence CC BY 4.0 (simplifie pour le web).';
+  /* textes des modes (une phrase courte, comme dans GéoNohyne Quizz), titre du nombre de questions et
+     crédits selon le jeu */
+  const BP3D = 'Modèle anatomique 3D : <b>BodyParts3D</b>, © The Database Center for Life Science, licence CC BY 4.0 (simplifié pour le web).';
   const GAME_TEXT = {
-    bones: { modes: ['Un os s\'illumine en rouge sur le squelette : saisissez son nom exact dans le panneau de gauche.',
-      'Le nom officiel (TA2) d\'un os s\'affiche : cliquez sur l\'os correspondant directement sur le squelette.'],
-    count: 'Nombre d\'os a deviner', old: 'rotule, perone, omoplate, astragale...', credits: BP3D },
-    osteo: { modes: ['Une partie de l\'os s\'illumine en rouge : saisissez son nom exact dans le panneau de gauche.',
-      'Le nom officiel (TA2) d\'une partie s\'affiche : cliquez sur cette partie, directement sur l\'os.'],
-    count: 'Nombre de parties a trouver', old: 'trochiter, epitrochlee, apophyse coracoide...', credits: BP3D },
-    muscles: { modes: ['Un muscle s\'illumine en bleu sur le corps : saisissez son nom exact dans le panneau de gauche.',
-      'Le nom officiel (TA2) d\'un muscle s\'affiche : cliquez sur ce muscle, directement sur le corps (Maj + clic ecarte un muscle qui le cache).'],
-    count: 'Nombre de muscles a trouver', old: 'grand fessier, jambier anterieur, sus-epineux, couturier...',
-    credits: 'Modele anatomique 3D : <b>Z-Anatomy</b> (muscles et squelette), licence CC BY-SA 4.0, derive de BodyParts3D (DBCLS) ; simplifie pour le web.' }
+    bones: { modes: ['Un os s\'illumine en rouge : écrivez son nom.', 'Un nom d\'os s\'affiche : cliquez sur cet os.'],
+      count: 'Nombre d\'os à deviner', old: 'rotule, péroné, omoplate, astragale…', credits: BP3D },
+    osteo: { modes: ['Une partie de l\'os s\'illumine : écrivez son nom.', 'Un nom de partie s\'affiche : cliquez sur cette partie.'],
+      count: 'Nombre de parties à trouver', old: 'trochiter, épitrochlée, apophyse coracoïde…', credits: BP3D },
+    muscles: { modes: ['Un muscle s\'illumine en bleu : écrivez son nom.', 'Un nom de muscle s\'affiche : cliquez sur ce muscle.'],
+      count: 'Nombre de muscles à trouver', old: 'grand fessier, jambier antérieur, sus-épineux, couturier…',
+      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (muscles et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' }
   };
 
   function initSetup() {
@@ -54,6 +52,14 @@
     $('countNum').addEventListener('input', e => setCount(e.target.value, true));
     $('countNum').addEventListener('change', e => setCount(e.target.value));
     $('countRange').addEventListener('input', e => setCount(e.target.value));
+    /* − et +, raccourcis (5, 10, 20, 30, tous) */
+    document.querySelectorAll('#setup [data-pas]').forEach(b => b.addEventListener('click', () => {
+      setCount(settings[countKey()] + Number(b.dataset.pas));
+    }));
+    $('countPresets').addEventListener('click', e => {
+      const b = e.target.closest('[data-nombre]');
+      if (b) setCount(b.dataset.nombre === 'max' ? countMax() : b.dataset.nombre);
+    });
     document.querySelectorAll('input[name=mode]').forEach(r => r.addEventListener('change', () => { settings.mode = r.value; updateOpts(); }));
     $('optAuto').addEventListener('change', e => { settings.auto = e.target.checked; });
     $('optTol').addEventListener('change', e => { settings.tol = e.target.checked; });
@@ -82,7 +88,7 @@
     $('setupOld').textContent = t.old;
     $('modeADesc').textContent = t.modes[0];
     $('modeBDesc').textContent = t.modes[1];
-    $('setupCredits').innerHTML = t.credits + ' Rendu 3D : Three.js (licence MIT). Details dans CREDITS.md.';
+    $('setupCredits').innerHTML = t.credits + ' Rendu 3D : Three.js (licence MIT). Détails dans CREDITS.md.';
   }
 
   /* nombre maximal de questions pour la configuration courante */
@@ -90,12 +96,6 @@
     : isMuscleGame() ? NS.ADAPTERS['muscles-localisation'].pool().length : NS.pool().length;
 
   function updatePool() {
-    /* le squelette 3D se charge en arriere-plan pendant que l'accueil s'affiche */
-    if (!EN.isReady()) {
-      $('startBtn').disabled = true;
-      $('setupWarn').textContent = NS.loadError || 'Chargement du squelette 3D...';
-      return;
-    }
     if (isOsteoGame()) { NS.updateOsteoPool(); return; }
     if (isMuscleGame()) { NS.updateMusclePool(); return; }
     const n = NS.pool().length;
@@ -103,20 +103,33 @@
     $('countOf').textContent = `sur ${n} os disponibles`;
     setCount(settings.count, false, true);
     $('startBtn').disabled = n === 0;
-    $('setupWarn').textContent = n === 0 ? 'Selectionnez au moins une zone du corps.' : '';
+    $('setupWarn').textContent = n === 0 ? 'Sélectionnez au moins une zone du corps.' : '';
   }
 
   /* synchronisation champ numerique <-> curseur (os du squelette, parties de l'os, muscles) ;
      keep : simple mise a jour de l'affichage (le nombre souhaite est conserve, meme s'il
      depasse le maximum de la configuration courante, qui peut encore changer) */
+  const countKey = () => isOsteoGame() ? 'oCount' : isMuscleGame() ? 'mCount' : 'count';
   function setCount(v, typing, keep) {
-    const key = isOsteoGame() ? 'oCount' : isMuscleGame() ? 'mCount' : 'count';
+    const key = countKey();
     let c = parseInt(v, 10);
     if (isNaN(c)) { if (typing) return; c = settings[key]; }
     c = clamp(c, 1, Math.max(1, countMax()));
     if (!keep) settings[key] = c;
     if (!typing || String(c) !== $('countNum').value) $('countNum').value = c;
     $('countRange').value = c;
+    updatePresets(c);
+  }
+  /* raccourcis : celui du nombre choisi est enfoncé ; ceux qui dépassent le maximum sont cachés */
+  function updatePresets(v) {
+    const max = Math.max(1, countMax());
+    $('countAll').textContent = max;
+    document.querySelectorAll('#countPresets [data-nombre]').forEach(b => {
+      const tous = b.dataset.nombre === 'max', n = tous ? max : Number(b.dataset.nombre);
+      b.hidden = !tous && n >= max;
+      b.classList.toggle('on', n === v);
+      b.setAttribute('aria-pressed', String(n === v));
+    });
   }
 
   /* retour a l'ecran de configuration */
@@ -129,17 +142,13 @@
     ['qA', 'qB', 'feedback', 'reviewBox', 'results'].forEach(id => { $(id).hidden = true; });
     $('setup').hidden = false;
     $('app').className = 'mode-a';
-    /* muscles : modele des muscles en arriere-plan (charge a la demande) ; sinon squelette */
-    if (isMuscleGame()) { NS.resetMuscleError(); NS.showMuscles(); } else EN.deactivateMuscles();
+    /* aucune 3D derrière la configuration : les modèles (squelette, os détaillés, muscles) ne se
+       chargent qu'au lancement de la partie (js/game/play.js), et l'affichage est en pause */
+    EN.deactivateMuscles();
+    EN.pause();
     NS.updateDock();
     configure();
     updatePool();
-    /* jeu 2 : les os detailles se chargent a l'ouverture de la configuration */
-    if (isOsteoGame() && !EN.osteoLoaded()) {
-      EN.loadOsteoModel().then(updatePool).catch(err => {
-        $('setupWarn').textContent = 'Os detailles indisponibles : ' + (err && err.message ? err.message : err);
-      });
-    }
   }
 
   Object.assign(NS, { initSetup, showSetup, updatePool, setCount, isOsteoGame, isMuscleGame });

@@ -485,10 +485,10 @@
       b.classList.toggle('is-active', actif);
       b.setAttribute('aria-pressed', String(actif));
     });
-    $('#liste-deviner-aide').textContent = DEVINER[d].aide;
     memoriser(CLE_DEVINER, d);
   }
 
+  // Périmètres : une case par choix (nom, et à droite le nombre de départements)
   function dessinerPerimetres() {
     const liste = $('#liste-perimetres');
     liste.innerHTML = '';
@@ -501,21 +501,79 @@
       choix.value = g;
       choix.checked = g === perimetre;
       const texte = document.createElement('span');
-      texte.textContent = nomPerimetre(g) + ' · ' + lignesDe(g).length;
+      const nom = document.createElement('b');
+      nom.textContent = nomPerimetre(g);
+      const n = document.createElement('small');
+      n.textContent = lignesDe(g).length;
+      texte.append(nom, n);
       label.append(choix, texte);
       liste.appendChild(label);
-      if (g === TOUT) liste.appendChild(Object.assign(document.createElement('span'), { className: 'groupes-saut' }));
     });
+  }
+
+  // Mini-carte des régions (même présentation que l'écran de choix des quiz) : un clic choisit la région,
+  // un second revient à toute la France ; le survol éclaire la région et sa case
+  let miniCarte = null;
+  function dessinerMiniCarte() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const groupeDe = {};
+    LIGNES.forEach((l) => { groupeDe[l.code] = l.groupe; });
+    const v = CARTE.vue || { x: 0, y: 0, w: CARTE.largeur, h: CARTE.hauteur };
+    miniCarte = document.createElementNS(ns, 'svg');
+    miniCarte.setAttribute('class', 'mini-carte');
+    miniCarte.setAttribute('viewBox', [v.x, v.y, v.w, v.h].join(' '));
+    miniCarte.setAttribute('aria-hidden', 'true');
+    CARTE.elements.forEach((e) => {
+      if (!e.d || !groupeDe[e.code]) return;
+      const forme = document.createElementNS(ns, 'path');
+      forme.setAttribute('class', 'mini-zone');
+      forme.setAttribute('d', e.d);
+      forme.dataset.groupe = groupeDe[e.code];
+      const titre = document.createElementNS(ns, 'title');
+      titre.textContent = groupeDe[e.code];
+      forme.appendChild(titre);
+      miniCarte.appendChild(forme);
+    });
+    $('#liste-mini-carte').appendChild(miniCarte);
+  }
+  function majMiniCarte() {
+    if (miniCarte) {
+      miniCarte.querySelectorAll('[data-groupe]').forEach((z) => {
+        z.classList.toggle('is-choisi', perimetre === TOUT || z.dataset.groupe === perimetre);
+      });
+    }
+    const n = lignesDe(perimetre).length;
+    $('#liste-perimetre-compte').textContent = n + ' département' + (n > 1 ? 's' : '');
+  }
+  function survolerGroupe(g) {
+    if (miniCarte) miniCarte.querySelectorAll('[data-groupe]').forEach((z) => z.classList.toggle('is-survol', z.dataset.groupe === g));
+    document.querySelectorAll('#liste-perimetres input').forEach((i) => i.parentNode.classList.toggle('is-survol', i.value === g));
+  }
+  function choisirPerimetre(g) {
+    perimetre = g;
+    const r = [...document.querySelectorAll('#liste-perimetres input')].find((i) => i.value === g);
+    if (r) r.checked = true;
+    $('#liste-ordre-wrap').classList.toggle('hidden', !plusieursRegions(perimetre));
+    memoriser(CLE, perimetre);
+    majMiniCarte();
   }
 
   function brancher() {
     dessinerPerimetres();
+    dessinerMiniCarte();
     $('#liste-perimetres').addEventListener('change', (e) => {
-      if (e.target.name !== 'liste-perimetre') return;
-      perimetre = e.target.value;
-      $('#liste-ordre-wrap').classList.toggle('hidden', !plusieursRegions(perimetre));
-      memoriser(CLE, perimetre);
+      if (e.target.name === 'liste-perimetre') choisirPerimetre(e.target.value);
     });
+    const place = $('#liste-mini-carte');
+    place.addEventListener('click', (e) => {
+      const z = e.target.closest('[data-groupe]');
+      if (z) choisirPerimetre(perimetre === z.dataset.groupe ? TOUT : z.dataset.groupe);
+    });
+    place.addEventListener('mouseover', (e) => {
+      const z = e.target.closest('[data-groupe]');
+      survolerGroupe(z ? z.dataset.groupe : null);
+    });
+    place.addEventListener('mouseleave', () => survolerGroupe(null));
     document.querySelectorAll('[data-liste-deviner]').forEach((b) => b.addEventListener('click', () => {
       definirDeviner(b.dataset.listeDeviner);
     }));
@@ -584,7 +642,7 @@
       definirOrdre(ordre);
       definirDeviner(deviner);
       $('#liste-carte-option').checked = avecCarte;
-      $('#liste-ordre-wrap').classList.toggle('hidden', !plusieursRegions(perimetre));
+      choisirPerimetre(perimetre);
       afficherEtape('options');        // on choisit d'abord le périmètre, puis « Lancer la partie »
     }
   });

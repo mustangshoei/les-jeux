@@ -25,14 +25,14 @@
 
   const A = NS.ADAPTERS['muscles-localisation'] = {
     texts: {
-      qTitleA: 'Quel est le nom du muscle en bleu ?',
+      qTitleA: 'Quel est le nom du muscle en bleu\u00a0?',
       placeholder: 'Nom du muscle (nomenclature TA2)',
       qTitleB: 'Cliquez sur ce muscle :',
       promptA: 'Nommez le muscle <b>en bleu</b> dans le panneau de gauche',
       other: 'un autre muscle',
       fit: 'Voir tout le corps (touche 0)',
       target: 'Recentrer sur le muscle en cours',
-      credits: 'Modele 3D : Z-Anatomy, CC BY-SA 4.0'
+      credits: 'Modèle 3D : Z-Anatomy, CC BY-SA 4.0'
     },
     pool,
 
@@ -55,7 +55,7 @@
       const list = EN.muscleInstances(q.item.id), views = EN.bestViews(list[0]);
       EN.frameAll({ view: views.includes(EN.view()) ? null : views[0] });
       if (list.every(i => i.vis < DEEP)) {
-        NS.showNotice('Muscle profond : Maj + clic sur les muscles qui le recouvrent pour les ecarter.');
+        NS.showNotice('Muscle profond : Maj + clic sur les muscles qui le recouvrent pour les écarter.');
       }
     },
     describe: q => ({ name: q.item.name, latin: q.item.latin, where: q.inst ? sideName(q.inst.side) : '' }),
@@ -84,14 +84,14 @@
       list.forEach(it => EN.mark(it, 'reveal'));
       const focus = inst || list[0];
       if (focus) { EN.setHalo(focus, 'ok'); if (clicked) EN.focusInstance(focus, { keep: true }); else show(focus); }
-      NS.setPrompt('Revision : <b>' + esc(m.name) + '</b> - cliquez sur un autre muscle pour l\'identifier', 'review');
-      NS.reviewPanel(`<p class="qlabel">Revision - cliquez sur d'autres muscles pour les identifier</p><h3 class="rv-h">${esc(m.name)}</h3>` +
+      NS.setPrompt('Révision : <b>' + esc(m.name) + '</b> - cliquez sur un autre muscle pour l\'identifier', 'review');
+      NS.reviewPanel(`<p class="qlabel">Révision - cliquez sur d'autres muscles pour les identifier</p><h3 class="rv-h">${esc(m.name)}</h3>` +
         `<div class="latin">${esc(m.latin)}</div><div class="rv-meta">Zone : ${esc(D.MUSCLE_REGION[m.region].name)}` +
         `${m.principal ? ' - muscle principal' : ''}${list.length > 1 ? ' - pair' : ''}` +
         `${m.alt.length ? '<br>Aussi accepte : ' + esc(m.alt.join(', ')) : ''}` +
         `${m.old.length ? '<br>Ancien(s) terme(s) a ne plus utiliser : ' + esc(m.old.join(', ')) : ''}</div>` +
         `<p class="rv-sec">Astuce</p><div class="rv-meta">Maj + clic masque un muscle qui en cache un autre ; ` +
-        `"Tout afficher" les fait reapparaitre.</div>`);
+        `« Tout afficher » les fait réapparaître.</div>`);
     },
     reviewClick(it) { A.review(D.MUSCLE[it.bone], it, true); },
     tip(it) {

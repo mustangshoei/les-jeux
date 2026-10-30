@@ -1,73 +1,136 @@
 /* ==========================================================================
    Anotehomy Quizz - panel.css
-   Contenu du panneau lateral : progression, questions (modes A et B),
-   autocompletion, retour immediat, revision.
+   Contenu du panneau latéral : progression, questions (Nommage, Ciblage), autocomplétion, retour immédiat,
+   révision.
    ========================================================================== */
-.card-s{background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.card-s {
+  padding: 14px;
+  border: 1px solid rgba(255, 196, 214, .2);
+  border-radius: var(--radius);
+  background: var(--verre), rgba(15, 8, 14, .5);
+  box-shadow: var(--verre-ombre);
+}
 
 /* ---------- Progression et score ---------- */
-.prog-row{display:flex;justify-content:space-between;align-items:baseline;font-weight:600}
-.timer{font-variant-numeric:tabular-nums;color:var(--muted);display:flex;align-items:center;gap:6px}
-.timer svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
-.bar{height:8px;border-radius:99px;background:#0b1222;margin:10px 0 12px;overflow:hidden}
-.bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit;transition:width .5s ease}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{background:#0d1528;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
-.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
-.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-.stat.ok b{color:var(--ok)}
-.stat.ko b{color:var(--ko)}
+.prog-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+.timer { display: flex; align-items: center; gap: 6px; font: 600 .9rem var(--mono); font-variant-numeric: tabular-nums; color: var(--warn); }
+.timer svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+.bar { height: 7px; margin: 10px 0 12px; overflow: hidden; border-radius: 99px; background: rgba(15, 8, 14, .8); }
+.bar > div { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--rose), #ffa3bf); transition: width .5s ease; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--champ); text-align: center; }
+.stat b { display: block; font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat span { font: 500 .62rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.stat.ok { border-color: rgba(94, 232, 197, .3); }
+.stat.ok b { color: var(--ok); }
+.stat.ko { border-color: rgba(255, 74, 95, .3); }
+.stat.ko b { color: var(--ko); }
 
-/* ---------- Osteologie : os etudie ---------- */
-.subject-card{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:var(--radius);border:1px solid rgba(124,156,255,.45);border-left:4px solid var(--accent2);background:linear-gradient(135deg,rgba(124,156,255,.16),rgba(79,209,197,.08))}
-.sc-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.sc-name{font-size:18px;font-weight:750;color:#fff;line-height:1.25}
+/* ---------- Ostéologie : os étudié ---------- */
+.subject-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 196, 138, .4);
+  border-left: 4px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--warn-doux);
+}
+.sc-label { font: 500 .66rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.sc-name { font-size: 1.15rem; font-weight: 800; line-height: 1.25; color: var(--ink); }
 
 /* ---------- Questions ---------- */
-.qlabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 6px}
-.qtitle{font-size:17px;font-weight:650;margin:0 0 12px}
-.input-wrap{position:relative}
-.answer{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--line);background:#0b1222;outline:none;font-size:16px;transition:border-color .2s,box-shadow .2s}
-.answer:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,209,197,.18)}
-.answer:disabled{opacity:.6}
-.answer.shake{animation:shake .35s}
-.target-name{font-size:24px;font-weight:750;color:#fff;line-height:1.2;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(79,209,197,.14),rgba(124,156,255,.14));border:1px solid rgba(79,209,197,.35)}
+.qlabel { margin: 0 0 6px; font: 600 .7rem/1.3 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--rose-txt); }
+.qtitle { margin: 0 0 12px; font-size: 1.1rem; font-weight: 700; }
+.input-wrap { position: relative; }
+.answer {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--champ);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.answer:focus { border-color: var(--rose); box-shadow: var(--anneau); }
+.answer:disabled { opacity: .6; }
+.answer.shake { animation: shake .35s; }
+.target-name {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 92, 138, .4);
+  border-radius: 12px;
+  background: var(--rose-doux);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--ink);
+}
 
-/* ---------- Autocompletion ---------- */
-.suggest{position:absolute;left:0;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#0e1730;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 30px rgba(0,0,0,.45);z-index:10;max-height:260px;overflow:auto}
-.suggest li{padding:8px 10px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.suggest li small{color:var(--muted);font-style:italic;font-size:11.5px;text-align:right}
-.suggest li.active,.suggest li:hover{background:#1b2847}
-.suggest mark{background:none;color:var(--accent);font-weight:700}
+/* ---------- Autocomplétion ---------- */
+.suggest {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 260px;
+  margin: 0;
+  padding: 6px;
+  overflow: auto;
+  list-style: none;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.suggest li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.suggest li small { font-size: .75rem; font-style: italic; color: var(--muted); text-align: right; }
+.suggest li.active, .suggest li:hover { background: var(--rose-doux); }
+.suggest mark { background: none; color: var(--rose-txt); font-weight: 700; }
 
-/* ---------- Retour immediat ---------- */
-.feedback{border-radius:var(--radius);padding:14px;border:1px solid;animation:pop .3s ease}
-.feedback.ok{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.45);color:var(--ok)}
-.feedback.ko{background:rgba(255,90,90,.1);border-color:rgba(255,90,90,.45);color:var(--ko)}
-.fb-title{font-weight:750;font-size:16px;display:flex;align-items:center;gap:8px}
-.fb-title svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-.fb-body{margin-top:6px;color:#d5dcec}
-.fb-body b{color:#fff}
-.fb-where{color:var(--muted)}
-.fb-note{margin-top:8px;font-size:12.5px;color:var(--warn)}
-.fb-next{margin-top:12px;display:flex;align-items:center;gap:10px}
-.fb-timer{flex:1;height:4px;background:#0b1222;border-radius:9px;overflow:hidden}
-.fb-timer>div{height:100%;background:currentColor;opacity:.7;width:100%;transform-origin:left center}
-.fb-next .btn{padding:7px 12px;font-size:13px;color:#fff}
+/* ---------- Retour immédiat ---------- */
+.feedback { padding: 14px; border: 1px solid; border-radius: var(--radius); animation: pop .3s ease; }
+.feedback.ok { border-color: rgba(94, 232, 197, .45); background: var(--ok-doux); color: var(--ok); }
+.feedback.ko { border-color: rgba(255, 74, 95, .45); background: rgba(255, 74, 95, .1); color: #ff8e9c; }
+.fb-title { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: 800; }
+.fb-title svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.fb-body { margin-top: 6px; color: var(--ink-2); }
+.fb-body b { color: var(--ink); }
+.fb-where { color: var(--muted); }
+.fb-note { margin-top: 8px; font-size: .82rem; color: var(--warn); }
+.fb-next { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.fb-timer { flex: 1; height: 4px; overflow: hidden; border-radius: 9px; background: rgba(15, 8, 14, .8); }
+.fb-timer > div { width: 100%; height: 100%; background: currentColor; opacity: .7; transform-origin: left center; }
+.fb-next .btn { padding: 7px 12px; font-size: .85rem; color: var(--ink); }
 
-/* ---------- Revision ---------- */
-.subs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.subs span{font-size:12px;padding:4px 9px;border-radius:99px;background:#101a30;border:1px solid var(--line);color:#cdd6ea}
-/* parties de l'os etudie (osteologie) : pastilles cliquables, avec la couleur de l'atlas */
-.sub-chip{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12px;padding:4px 9px;border-radius:99px;background:#101a30;border:1px solid var(--line);color:#cdd6ea;cursor:pointer;transition:border-color .2s,background .2s}
-.sub-chip:hover{border-color:var(--accent)}
-.sub-chip.on{background:rgba(47,224,138,.14);border-color:rgba(47,224,138,.6);color:#fff}
-.sub-chip i{width:9px;height:9px;border-radius:50%;flex:none}
-.sub-chip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.subs.chips{max-height:42vh;overflow:auto}
-.rv-h{font-size:20px;font-weight:750;margin:0}
-.rv-meta{font-size:12px;color:var(--muted);margin-top:4px}
-.rv-sec{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 0}
+/* ---------- Révision ---------- */
+.subs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.subs span { padding: 4px 9px; border: 1px solid var(--line); border-radius: 99px; background: var(--champ); font-size: .78rem; color: var(--ink-2); }
+/* parties de l'os étudié (ostéologie) : pastilles cliquables, avec la couleur de l'atlas */
+.sub-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--champ);
+  font: inherit;
+  font-size: .78rem;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: border-color .2s ease, background-color .2s ease;
+}
+.sub-chip:hover { border-color: var(--rose); }
+.sub-chip.on { border-color: rgba(94, 232, 197, .6); background: var(--ok-doux); color: var(--ink); }
+.sub-chip i { flex: none; width: 9px; height: 9px; border-radius: 50%; }
+.sub-chip:focus-visible { outline: 2px solid var(--rose); outline-offset: 1px; }
+.subs.chips { max-height: 42vh; overflow: auto; }
+.rv-h { margin: 0; font-size: 1.3rem; font-weight: 800; }
+.rv-meta { margin-top: 4px; font-size: .8rem; color: var(--muted); }
+.rv-sec { margin: 14px 0 0; font: 600 .68rem/1.3 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
 
-@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
-@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }

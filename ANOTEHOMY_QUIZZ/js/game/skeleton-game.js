@@ -40,7 +40,7 @@
   function preciseName(b, inst) {
     const e = expected(b, inst);
     if (!e) return null;
-    if (SERIES[b.id].kind === 'rib') return ordinal(e.num) + ' cote ' + (e.side === 'L' ? 'gauche' : 'droite');
+    if (SERIES[b.id].kind === 'rib') return ordinal(e.num) + ' côte ' + (e.side === 'L' ? 'gauche' : 'droite');
     return b.name + ' ' + inst.label;
   }
 
@@ -71,7 +71,7 @@
     let r;
     if (p.code) {
       /* niveau vertebral saisi (T9, D9, L3...) */
-      if (p.code.letter === 'd' && exp.letter === 't') return { ok: false, oldName: 'D' + p.code.num + ' (vertebre dorsale)', other: b };
+      if (p.code.letter === 'd' && exp.letter === 't') return { ok: false, oldName: 'D' + p.code.num + ' (vertèbre dorsale)', other: b };
       if (p.code.letter !== exp.letter) {
         const ob = D.BONE[LETTER_BONE[p.code.letter]];
         return { ok: false, other: ob || null };
@@ -84,19 +84,19 @@
       r = NS.evaluate(p.rest, b, inst);
       if (!r.ok) return r;
     }
-    if (p.num !== null && p.num !== exp.num) return { ok: false, note: `Bon os, mais mauvais numero : c'etait ${disp}.` };
-    if (p.side && exp.side && p.side !== exp.side) return { ok: false, note: `Bon os, mais mauvais cote : c'etait ${disp}.` };
+    if (p.num !== null && p.num !== exp.num) return { ok: false, note: `Bon os, mais mauvais numéro : c'était ${disp}.` };
+    if (p.side && exp.side && p.side !== exp.side) return { ok: false, note: `Bon os, mais mauvais côté : c'était ${disp}.` };
     const complete = p.num !== null && (!exp.side || p.side);
     if (!complete) {
-      if (settings.precise) return { ok: false, incomplete: true, note: `Reponse incomplete : il fallait preciser ${SERIES[b.id].kind === 'rib' ? 'le numero et le cote' : 'le niveau'} (${disp}).` };
-      r.note = `Nom precis : ${disp}.`;
+      if (settings.precise) return { ok: false, incomplete: true, note: `Réponse incomplète : il fallait préciser ${SERIES[b.id].kind === 'rib' ? 'le numéro et le côté' : 'le niveau'} (${disp}).` };
+      r.note = `Nom précis : ${disp}.`;
     }
     return r;
   }
 
   NS.ADAPTERS['os-squelette'] = {
     texts: {
-      qTitleA: 'Quel est le nom de l\'os en rouge ?',
+      qTitleA: 'Quel est le nom de l\'os en rouge\u00a0?',
       placeholder: 'Nom de l\'os (nomenclature TA2)',
       qTitleB: 'Cliquez sur cet os :',
       promptA: 'Nommez l\'os <b>en rouge</b> dans le panneau de gauche',
@@ -160,11 +160,11 @@
       const focus = inst || list[0];
       if (focus) { EN.setHalo(focus, 'ok'); EN.focusInstance(focus); }
       const pn = focus ? preciseName(b, focus) : null;
-      NS.setPrompt('Revision : <b>' + esc(pn || b.name) + '</b> - cliquez sur un autre os pour l\'identifier', 'review');
+      NS.setPrompt('Révision : <b>' + esc(pn || b.name) + '</b> - cliquez sur un autre os pour l\'identifier', 'review');
       /* parties de l'os : celles du jeu "Osteologie descriptive" si l'os y est decrit */
       const def = D.OSTEO.find(o => o.bone === b.id);
       const subs = def ? def.parts : b.sub;
-      NS.reviewPanel(`<p class="qlabel">Revision - cliquez sur d'autres os pour les identifier</p><h3 class="rv-h">${esc(pn || b.name)}</h3>` +
+      NS.reviewPanel(`<p class="qlabel">Révision - cliquez sur d'autres os pour les identifier</p><h3 class="rv-h">${esc(pn || b.name)}</h3>` +
         `<div class="latin">${esc(b.latin)}</div><div class="rv-meta">${pn ? esc(b.name) + ' - ' : ''}Zone : ${esc(D.REGION[b.region].name)}${b.paired ? ' - os pair' : ''}` +
         `${b.old.length ? '<br>Ancien(s) terme(s) a ne plus utiliser : ' + esc(b.old.join(', ')) : ''}</div>` +
         (subs.length ? `<p class="rv-sec">${def ? 'Parties (jeu Osteologie descriptive)' : 'Principales parties'}</p>` +

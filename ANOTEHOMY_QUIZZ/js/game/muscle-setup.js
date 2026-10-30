@@ -42,44 +42,20 @@
     $('mSetAllN').textContent = plural(D.MUSCLES.length, 'muscle');
   }
 
-  /* chargement du modele (une seule tentative par ouverture de la configuration) */
-  let loading = false, failed = '';
-  function ensureMuscleModel() {
-    if (EN.musclesLoaded() || loading || failed || !EN.isReady()) return;
-    loading = true;
-    EN.loadMuscleModel().then(() => {
-      loading = false;
-      if (session.phase === 'setup' && NS.isMuscleGame()) showMuscles();
-      NS.updatePool();
-    }).catch(err => {
-      loading = false;
-      failed = 'Muscles 3D indisponibles : ' + (err && err.message ? err.message : err);
-      NS.updatePool();
-    });
-  }
-  /* nouvelle ouverture de la configuration : nouvel essai possible apres une erreur */
-  function resetMuscleError() { failed = ''; }
-  /* modele des muscles en arriere-plan de la configuration */
-  function showMuscles() {
-    if (!EN.musclesLoaded()) return;
-    EN.activateMuscles();
-    EN.frameAll({ view: 'A' });
-  }
-
+  /* Le modèle 3D des muscles (environ 3 Mo) ne se charge qu'au lancement de la partie
+     (js/game/muscle-game.js, build) : rien ne s'affiche derrière la configuration. */
   function updateMusclePool() {
     D.MUSCLE_REGIONS.forEach(r => {
       const el = document.querySelector(`[data-zc="${r.id}"]`);
       if (el) el.textContent = plural(inZone(r.id), 'muscle');
     });
-    ensureMuscleModel();
-    const n = A().pool().length, loaded = EN.musclesLoaded();
+    const n = A().pool().length;
     $('countNum').max = $('countRange').max = Math.max(1, n);
     $('countOf').textContent = `sur ${plural(n, 'muscle')} disponible${n > 1 ? 's' : ''}`;
     NS.setCount(settings.mCount, false, true);
-    $('startBtn').disabled = !n || !loaded;
-    $('setupWarn').textContent = !n ? 'Selectionnez au moins une zone du corps.'
-      : loaded ? '' : failed || 'Chargement des muscles 3D...';
+    $('startBtn').disabled = !n;
+    $('setupWarn').textContent = !n ? 'Sélectionnez au moins une zone du corps.' : '';
   }
 
-  Object.assign(NS, { initMuscleSetup, updateMusclePool, resetMuscleError, showMuscles });
+  Object.assign(NS, { initMuscleSetup, updateMusclePool });
 })(AQ.game);

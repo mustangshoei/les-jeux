@@ -350,12 +350,15 @@
     Object.keys(cat.groupes).forEach((g) => cat.groupes[g].forEach((c) => { groupeDe[c] = g; }));
     const v = carte.vue || { x: 0, y: 0, w: carte.largeur, h: carte.hauteur };
     const svg = creerSVG('svg', 'mini-carte', { viewBox: [v.x, v.y, v.w, v.h].join(' '), 'aria-hidden': 'true' });
-    // Carte en longueur (le monde) : au-dessus de la liste, sur toute la largeur ; sinon, à côté
-    document.querySelectorAll('.groupes-choix').forEach((b) => b.classList.toggle('groupes-choix--large', v.w / v.h > 1.3));
-    carte.elements.forEach((e) => {
+    // Carte en longueur (le monde) ou peu de groupes (types, niveaux) : la carte en grand, au-dessus de la liste ;
+    // sinon (les régions), à côté
+    const large = v.w / v.h > 1.3 || Object.keys(cat.groupes).length <= 4;
+    document.querySelectorAll('.groupes-choix').forEach((b) => b.classList.toggle('groupes-choix--large', large));
+    const ajouter = (e) => {
       if (!e.d && !e.point) return;
+      const classe = 'mini-zone' + (e.ligne ? ' mini-zone--ligne' : '') + (e.dessous ? ' mini-zone--dessous' : '');
       const forme = e.d
-        ? creerSVG('path', 'mini-zone' + (e.ligne ? ' mini-zone--ligne' : ''), { d: e.d })
+        ? creerSVG('path', classe, { d: e.d })
         : creerSVG('circle', 'mini-zone mini-zone--point', { cx: e.cx, cy: e.cy, r: v.w * 0.006 });
       const g = groupeDe[e.code];
       if (g) {
@@ -367,7 +370,21 @@
         forme.classList.add('mini-zone--hors');
       }
       svg.appendChild(forme);
-    });
+    };
+    // Même ordre que la vraie carte (construireAvecFond) : les surfaces « dessous » (les mers), le décor (pays
+    // voisins), la terre du fond (ex. les départements, sans quoi les cours d'eau flotteraient dans le vide),
+    // puis le reste (les cours d'eau) ; les mers, polygones grossiers, sont ainsi recouvertes par la côte
+    const fond = cat.fond && GeoCarte.obtenir(cat.fond.carte);
+    const exclus = new Set((cat.fond && cat.fond.exclure) || []);
+    const decor = (couche) => (carte.decor || [])
+      .filter((p) => (p.fond ? 'fond' : p.dessus ? 'dessus' : 'milieu') === couche)
+      .forEach((p) => svg.appendChild(creerSVG('path', 'mini-decor mini-decor--' + couche, { d: p.d })));
+    decor('fond');
+    carte.elements.filter((e) => e.dessous).forEach(ajouter);
+    decor('milieu');
+    if (fond) fond.elements.filter((e) => e.d && !exclus.has(e.code)).forEach((e) => svg.appendChild(creerSVG('path', 'mini-terre', { d: e.d })));
+    carte.elements.filter((e) => !e.dessous).forEach(ajouter);
+    decor('dessus');
     miniCarte = svg;
   }
 
@@ -901,7 +918,10 @@
 
   function etat(code, valeur) {
     const z = zones.get(code);
-    if (z) z.el.dataset.state = valeur;
+    if (!z) return;
+    z.el.dataset.state = valeur;
+    // Un cours d'eau joué (trouvé, raté, demandé…) passe au-dessus des autres : son trait reste entier
+    if (valeur !== 'idle' && z.el.classList.contains('ligne')) z.el.parentNode.appendChild(z.el);
   }
 
   function brancherCarte() {

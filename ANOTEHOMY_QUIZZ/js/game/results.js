@@ -30,11 +30,11 @@
   }
 
   function answerText(l) {
-    if (l.skipped) return 'Question passee';
-    if (settings.mode === 'B') return `Vous avez clique sur : <b>${esc(l.given)}</b>`;
-    let a = `Votre reponse : <b>"${esc(l.given)}"</b>`;
+    if (l.skipped) return 'Question passée';
+    if (settings.mode === 'B') return `Vous avez cliqué sur : <b>${esc(l.given)}</b>`;
+    let a = `Votre réponse : <b>« ${esc(l.given)} »</b>`;
     if (l.note) a += ' - ' + esc(l.note);
-    else if (l.oldName) a += l.other && l.other !== l.item ? ' - ancien terme designant : ' + esc(l.other.name) : ' - ancienne nomenclature';
+    else if (l.oldName) a += l.other && l.other !== l.item ? ' - ancien terme désignant : ' + esc(l.other.name) : ' - ancienne nomenclature';
     else if (l.other) a += ' - ' + NS.adapter().texts.other + ' (' + esc(l.other.name) + ')';
     return a;
   }
@@ -46,26 +46,26 @@
     const n = session.log.length, pct = n ? Math.round(session.ok / n * 100) : 0, C = 2 * Math.PI * 58;
     const errs = session.log.map((l, i) => [l, i]).filter(([l]) => !l.ok);
     const typos = session.log.map((l, i) => [l, i]).filter(([l]) => l.ok && l.typo);
-    const msg = pct === 100 ? 'Parfait !' : pct >= 80 ? 'Excellent travail !' : pct >= 50 ? 'Bon travail, continuez !' : 'Continuez a vous entrainer !';
+    const msg = pct === 100 ? 'Parfait\u00a0!' : pct >= 80 ? 'Excellent travail\u00a0!' : pct >= 50 ? 'Bon travail, continuez\u00a0!' : 'Continuez à vous entraîner\u00a0!';
     const item = ([l, i], cls, text) => `<li${cls ? ' class="' + cls + '"' : ''}><div><div class="en">${esc(shownName(l))}<i>${esc(l.item.latin)}</i></div>` +
       `<div class="ea">${text}</div></div><button type="button" class="btn" data-review="${i}">Voir</button></li>`;
     const random = osteo && settings.oPick === 'random';
     $('resultsCard').innerHTML =
-      `<h2 class="res-title">Partie terminee - ${msg}</h2>
-      ${osteo ? `<p class="res-sub">Os etudie : <b>${esc(A.boneTitle(session.oDef))}</b></p>` : ''}
+      `<h2 class="res-title">Partie terminée — ${msg}</h2>
+      ${osteo ? `<p class="res-sub">Os étudié : <b>${esc(A.boneTitle(session.oDef))}</b></p>` : ''}
       <div class="res-top">
         <div class="ring"><svg viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="58"/><circle class="fg" id="ringFg" cx="70" cy="70" r="58" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}"/></svg><div class="pct">${pct}%</div></div>
         <div class="kpis">
           <div class="kpi"><b>${session.points} pts</b><span>Score total</span></div>
-          <div class="kpi"><b>${session.ok} / ${n}</b><span>Bonnes reponses</span></div>
-          <div class="kpi"><b>${pct} %</b><span>Taux de reussite</span></div>
-          <div class="kpi"><b>${fmt(session.elapsed)}</b><span>Temps passe</span></div>
+          <div class="kpi"><b>${session.ok} / ${n}</b><span>Bonnes réponses</span></div>
+          <div class="kpi"><b>${pct} %</b><span>Taux de réussite</span></div>
+          <div class="kpi"><b>${fmt(session.elapsed)}</b><span>Temps passé</span></div>
         </div>
       </div>
-      ${aborted && n < session.queue.length ? `<p class="fb-note">Partie interrompue : ${n} question(s) traitee(s) sur ${session.queue.length}.</p>` : ''}
-      <h3 class="res-sec">Recapitulatif des erreurs (${errs.length})</h3>
-      ${errs.length ? `<ul class="errs">${errs.map(e => item(e, '', answerText(e[0]))).join('')}</ul>` : `<div class="perfect">Aucune erreur, toutes les reponses sont correctes en nomenclature TA2.</div>`}
-      ${typos.length ? `<h3 class="res-sec">Acceptees avec une faute de frappe (${typos.length})</h3><ul class="errs">${typos.map(t => item(t, 'typo', `Saisi : <b>"${esc(t[0].given)}"</b>`)).join('')}</ul>` : ''}
+      ${aborted && n < session.queue.length ? `<p class="fb-note">Partie interrompue : ${n} question(s) traitée(s) sur ${session.queue.length}.</p>` : ''}
+      <h3 class="res-sec">Récapitulatif des erreurs (${errs.length})</h3>
+      ${errs.length ? `<ul class="errs">${errs.map(e => item(e, '', answerText(e[0]))).join('')}</ul>` : `<div class="perfect">Aucune erreur, toutes les réponses sont correctes en nomenclature TA2.</div>`}
+      ${typos.length ? `<h3 class="res-sec">Acceptées avec une faute de frappe (${typos.length})</h3><ul class="errs">${typos.map(t => item(t, 'typo', `Saisi : <b>« ${esc(t[0].given)} »</b>`)).join('')}</ul>` : ''}
       <div class="res-actions"><button type="button" class="btn ghost" id="btnHome">Menu principal</button><button type="button" class="btn" id="btnNewCfg">Nouvelle configuration</button>` +
       (osteo ? `<button type="button" class="btn" id="btnExplore">Explorer l'os</button>` : '') +
       (random ? `<button type="button" class="btn" id="btnOther">Autre os au hasard</button>` : '') +
@@ -98,7 +98,7 @@
   /* panneau de revision (html du jeu) + bouton de retour aux resultats */
   function reviewPanel(html) {
     const rb = $('reviewBox');
-    rb.innerHTML = html + '<div class="btn-row"><button type="button" class="btn primary grow" id="btnBackRes">Retour aux resultats</button></div>';
+    rb.innerHTML = html + '<div class="btn-row"><button type="button" class="btn primary grow" id="btnBackRes">Retour aux résultats</button></div>';
     rb.hidden = false;
     $('btnBackRes').addEventListener('click', backToResults);
   }

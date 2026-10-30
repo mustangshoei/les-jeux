@@ -67,7 +67,7 @@
   /* squelette complet : parties + geometries Three.js */
   function loadModel() {
     const M = AQ.data.MODEL;
-    if (!M) return Promise.reject(new Error('Modele 3D absent (js/data/skeleton-model.js).'));
+    if (!M) return Promise.reject(new Error('Modèle 3D absent (js/data/skeleton-model.js).'));
     return decode(M).then(parts => parts.map(p => Object.assign(p, { geometry: makeGeometry(p.positions, p.indices) })));
   }
 

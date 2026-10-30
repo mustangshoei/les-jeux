@@ -48,13 +48,18 @@
         { id: 'morpion-monde', nom: 'Le morpion du monde', groupe: 'Monde', variantes: DUEL, bientot: true },
         { id: 'grand-chemin-monde', nom: 'Le Grand Chemin du monde', groupe: 'Monde', bientot: true }
       ] },
-    { id: 'anotehomy', dossier: 'ANOTEHOMY_QUIZZ', nom: 'Anotehomy Quizz', icone: '🦴', version: '1.0.0',
+    { id: 'anotehomy', dossier: 'ANOTEHOMY_QUIZZ', nom: 'Anotehomy Quizz', icone: '🦴', version: '2.0.0',
       description: 'Anatomie humaine en 3D : os, ostéologie descriptive, muscles.',
       modes: [
-        { id: 'os-squelette', nom: 'Les os du squelette', groupe: 'Les os', variantes: NOMMAGE },
-        { id: 'os-descriptive', nom: 'Ostéologie descriptive', groupe: 'Les os', variantes: NOMMAGE },
-        { id: 'muscles-localisation', nom: 'Les muscles du corps humain', groupe: 'Les muscles', variantes: NOMMAGE },
-        { id: 'vaisseaux', nom: 'Les vaisseaux sanguins', groupe: 'Les vaisseaux sanguins', bientot: true }
+        { id: 'os-squelette', nom: 'Les os du squelette', groupe: 'Le corps humain', variantes: NOMMAGE },
+        { id: 'os-descriptive', nom: 'Ostéologie descriptive', groupe: 'Le corps humain', variantes: NOMMAGE },
+        { id: 'muscles-localisation', nom: 'Les muscles du corps humain', groupe: 'Le corps humain', variantes: NOMMAGE },
+        { id: 'organes', nom: 'Les organes', groupe: 'Le corps humain', bientot: true },
+        { id: 'splanchnologie', nom: 'Splanchnologie descriptive', groupe: 'Le corps humain', bientot: true },
+        { id: 'nerfs', nom: 'Les nerfs', groupe: 'Le corps humain', bientot: true },
+        { id: 'vaisseaux', nom: 'Les vaisseaux sanguins', groupe: 'Le corps humain', bientot: true },
+        { id: 'pathologies', nom: 'Les pathologies', groupe: 'La langue médicale', bientot: true },
+        { id: 'medicaments', nom: 'Les termes médicamenteux', groupe: 'La langue médicale', bientot: true }
       ] },
     { id: 'histehory', dossier: 'HISTEHORY_QUIZZ', nom: 'Histehory Quizz', icone: '📜', version: '0.1.0',
       description: 'Histoire : dates, personnages, chronologie, vrai ou faux.',

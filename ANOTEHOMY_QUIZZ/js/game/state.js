@@ -33,8 +33,11 @@
   const ADAPTERS = {};
   const adapter = () => ADAPTERS[session.game ? session.game.id : 'os-squelette'];
 
-  /* os jouables pour les zones cochees (presents dans le modele 3D) */
-  const available = b => EN.instancesOf(b.id).length > 0;
+  /* os jouables pour les zones cochées (présents dans le modèle 3D). Avant la première partie, la 3D
+     n'est pas démarrée : la liste des os du modèle est lue dans l'en-tête de js/data/skeleton-model.js,
+     sans décoder la géométrie. */
+  const IN_MODEL = new Set(((AQ.data.MODEL && AQ.data.MODEL.parts) || []).filter(p => p[0] === 'b').map(p => p[1]));
+  const available = b => EN.isReady() ? EN.instancesOf(b.id).length > 0 : IN_MODEL.has(b.id);
   const pool = () => BONES.filter(b => settings.regions.has(b.region) && available(b));
   const inGame = () => session.phase === 'play' || session.phase === 'feedback';
   const curQ = () => session.queue[session.idx];

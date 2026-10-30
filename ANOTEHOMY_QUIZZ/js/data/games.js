@@ -1,47 +1,79 @@
 /* ==========================================================================
    Anotehomy Quizz - data/games.js
-   CATALOGUE DES CATEGORIES ET DES JEUX (ecran d'accueil)
+   CATALOGUE DU MENU : les chapitres (grandes catégories), puis leurs cartes (jeux et modules).
    --------------------------------------------------------------------------
-   Pour ajouter un jeu : ajouter une entree dans GAMES avec la categorie
-   voulue. status : 'ready' = jouable, 'soon' = annonce mais verrouille.
-   Une categorie est verrouillee tant qu'elle n'a aucun jeu 'ready'.
+   POUR AJOUTER UN JEU : une entrée dans GAMES, avec son chapitre. status : 'ready' = jouable,
+   'soon' = annoncé mais grisé (« Bientôt »). L'ordre de GAMES est celui des cartes dans le menu.
+   Les identifiants des jeux jouables ne doivent pas changer : les statistiques des joueurs y sont
+   rangées (js/account/profile.js).
+     chapter  chapitre de la carte (CHAPTERS)
+     kind     'jeu' ou 'module' (module d'exploration, chapitre « Apprendre la Vie »)
+     icon     pictogramme de la vignette (js/game/home.js, ICONS) ; tint : sa couleur (TINTS)
+     tagline  phrase de la carte et de l'écran de configuration
+     meta     repères en bas de la carte (ex. « 194 muscles · Nommage · Ciblage »)
    ========================================================================== */
 (function (NS) {
   'use strict';
 
-  const CATEGORIES = [
-    { id: 'muscles', name: 'Les muscles', icon: 'muscle',
-      desc: 'Muscles squelettiques : situation, insertions et actions.' },
-    { id: 'os', name: 'Les os', icon: 'bone',
-      desc: 'Squelette humain et anatomie descriptive des os.' },
-    { id: 'vaisseaux', name: 'Les vaisseaux sanguins', icon: 'vessel',
-      desc: 'Arteres et veines : trajets, branches et territoires.' }
+  const CHAPTERS = [
+    { id: 'corps', name: 'Le corps humain', image: 'corps', unit: ['jeu', 'jeux'],
+      desc: 'Os, muscles, organes, nerfs et vaisseaux : reconnaître et situer chaque élément sur le corps en 3D.' },
+    { id: 'langue', name: 'La langue médicale', image: 'langue', unit: ['jeu', 'jeux'],
+      desc: 'Les mots de la médecine : les pathologies et les termes médicamenteux.' },
+    { id: 'vie', name: 'Apprendre la Vie', image: 'vie', unit: ['module', 'modules'],
+      desc: 'Explorer librement le corps humain et consulter la fiche de chaque élément.' }
   ];
 
+  const muscles = () => NS.MUSCLES.length;
   const GAMES = [
-    { id: 'os-squelette', category: 'os', num: 1, status: 'ready',
+    /* ---------- 1. Le corps humain ---------- */
+    { id: 'os-squelette', chapter: 'corps', kind: 'jeu', status: 'ready', icon: 'os', tint: 'nacre',
       name: 'Les os du squelette',
-      tagline: 'Reconnaitre et localiser chaque os du corps humain.',
-      desc: 'Un os s\'illumine sur le squelette 3D : donnez son nom (mode Nommage), ou cliquez sur l\'os demande (mode Ciblage).',
-      meta: [NS.BONES.length + ' os', 'Nommage ou ciblage', 'Squelette 3D'] },
-    { id: 'os-descriptive', category: 'os', num: 2, status: 'ready',
-      name: 'Osteologie descriptive',
-      tagline: 'Nommer et localiser les parties d\'un os.',
-      desc: 'Un os tire au sort (ou choisi) est affiche seul, decoupe en parties : identifiez ses reliefs et ses reperes (processus, fosses, incisures, tuberosites...).',
-      meta: [NS.OSTEO.length + ' os detailles', NS.OSTEO.reduce((n, d) => n + d.parts.length, 0) + ' parties', 'Nommage ou ciblage'] },
-    { id: 'muscles-localisation', category: 'muscles', num: 1, status: 'ready',
+      tagline: 'Reconnaître et situer chaque os du corps humain.',
+      desc: 'Un os s\'illumine sur le squelette 3D : donnez son nom (Nommage), ou cliquez sur l\'os demandé (Ciblage).',
+      meta: NS.BONES.length + ' os · Nommage · Ciblage' },
+    { id: 'os-descriptive', chapter: 'corps', kind: 'jeu', status: 'ready', icon: 'osteo', tint: 'peche',
+      name: 'Ostéologie descriptive',
+      tagline: 'Nommer et situer les parties d\'un os : reliefs, fosses, incisures.',
+      desc: 'Un os tiré au sort (ou choisi) est affiché seul, découpé en parties : identifiez ses reliefs et ses repères.',
+      meta: NS.OSTEO.length + ' os détaillés · ' + NS.OSTEO.reduce((n, d) => n + d.parts.length, 0) + ' parties' },
+    { id: 'muscles-localisation', chapter: 'corps', kind: 'jeu', status: 'ready', icon: 'muscle', tint: 'framboise',
       name: 'Les muscles du corps humain',
-      tagline: 'Reconnaitre et localiser les muscles du corps humain.',
-      desc: 'Un muscle s\'illumine sur le corps en 3D : donnez son nom (mode Nommage), ou cliquez sur le muscle demande (mode Ciblage). Muscles principaux ou tous les muscles, zone par zone.',
-      meta: [NS.MUSCLES.length + ' muscles', NS.MUSCLES.filter(m => m.principal).length + ' principaux', 'Nommage ou ciblage'] }
+      tagline: 'Reconnaître et situer les muscles, zone par zone.',
+      desc: 'Un muscle s\'illumine sur le corps en 3D : donnez son nom (Nommage), ou cliquez sur le muscle demandé (Ciblage).',
+      meta: muscles() + ' muscles · ' + NS.MUSCLES.filter(m => m.principal).length + ' principaux' },
+    { id: 'organes', chapter: 'corps', kind: 'jeu', status: 'soon', icon: 'organe',
+      name: 'Les organes',
+      tagline: 'Reconnaître et situer les organes du corps humain.' },
+    { id: 'splanchnologie', chapter: 'corps', kind: 'jeu', status: 'soon', icon: 'splanchno',
+      name: 'Splanchnologie descriptive',
+      tagline: 'Nommer et situer les parties d\'un organe, comme l\'ostéologie pour les os.' },
+    { id: 'nerfs', chapter: 'corps', kind: 'jeu', status: 'soon', icon: 'nerf',
+      name: 'Les nerfs',
+      tagline: 'Suivre les nerfs : origines, trajets et territoires.' },
+    { id: 'vaisseaux', chapter: 'corps', kind: 'jeu', status: 'soon', icon: 'vaisseau',
+      name: 'Les vaisseaux sanguins',
+      tagline: 'Artères et veines : trajets, branches et territoires.' },
+
+    /* ---------- 2. La langue médicale (nom temporaire) ---------- */
+    { id: 'pathologies', chapter: 'langue', kind: 'jeu', status: 'soon', icon: 'pathologie',
+      name: 'Les pathologies',
+      tagline: 'Reconnaître les maladies et leurs termes.' },
+    { id: 'medicaments', chapter: 'langue', kind: 'jeu', status: 'soon', icon: 'medicament',
+      name: 'Les termes médicamenteux',
+      tagline: 'Le vocabulaire des médicaments et des traitements.' },
+
+    /* ---------- 3. Apprendre la Vie ---------- */
+    { id: 'corps-humain', chapter: 'vie', kind: 'module', status: 'soon', icon: 'corps',
+      name: 'Le corps humain',
+      tagline: 'Explorer le corps en 3D : os, muscles, organes, nerfs et vaisseaux, avec leur fiche.' }
   ];
 
-  const gamesOf = catId => GAMES.filter(g => g.category === catId);
-  const isOpen = catId => gamesOf(catId).some(g => g.status === 'ready');
+  const gamesOf = chId => GAMES.filter(g => g.chapter === chId);
   const GAME = {};
   GAMES.forEach(g => { GAME[g.id] = g; });
-  const CATEGORY = {};
-  CATEGORIES.forEach(c => { CATEGORY[c.id] = c; });
+  const CHAPTER = {};
+  CHAPTERS.forEach(c => { CHAPTER[c.id] = c; });
 
-  Object.assign(NS, { CATEGORIES, CATEGORY, GAMES, GAME, gamesOf, isOpen });
+  Object.assign(NS, { CHAPTERS, CHAPTER, GAMES, GAME, gamesOf });
 })(AQ.data);

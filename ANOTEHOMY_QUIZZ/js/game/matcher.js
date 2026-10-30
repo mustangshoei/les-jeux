@@ -7,13 +7,18 @@
   'use strict';
   const { BONES } = AQ.data;
 
-  /* plages Unicode construites en ASCII : diacritiques combinants et apostrophe typographique */
+  /* plages Unicode construites en ASCII : diacritiques combinants, apostrophe typographique, ligatures œ et æ
+     (que la décomposition NFD ne sépare pas : « œil » doit valoir « oeil ») */
   const RE_DIACRITICS = new RegExp('[' + String.fromCharCode(0x300) + '-' + String.fromCharCode(0x36f) + ']', 'g');
   const RE_PUNCT = new RegExp('[' + String.fromCharCode(0x2019) + "'`\\-_.,;:()/]", 'g');
+  const RE_OE = new RegExp(String.fromCharCode(0x153), 'g'), RE_AE = new RegExp(String.fromCharCode(0xe6), 'g');
 
-  /* "L'Os Femur" -> "femur" */
+  /* minuscules, sans accents ni ligatures : "Œil" -> "oeil", "Fémur" -> "femur" */
+  const plier = s => String(s).toLowerCase().normalize('NFD').replace(RE_DIACRITICS, '').replace(RE_OE, 'oe').replace(RE_AE, 'ae');
+
+  /* "L'Os Fémur" -> "femur" */
   function norm(s) {
-    return String(s).toLowerCase().normalize('NFD').replace(RE_DIACRITICS, '')
+    return plier(s)
       .replace(RE_PUNCT, ' ').replace(/\s+/g, ' ').trim()
       .replace(/^(l|le|la|les|un|une) /, '').replace(/^os /, '').trim();
   }
@@ -108,5 +113,5 @@
     return evaluateIn(raw, target, BONES);
   }
 
-  Object.assign(NS, { norm, canon, lev, prepareItems, prepareMatcher, evaluate, evaluateIn });
+  Object.assign(NS, { plier, norm, canon, lev, prepareItems, prepareMatcher, evaluate, evaluateIn });
 })(AQ.game);

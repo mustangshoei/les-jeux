@@ -29,7 +29,7 @@
   function boneTitle(def) {
     const b = D.BONE[def.bone], name = def.title || b.name;
     const t = name.charAt(0).toUpperCase() + name.slice(1) + (!def.title && def.label ? ' (' + def.label + ')' : '');
-    return t + (def.side === 'R' ? ' (cote droit)' : def.side === 'L' ? ' (cote gauche)' : '');
+    return t + (def.side === 'R' ? ' (côté droit)' : def.side === 'L' ? ' (côté gauche)' : '');
   }
   /* zone du corps d'un os detaille (js/data/regions.js) */
   const zoneOf = def => D.BONE[def.bone].region;
@@ -49,7 +49,7 @@
 
   const A = NS.ADAPTERS['os-descriptive'] = {
     texts: {
-      qTitleA: 'Quel est le nom de la partie en rouge ?',
+      qTitleA: 'Quel est le nom de la partie en rouge\u00a0?',
       placeholder: 'Nom de la partie (nomenclature TA2)',
       qTitleB: 'Cliquez sur cette partie de l\'os :',
       promptA: 'Nommez la partie <b>en rouge</b> dans le panneau de gauche',
@@ -59,7 +59,7 @@
     },
     boneTitle, zoneOf, pool,
     /* os etudie, affiche en permanence pendant la partie et la revision */
-    subject() { const cur = EN.osteoCurrent(); return cur ? { label: 'Os etudie', name: boneTitle(cur.def) } : null; },
+    subject() { const cur = EN.osteoCurrent(); return cur ? { label: 'Os étudié', name: boneTitle(cur.def) } : null; },
 
     /* os de la partie : choisi, tire au hasard, ou le meme que la partie precedente (opts.same) */
     pickDef(opts = {}) {
@@ -74,10 +74,10 @@
     /* decoupe l'os (calcul de quelques dixiemes de seconde) puis prepare les questions */
     build(opts = {}) {
       const def = A.pickDef(opts);
-      if (!def) return Promise.reject(new Error('Aucun os a etudier : cochez au moins une zone du corps.'));
+      if (!def) return Promise.reject(new Error('Aucun os à étudier : cochez au moins une zone du corps.'));
       EN.deactivateMuscles();
       const ld = $('loading');
-      ld.textContent = 'Preparation de l\'os : ' + boneTitle(def) + '...';
+      ld.textContent = 'Préparation de l\'os : ' + boneTitle(def) + '…';
       ld.hidden = false;
       return EN.loadOsteoModel().then(() => new Promise((resolve, reject) => {
         /* laisse le navigateur afficher le message avant le calcul */
@@ -122,7 +122,7 @@
       EN.clearMarks();
       if (reg) { EN.mark(reg, 'reveal'); EN.setHalo(reg, 'ok'); EN.focusRegion(reg, { turn: true }); }
       else EN.frameBone();
-      NS.setPrompt(reg ? 'Revision : <b>' + esc(part.name) + '</b> - survolez ou cliquez sur les autres parties'
+      NS.setPrompt(reg ? 'Révision : <b>' + esc(part.name) + '</b> - survolez ou cliquez sur les autres parties'
         : 'Exploration : survolez ou cliquez sur une partie pour l\'identifier', 'review');
       const chips = cur.regions.map(r => `<button type="button" class="sub-chip${r === reg ? ' on' : ''}" data-reg="${r.index}" title="${esc(r.part.latin)}">` +
         `<i style="background:${EN.regionColor(r)}"></i>${esc(r.part.name)}</button>`).join('');

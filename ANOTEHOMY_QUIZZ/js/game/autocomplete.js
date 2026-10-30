@@ -29,9 +29,21 @@
       .sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q)) || a.name.localeCompare(b.name)).slice(0, 7);
     if (!sugg.length || (sugg.length === 1 && sugg[0].n === q)) { hideSuggest(); return; }
     sIdx = -1;
+    /* surligne la saisie dans le nom, sans tenir compte des accents ni des ligatures (« femur » dans
+       « fémur », « oeil » dans « œil ») : recherche dans le nom plié, puis retour aux positions d'origine */
+    const cherche = NS.plier(raw);
     const hl = s => {
-      const i = s.toLowerCase().indexOf(raw);
-      return i < 0 || !raw ? esc(s) : esc(s.slice(0, i)) + '<mark>' + esc(s.slice(i, i + raw.length)) + '</mark>' + esc(s.slice(i + raw.length));
+      let plie = '';
+      const pos = [];
+      for (let k = 0; k < s.length; k++) {
+        const c = NS.plier(s[k]);
+        plie += c;
+        for (let r = 0; r < c.length; r++) pos.push(k);
+      }
+      const i = cherche ? plie.indexOf(cherche) : -1;
+      if (i < 0) return esc(s);
+      const a = pos[i], b = pos[i + cherche.length - 1] + 1;
+      return esc(s.slice(0, a)) + '<mark>' + esc(s.slice(a, b)) + '</mark>' + esc(s.slice(b));
     };
     const ul = $('suggest');
     ul.innerHTML = sugg.map((s, i) => `<li role="option" data-i="${i}"><span>${hl(s.name)}</span><small>${esc(s.latin)}</small></li>`).join('');

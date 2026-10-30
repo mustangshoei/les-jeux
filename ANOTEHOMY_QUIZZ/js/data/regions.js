@@ -6,10 +6,10 @@
   'use strict';
 
   const REGIONS = [
-    { id: 'mi', name: 'Membre inferieur' },
-    { id: 'ms', name: 'Membre superieur' },
-    { id: 'vert', name: 'Vertebres' },
-    { id: 'crane', name: 'Crane' },
+    { id: 'mi', name: 'Membre inférieur' },
+    { id: 'ms', name: 'Membre supérieur' },
+    { id: 'vert', name: 'Vertèbres' },
+    { id: 'crane', name: 'Crâne' },
     { id: 'pelvis', name: 'Pelvis' },
     { id: 'axial', name: 'Autre / Squelette axial' }
   ];

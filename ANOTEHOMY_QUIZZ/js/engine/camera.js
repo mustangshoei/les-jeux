@@ -12,7 +12,7 @@
 
   /* vues predefinies : [theta, phi] */
   const VIEW_ANGLES = { A: [0, 0], P: [Math.PI, 0], LD: [-Math.PI / 2, 0], LG: [Math.PI / 2, 0], S: [0, 1.45], I: [0, -1.45] };
-  const VIEW_NAMES = { A: 'anterieure', P: 'posterieure', LD: 'laterale droite', LG: 'laterale gauche', S: 'superieure', I: 'inferieure' };
+  const VIEW_NAMES = { A: 'antérieure', P: 'postérieure', LD: 'latérale droite', LG: 'latérale gauche', S: 'supérieure', I: 'inférieure' };
   const PHI_MAX = 1.5;
 
   const cam = { target: new THREE.Vector3(), r: 3000, theta: 0, phi: 0 };    /* etat courant */

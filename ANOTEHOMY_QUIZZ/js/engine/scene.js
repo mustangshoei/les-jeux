@@ -16,7 +16,7 @@
   const BOUNDS = new THREE.Box3();   /* squelette entier */
   const VIEW = new THREE.Box3();     /* zone de travail de la camera (squelette, ou os isole) */
   let renderer = null, scene = null, camera = null, keyLight = null, fillLight = null;
-  let dirty = true, lastT = 0, ready = false;
+  let dirty = true, lastT = 0, ready = false, looping = false, paused = false;
   const hidden = new Set();
 
   function makeMaterials() {
@@ -71,7 +71,7 @@
     new ResizeObserver(resize).observe(canvas.parentElement);
     resize();
     ready = true;
-    requestAnimationFrame(frame);
+    resume();
   }
 
   function resize() {
@@ -93,8 +93,11 @@
     fillLight.target.position.copy(t);
   }
 
-  /* boucle : ne redessine que si la camera bouge, si un os pulse ou si on l'a demande */
+  /* boucle : ne redessine que si la caméra bouge, si un os pulse ou si on l'a demandé.
+     En pause (menu, configuration : js/game/home.js, setup.js), elle s'arrête complètement :
+     rien ne tourne derrière les écrans qui n'affichent pas la 3D. */
   function frame(now) {
+    if (paused) { looping = false; lastT = 0; return; }
     requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - (lastT || now)) / 1000);
     lastT = now;
@@ -107,6 +110,12 @@
     NS.updateHalo();
   }
   function requestRender() { dirty = true; }
+  function pause() { paused = true; }
+  function resume() {
+    paused = false;
+    dirty = true;
+    if (ready && !looping) { looping = true; requestAnimationFrame(frame); }
+  }
 
   /* ---------------- Os masques (Maj + clic) ---------------- */
   function setHidden(inst, on) {
@@ -153,9 +162,10 @@
 
   Object.assign(NS, {
     INST, BY_BONE, PICK, MAT, BOUNDS, VIEW,
-    initScene, requestRender, setHidden, showAll,
+    initScene, requestRender, setHidden, showAll, pause, resume,
     isolate, restoreSkeleton, setPick, setViewBox: setView, addObject, removeObject, renderNow,
     isReady: () => ready,
+    isRunning: () => looping && !paused,
     hiddenCount: () => hidden.size,
     camera: () => camera,
     renderInfo: () => renderer && renderer.info.render,   /* diagnostic */

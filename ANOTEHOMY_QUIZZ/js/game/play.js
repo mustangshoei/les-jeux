@@ -22,7 +22,7 @@
     $('qTitleB').textContent = t.qTitleB;
     $('zFit').title = t.fit; $('zFit').setAttribute('aria-label', t.fit);
     $('zTarget').title = t.target; $('zTarget').setAttribute('aria-label', t.target);
-    $('panelCredits').textContent = t.credits || 'Modele 3D : BodyParts3D, (c) DBCLS, CC BY 4.0';
+    $('panelCredits').textContent = t.credits || 'Modèle 3D : BodyParts3D, © DBCLS, CC BY 4.0';
   }
 
   /* ---------------- Lancement ---------------- */
@@ -32,18 +32,24 @@
     const A = NS.adapter();
     session.starting = true;
     $('startBtn').disabled = true;
+    if (!EN.isReady()) $('setupWarn').textContent = 'Chargement du modèle 3D…';
     clearTimeout(session.nextT);
     clearInterval(session.timer);
-    EN.clearMarks();
-    A.build(opts || {}).then(queue => {
+    /* la 3D ne démarre qu'ici, à la première partie (js/main.js), puis l'affichage reprend */
+    NS.ensure3D().then(() => {
+      EN.resume();
+      EN.clearMarks();
+      return A.build(opts || {});
+    }).then(queue => {
       session.starting = false;
+      $('setupWarn').textContent = '';
       if (!queue.length) { NS.showSetup(); return; }
       session.queue = queue;
       Object.assign(session, { idx: 0, log: [], ok: 0, ko: 0, points: 0, t0: performance.now(), elapsed: 0 });
       ['home', 'setup', 'results', 'reviewBox'].forEach(id => { $(id).hidden = true; });
       $('btnQuit').hidden = false;
       $('app').className = settings.mode === 'A' ? 'mode-a' : 'mode-b';
-      $('modeChip').textContent = settings.mode === 'A' ? 'Mode A - Nommage' : 'Mode B - Ciblage';
+      $('modeChip').textContent = settings.mode === 'A' ? 'Nommage' : 'Ciblage';
       applyTexts(A);
       NS.updateDock();
       EN.setHoverEnabled(settings.mode === 'B');
@@ -145,24 +151,24 @@
     const nameHtml = `<b>${esc(d.name)}</b>${d.where && settings.mode === 'A' ? ' <span class="fb-where">(' + esc(d.where) + ')</span>' : ''}<div class="latin">${esc(d.latin)}</div>`;
     let title, body = '', note = '';
     if (ok) {
-      title = 'Correct !';
+      title = 'Correct\u00a0!';
       body = nameHtml;
-      if (r.typo) note = `Reponse acceptee malgre une faute de frappe : "${esc(given)}".`;
+      if (r.typo) note = `Réponse acceptée malgré une faute de frappe : « ${esc(given)} ».`;
       if (r.note) note += (note ? '<br>' : '') + esc(r.note);
     } else {
-      title = r.skipped ? 'Reponse passee' : r.incomplete ? 'Reponse incomplete' : 'Incorrect';
-      if (given && settings.mode === 'B') body += `Vous avez clique sur : <b>${esc(given)}</b><br>`;
-      if (given && settings.mode === 'A') body += `Votre reponse : "${esc(given)}"<br>`;
-      body += 'Bonne reponse : ' + nameHtml;
+      title = r.skipped ? 'Réponse passée' : r.incomplete ? 'Réponse incomplète' : 'Incorrect';
+      if (given && settings.mode === 'B') body += `Vous avez cliqué sur : <b>${esc(given)}</b><br>`;
+      if (given && settings.mode === 'A') body += `Votre réponse : « ${esc(given)} »<br>`;
+      body += 'Bonne réponse : ' + nameHtml;
       if (r.note) note = esc(r.note);
-      else if (r.oldName) note = `"${esc(r.oldName)}" est un terme de l'ancienne nomenclature${r.other && r.other !== q.item ? ' (= ' + esc(r.other.name) + ')' : ''}. Utilisez le terme TA2.`;
-      else if (r.other && settings.mode === 'A') note = `Vous avez nomme ${A.texts.other} : ${esc(r.other.name)}.`;
+      else if (r.oldName) note = `« ${esc(r.oldName)} » est un terme de l'ancienne nomenclature${r.other && r.other !== q.item ? ' (= ' + esc(r.other.name) + ')' : ''}. Utilisez le terme TA2.`;
+      else if (r.other && settings.mode === 'A') note = `Vous avez nommé ${A.texts.other} : ${esc(r.other.name)}.`;
     }
-    NS.setPrompt(ok ? 'Correct : <b>' + esc(d.name) + '</b>' : (r.skipped ? 'Reponse : ' : 'Incorrect - c\'etait : ') + '<b>' + esc(d.name) + '</b>', ok ? 'ok' : 'ko');
+    NS.setPrompt(ok ? 'Correct : <b>' + esc(d.name) + '</b>' : (r.skipped ? 'Réponse : ' : 'Incorrect, c\'était : ') + '<b>' + esc(d.name) + '</b>', ok ? 'ok' : 'ko');
     fb.className = 'feedback ' + (ok ? 'ok' : 'ko');
     fb.innerHTML = `<div class="fb-title">${ok ? ICON_OK : ICON_KO}${title}</div><div class="fb-body">${body}</div>` +
       (note ? `<div class="fb-note">${note}</div>` : '') +
-      `<div class="fb-next"><div class="fb-timer"><div id="fbBar"></div></div><button type="button" class="btn" id="btnNext">Suivant<span class="kbd">Entree</span></button></div>`;
+      `<div class="fb-next"><div class="fb-timer"><div id="fbBar"></div></div><button type="button" class="btn" id="btnNext">Suivant<span class="kbd">Entrée</span></button></div>`;
     fb.hidden = false;
     const bar = $('fbBar');
     if (bar.animate) bar.animate([{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }], { duration: wait, easing: 'linear', fill: 'forwards' });

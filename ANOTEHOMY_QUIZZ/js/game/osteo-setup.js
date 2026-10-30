@@ -68,15 +68,16 @@
   }
 
   function updateOsteoPool() {
-    const c = osteoCounts(), chosen = settings.oPick === 'chosen', loaded = EN.osteoLoaded();
+    const c = osteoCounts(), chosen = settings.oPick === 'chosen';
     $('countNum').max = $('countRange').max = Math.max(1, c.max);
     $('countOf').textContent = !c.n ? '' : chosen ? `sur ${c.max} parties`
-      : c.min === c.max ? `sur ${c.max} parties` : `parties au plus (l'os tire en compte de ${c.min} a ${c.max})`;
+      : c.min === c.max ? `sur ${c.max} parties` : `parties au plus (l'os tiré en compte de ${c.min} à ${c.max})`;
     NS.setCount(settings.oCount, false, true);
     const d = D.OSTEO_BY[settings.oKey];
-    $('oBoneInfo').textContent = d ? `Zone : ${D.REGION[A().zoneOf(d)].name} - ${d.parts.length} parties a reconnaitre.` : '';
-    $('startBtn').disabled = !c.n || !loaded;
-    $('setupWarn').textContent = !c.n ? 'Cochez au moins une zone du corps.' : (loaded ? '' : 'Chargement des os detailles...');
+    $('oBoneInfo').textContent = d ? `Zone : ${D.REGION[A().zoneOf(d)].name} - ${d.parts.length} parties à reconnaître.` : '';
+    /* les os détaillés (modèle 3D) ne se chargent qu'au lancement de la partie (js/game/osteo-game.js) */
+    $('startBtn').disabled = !c.n;
+    $('setupWarn').textContent = !c.n ? 'Cochez au moins une zone du corps.' : '';
   }
 
   Object.assign(NS, { initOsteoSetup, osteoCounts, updateOsteoPool });
