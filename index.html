@@ -6,10 +6,40 @@
   <title>Les jeux</title>
   <!-- Page d'accueil : choix du jeu, bouton du compte (en haut à gauche) et, pour l'administrateur,
        le tableau de bord. La liste des jeux vient de COMMUN/jeux.js ; les liens écrits ci-dessous ne
-       servent que si ce fichier manque. Apparence et scripts : dossier ACCUEIL/. -->
+       servent que si ce fichier manque. Apparence et scripts : dossier ACCUEIL/.
+       ACCÈS : un jeu « bloque » dans COMMUN/jeux.js garde sa tuile, visible mais inerte (Histehory
+       Quizz et Natehure Quizz ci-dessous) ; un jeu « masque » n'en aurait aucune. Dans les deux cas
+       le dossier du jeu est intact : son index.html s'ouvre toujours à la main. -->
   <link rel="stylesheet" href="ACCUEIL/accueil.css">
 </head>
 <body data-vue="jeux">
+
+<!-- Fond animé : des bulles aux couleurs des quatre jeux, qui dérivent lentement derrière la
+     page. Apparence et animations : ACCUEIL/accueil.css. Purement décoratif (aria-hidden),
+     et entièrement arrêté si le système demande moins d'animations. -->
+<div class="fond" aria-hidden="true">
+  <span class="bulle" style="--x:8%;--y:14%;--s:440px;--dx:70px;--dy:60px;--v:34s;--d:0s;--c:#60a5fa"></span>
+  <span class="bulle" style="--x:88%;--y:8%;--s:380px;--dx:-80px;--dy:70px;--v:40s;--d:-6s;--c:#ff7a59"></span>
+  <span class="bulle" style="--x:72%;--y:64%;--s:460px;--dx:60px;--dy:-80px;--v:46s;--d:-14s;--c:#ff5c8a"></span>
+  <span class="bulle" style="--x:16%;--y:78%;--s:400px;--dx:90px;--dy:-60px;--v:38s;--d:-9s;--c:#5fe08a"></span>
+  <span class="bulle" style="--x:46%;--y:34%;--s:520px;--dx:-70px;--dy:-50px;--v:52s;--d:-20s;--c:#f59e0b"></span>
+  <span class="bulle" style="--x:96%;--y:92%;--s:340px;--dx:-60px;--dy:-70px;--v:36s;--d:-3s;--c:#60a5fa"></span>
+  <!-- petites bulles qui montent -->
+  <span class="bulle bulle--vive" style="--x:45%;--y:108%;--s:10px;--dx:10px;--dy:-118vh;--v:26s;--d:-1s;--c:#60a5fa"></span>
+  <span class="bulle bulle--vive" style="--x:13%;--y:108%;--s:16px;--dx:-28px;--dy:-118vh;--v:21s;--d:-18s;--c:#ff7a59"></span>
+  <span class="bulle bulle--vive" style="--x:11%;--y:108%;--s:16px;--dx:-13px;--dy:-118vh;--v:16s;--d:-2s;--c:#ff5c8a"></span>
+  <span class="bulle bulle--vive" style="--x:59%;--y:108%;--s:14px;--dx:-32px;--dy:-118vh;--v:19s;--d:-2s;--c:#5fe08a"></span>
+  <span class="bulle bulle--vive" style="--x:74%;--y:108%;--s:14px;--dx:-33px;--dy:-118vh;--v:29s;--d:-18s;--c:#f59e0b"></span>
+  <span class="bulle bulle--vive" style="--x:19%;--y:108%;--s:10px;--dx:40px;--dy:-118vh;--v:26s;--d:-18s;--c:#60a5fa"></span>
+  <span class="bulle bulle--vive" style="--x:11%;--y:108%;--s:16px;--dx:34px;--dy:-118vh;--v:22s;--d:-1s;--c:#ff7a59"></span>
+  <span class="bulle bulle--vive" style="--x:32%;--y:108%;--s:8px;--dx:31px;--dy:-118vh;--v:29s;--d:-4s;--c:#ff5c8a"></span>
+  <span class="bulle bulle--vive" style="--x:41%;--y:108%;--s:14px;--dx:-22px;--dy:-118vh;--v:24s;--d:-3s;--c:#5fe08a"></span>
+  <span class="bulle bulle--vive" style="--x:77%;--y:108%;--s:12px;--dx:31px;--dy:-118vh;--v:29s;--d:-21s;--c:#f59e0b"></span>
+  <span class="bulle bulle--vive" style="--x:27%;--y:108%;--s:8px;--dx:34px;--dy:-118vh;--v:25s;--d:-20s;--c:#60a5fa"></span>
+  <span class="bulle bulle--vive" style="--x:28%;--y:108%;--s:12px;--dx:-28px;--dy:-118vh;--v:24s;--d:-22s;--c:#ff7a59"></span>
+  <span class="bulle bulle--vive" style="--x:12%;--y:108%;--s:16px;--dx:-33px;--dy:-118vh;--v:25s;--d:-6s;--c:#ff5c8a"></span>
+  <span class="bulle bulle--vive" style="--x:67%;--y:108%;--s:20px;--dx:28px;--dy:-118vh;--v:22s;--d:-24s;--c:#5fe08a"></span>
+</div>
 
 <div class="compte-coin" hidden>
   <button id="compte-bouton" type="button" class="compte-bouton" aria-haspopup="dialog" aria-expanded="false" aria-controls="compte-menu"></button>
@@ -25,9 +55,16 @@
   <p class="lead">Choisissez un jeu. Un seul compte pour tous : vous restez connecté d'un jeu à l'autre.</p>
 
   <div id="jeux" class="jeux">
-    <a class="jeu" href="GEONOHYNE_QUIZZ/index.html"><span class="jeu__nom">GéoNohyne Quizz</span><span class="jeu__aller">Jouer →</span></a>
-    <a class="jeu" href="ANOTEHOMY_QUIZZ/index.html"><span class="jeu__nom">Anotehomy Quizz</span><span class="jeu__aller">Jouer →</span></a>
-    <a class="jeu" href="HISTEHORY_QUIZZ/index.html"><span class="jeu__nom">Histehory Quizz</span><span class="jeu__aller">Jouer →</span></a>
+    <a class="jeu" style="--jeu-couleur:#0d3b4a;--jeu-accent:#ff7a59" href="GEONOHYNE_QUIZZ/index.html"><span class="jeu__nom">GéoNohyne Quizz</span><span class="jeu__aller">Jouer →</span></a>
+    <a class="jeu" style="--jeu-couleur:#3a1529;--jeu-accent:#ff5c8a" href="ANOTEHOMY_QUIZZ/index.html"><span class="jeu__nom">Anotehomy Quizz</span><span class="jeu__aller">Jouer →</span></a>
+    <div class="jeu jeu--bloque" style="--jeu-couleur:#33230d;--jeu-accent:#f59e0b" aria-disabled="true"><span class="jeu__nom">Histehory Quizz</span><span class="jeu__aller">Fermé pour le moment</span></div>
+    <div class="jeu jeu--bloque" style="--jeu-couleur:#12331f;--jeu-accent:#5fe08a" aria-disabled="true"><span class="jeu__nom">Natehure Quizz</span><span class="jeu__aller">Fermé pour le moment</span></div>
+  </div>
+
+  <!-- Bouton « Statistiques », centré sous les quatre jeux : rempli et branché par ACCUEIL/stats.js
+       (caché tant que ce fichier n'a pas répondu, pour ne pas offrir un bouton inerte). -->
+  <div class="accueil-actions">
+    <button type="button" id="stats-bouton" class="btn-stats" hidden></button>
   </div>
 
   <footer>Chaque jeu fonctionne aussi seul : ouvrez directement son <code>index.html</code>.<br>
@@ -76,6 +113,17 @@
 
   <footer><span id="admin-version"></span></footer>
 </main>
+
+<!-- Panneau des statistiques (bouton sous les quatre jeux) : rempli par ACCUEIL/stats.js -->
+<dialog id="stats-dialogue" class="stats-dialogue" aria-labelledby="stats-titre">
+  <div class="stats-tete">
+    <h2 id="stats-titre">Statistiques</h2>
+    <p id="stats-sous-titre"></p>
+    <button type="button" class="dialogue__fermer" data-stats-fermer aria-label="Fermer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div id="stats-corps" class="stats-corps"></div>
+</dialog>
 
 <dialog id="defi-dialogue" class="dialogue" aria-labelledby="defi-dialogue-titre">
   <form id="defi-form" class="dialogue__form" novalidate>
@@ -130,5 +178,6 @@
 <script src="COMMUN/jeux.js"></script>
 <script src="ACCUEIL/admin.js"></script>
 <script src="ACCUEIL/accueil.js"></script>
+<script src="ACCUEIL/stats.js"></script>
 </body>
 </html>

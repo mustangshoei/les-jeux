@@ -1,0 +1,183 @@
+/* ==========================================================================
+   Natehure Quizz - base.css
+   Theme « Herbier » : sombre (vert sous-bois), accents vert feuille (actions, juste), blanc verdi
+   (textes), terre de Sienne (saisons, recoltes), soleil (photosynthese, records), rouge amanite
+   (ratés, especes toxiques), eau (seve, arrosage). Fond : papier millimetre d'herbier (quadrillage)
+   et deux lueurs fixes - rien ne bouge en fond. Meme construction que GeoNohyne Quizz et
+   Anotehomy Quizz. Polices locales (Bricolage Grotesque, IBM Plex Mono, licence OFL : css/polices/).
+   ========================================================================== */
+
+/* ---------- Polices ---------- */
+@font-face {
+  font-family: 'Bricolage Grotesque'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url(polices/bricolage-grotesque-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url(polices/bricolage-grotesque-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(polices/ibm-plex-mono-500-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(polices/ibm-plex-mono-500-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(polices/ibm-plex-mono-600-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(polices/ibm-plex-mono-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------- Couleurs et mesures ---------- */
+:root {
+  color-scheme: dark;
+  --bg: #0e1712;
+  --bg-profond: #080f0b;
+  --surface: #16241c;                      /* fonds pleins : listes, tableaux, fenêtres */
+  --panel2: rgba(228, 255, 236, .045);     /* cartes du panneau de jeu */
+  --champ: rgba(8, 15, 11, .72);           /* champs de saisie, petits boutons */
+  --text: #f0fbf2;
+  --ink: #f0fbf2;
+  --ink-2: #c5ddcc;
+  --muted: #8aa894;
+  --line: rgba(196, 255, 214, .16);
+  --line-2: rgba(196, 255, 214, .28);
+  --vert: #5fe08a;                         /* actions, ce qui est demandé */
+  --vert-txt: #8aeca8;
+  --vert-pale: #c2f0d1;
+  --vert-doux: rgba(95, 224, 138, .13);
+  --vert-ombre: #22734a;
+  --amanite: #ff6b5c;                      /* erreurs, espèces toxiques */
+  --ok: #5fe08a;                           /* juste */
+  --ok-txt: #a4f2bd;
+  --ok-doux: rgba(95, 224, 138, .1);
+  --ko: var(--amanite);
+  --warn: #ffd089;                         /* temps, records, avertissements */
+  --warn-doux: rgba(255, 208, 137, .12);
+  --accent: var(--vert);
+  --accent2: #a8d75e;                      /* vert tendre (jeunes pousses) */
+  --terre: #d9a05b;                        /* sol, saisons, récoltes */
+  --soleil: #ffd84d;                       /* lumière, photosynthèse */
+  --eau: #5bc8e8;                          /* sève, arrosage */
+  --radius: 16px;
+  --verre: linear-gradient(180deg, rgba(228, 255, 236, .07), rgba(228, 255, 236, .02));
+  --verre-ombre: inset 0 1px 0 rgba(255, 255, 255, .08), 0 24px 50px -30px rgba(0, 0, 0, .9);
+  --shadow: 0 24px 60px -20px rgba(0, 0, 0, .78);
+  --anneau: 0 0 0 3px rgba(95, 224, 138, .3);
+  --police: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* le sélecteur « Jeux » et le bouton de compte sont repris d'Anotehomy Quizz (css/account.css) :
+     ces alias évitent d'y renommer chaque variable de couleur */
+  --rose: var(--vert);
+  --rose-txt: var(--vert-txt);
+  --rose-pale: var(--vert-pale);
+  --rose-doux: var(--vert-doux);
+  --rose-ombre: var(--vert-ombre);
+  --sang: var(--amanite);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+html { scrollbar-color: rgba(196, 255, 214, .28) transparent; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 var(--police);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+/* Fond de tous les écrans : deux lueurs (sous-bois, clairière) et un papier millimétré d'herbier
+   (petits carreaux et grands carreaux) ; tout est fixe, rien ne bouge en fond. */
+body::before, body::after { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+body::before {
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(95, 224, 138, .13), transparent 52%),
+    radial-gradient(ellipse at 88% 92%, rgba(168, 215, 94, .07), transparent 55%);
+}
+body::after {
+  background-image:
+    linear-gradient(rgba(140, 230, 170, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140, 230, 170, .06) 1px, transparent 1px),
+    linear-gradient(rgba(140, 230, 170, .025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140, 230, 170, .025) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+::placeholder { color: var(--muted); opacity: 1; }
+select option { background: var(--surface); color: var(--ink); }
+[hidden] { display: none !important; }
+
+/* Les écrans : un seul visible à la fois */
+.ecran { position: fixed; inset: 0; }
+.overlay { overflow: hidden; }
+
+/* Petit texte en capitales, à chasse fixe (surtitres, repères) */
+.surtitre {
+  margin: 0;
+  font: 600 .78rem/1.3 var(--mono);
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--vert-txt);
+}
+
+/* ---------- Boutons ---------- */
+.btn {
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  padding: .65rem 1.2rem;
+  background: var(--champ);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: background-color .2s ease, border-color .2s ease, transform .1s ease, box-shadow .1s ease;
+}
+.btn:hover { border-color: var(--vert); background: var(--vert-doux); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--vert); outline-offset: 2px; }
+/* Action principale : verte, avec un petit relief */
+.btn.primary { border-color: transparent; background: var(--vert); color: #0b2316; box-shadow: 0 3px 0 var(--vert-ombre); }
+.btn.primary:hover { background: #7ee8a1; }
+.btn.primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--vert-ombre); }
+.btn.ghost { background: transparent; }
+.btn.grow { flex: 1; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn:disabled:hover { border-color: var(--line-2); background: var(--champ); }
+.btn.primary:disabled:hover { background: var(--vert); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.link { background: none; border: 0; padding: 2px 6px; color: var(--vert-txt); font-weight: 600; font-size: .86rem; }
+.link:hover { color: var(--vert-pale); }
+
+/* ---------- Petits éléments ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--champ);
+  font: 500 .68rem/1.3 var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.latin { margin-top: 6px; font-size: .85rem; font-style: italic; color: var(--muted); }
+.credits { margin: 0; font-size: .72rem; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

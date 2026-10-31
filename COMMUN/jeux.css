@@ -65,6 +65,13 @@
 }
 a.jx-jeu:hover, a.jx-jeu:focus-visible { background: var(--jx-doux, #f1f5f9); outline: none; }
 .jx-jeu.is-ici { box-shadow: inset 0 0 0 1.5px var(--jx-accent, #2563eb); }
+/* Jeu fermé (champ « bloque » de jeux.js) : la ligne reste lisible, mais rien ne répond au clic */
+.jx-jeu.is-bloque { opacity: .55; pointer-events: none; cursor: not-allowed; }
+.jx-jeu.is-bloque .jx-icone { filter: grayscale(1); }
+.jx-jeu.is-bloque .jx-texte { flex: 1; }
+.jx-cadenas { flex: none; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; }
+.jx-cadenas svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; }
 .jx-icone { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 10px;
   background: var(--jx-doux, #f1f5f9); font-size: 1.35rem; line-height: 1; }
 .jx-texte { display: flex; flex-direction: column; min-width: 0; }

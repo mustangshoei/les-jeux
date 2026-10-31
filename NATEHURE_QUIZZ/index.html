@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Natehure Quizz - Nature, agriculture & végétaux</title>
+
+<!-- ===================== STYLES ===================== -->
+<!-- commun à tous les jeux (dossier ../COMMUN) : sélecteur « Changer de jeu ». S'il manque, le jeu marche sans. -->
+<link rel="stylesheet" href="../COMMUN/jeux.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/account.css">
+<link rel="stylesheet" href="css/responsive.css">
+
+<!-- ===================== SCRIPTS =====================
+     Scripts classiques (pas de modules ES) pour que le jeu fonctionne en ouvrant directement ce
+     fichier, sans serveur. L'ORDRE COMPTE : chaque fichier s'appuie sur ceux chargés avant lui.
+     « defer » les exécute dans cet ordre, une fois la page analysée. -->
+<!-- commun à tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et sélecteur.
+     Facultatifs : s'ils manquent, le jeu s'ouvre en invité, sans sélecteur. -->
+<script defer src="../COMMUN/comptes.js"></script>
+<script defer src="../COMMUN/jeux.js"></script>
+<script defer src="js/core/namespace.js"></script>
+<script defer src="js/core/utils.js"></script>
+<!-- catalogue du menu : les trois chapitres et leurs cartes -->
+<script defer src="js/data/games.js"></script>
+<!-- compte du joueur, puis le menu (en dernier : il affiche les chapitres chargés ci-dessus) -->
+<script defer src="js/account/account.js"></script>
+<script defer src="js/game/home.js"></script>
+</head>
+<body>
+<noscript>Ce jeu a besoin de JavaScript.</noscript>
+
+<!-- ===================== MENU ===================== -->
+<div class="overlay ecran ecran-menu" id="home">
+  <div class="menu">
+    <p class="menu-edition" aria-hidden="true">Herbier · nature & agriculture · édition 0.1</p>
+
+    <div class="menu-hero">
+      <div class="menu-intro">
+        <p class="surtitre">Quiz · Jeux · Planches</p>
+        <h1 class="menu-titre">Natehure<br><span>Quizz</span></h1>
+        <p class="menu-sous-titre">Apprenez la nature, les végétaux et l'agriculture en jouant.</p>
+        <nav id="homeChapters" class="chapitres" aria-label="Chapitres"></nav>
+      </div>
+
+      <!-- la planche du chapitre : un dessin au trait, avec quelques repères (js/game/home.js) -->
+      <figure id="homeAtlas" class="menu-atlas">
+        <div id="homePlanche" class="planche-cadre"></div>
+        <!-- roue des saisons (P printemps, É été, A automne, H hiver) : le quartier de la saison du
+             jour est marqué par js/game/home.js -->
+        <svg class="saisons" viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M50 50 50 6A44 44 0 0 1 94 50Z" class="saisons-quartier" data-saison="printemps"/>
+          <path d="M50 50 94 50A44 44 0 0 1 50 94Z" class="saisons-quartier" data-saison="ete"/>
+          <path d="M50 50 50 94A44 44 0 0 1 6 50Z" class="saisons-quartier" data-saison="automne"/>
+          <path d="M50 50 6 50A44 44 0 0 1 50 6Z" class="saisons-quartier" data-saison="hiver"/>
+          <circle cx="50" cy="50" r="44" class="saisons-cercle"/>
+          <circle cx="50" cy="50" r="33" class="saisons-graduation"/>
+          <circle cx="50" cy="50" r="3.5" class="saisons-centre"/>
+          <text x="71" y="33" class="saisons-lettre" data-saison="printemps">P</text>
+          <text x="71" y="75" class="saisons-lettre" data-saison="ete">É</text>
+          <text x="29" y="75" class="saisons-lettre" data-saison="automne">A</text>
+          <text x="29" y="33" class="saisons-lettre" data-saison="hiver">H</text>
+        </svg>
+        <figcaption id="homeLegend" class="menu-legende"></figcaption>
+      </figure>
+    </div>
+
+    <!-- le chapitre choisi et ses cartes -->
+    <section id="homeChapter" class="chapitre" aria-labelledby="homeChapterTitle">
+      <div class="chapitre-tete">
+        <div>
+          <p id="homeChapterNum" class="surtitre">Chapitre 01</p>
+          <h2 id="homeChapterTitle">—</h2>
+          <p id="homeChapterDesc" class="chapitre-desc"></p>
+        </div>
+        <p id="homeChapterCount" class="chapitre-compte"></p>
+      </div>
+      <div id="homeCards" class="cartes" aria-live="polite"></div>
+      <p class="home-msg" id="homeMsg" aria-live="polite"></p>
+    </section>
+
+    <footer class="menu-pied">
+      <span>Aucun jeu n'est encore jouable : le catalogue des espèces et des cultures reste à constituer.</span>
+      <!-- version du jeu (lue dans ../COMMUN/jeux.js) : js/game/home.js -->
+      <span id="homeVersion"></span>
+    </footer>
+  </div>
+</div>
+
+<!-- ===================== COMPTE ET CHANGEMENT DE JEU ===================== -->
+<!-- compte (en haut à gauche) : bouton et menu déroulant, sur le modèle du menu « Jeux » (à droite) ;
+     js/account/account.js -->
+<div class="acct-coin">
+  <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="acctMenu"></button>
+  <div class="acct-menu" id="acctMenu" role="dialog" aria-labelledby="acctTitle" hidden>
+    <p class="acct-menu__titre" id="acctTitle">Compte</p>
+    <!-- rempli par js/account/account.js : connexion / création de compte, ou gestion du compte connecté -->
+    <div id="acctBody"></div>
+    <p class="acct-menu__note" id="acctHelp"></p>
+  </div>
+</div>
+<!-- changer de jeu (en haut à droite) : rempli par ../COMMUN/jeux.js.
+     Ce jeu est fermé ailleurs (champ « bloque » de ../COMMUN/jeux.js) : il reste visible sur la page
+     d'accueil et dans le menu « Jeux » des autres jeux, mais sa tuile n'y est plus cliquable. On en
+     sort par ce menu-ci, qui reste entier. -->
+<div class="jeux-coin" data-jeux-selecteur="natehure"></div>
+</body>
+</html>

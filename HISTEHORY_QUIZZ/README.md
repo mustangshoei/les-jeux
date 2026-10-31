@@ -9,6 +9,12 @@ communs et serveur sont décrits dans le [README à la racine](../README.md).
 **En préparation** : seule la page d'accueil existe, avec ses quatre modes de jeu grisés
 (« Bientôt disponible ») : Trouver la date, Deviner la personne, Chronologie aléatoire, Vrai ou Faux.
 
+**Fermé** (champ `bloque` de sa ligne dans `../COMMUN/jeux.js`) : sa tuile reste **visible** sur la page
+d'accueil et dans le menu « Jeux » des autres jeux, mais elle est grisée et **inerte** — ce n'est plus un
+lien. Le dossier n'est pas touché : `index.html` s'ouvre normalement à la main, et son propre menu
+« Jeux » permet toujours d'en repartir. Pour le rouvrir : retirer `bloque: true` de sa ligne. Voir
+« Accès aux jeux » dans le [README à la racine](../README.md).
+
 ## Versions
 
 À chaque nouvelle version : une ligne ici, et le numéro dans `../COMMUN/jeux.js` (ligne `histehory`),

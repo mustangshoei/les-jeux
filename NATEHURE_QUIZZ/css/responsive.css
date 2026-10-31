@@ -1,0 +1,36 @@
+/* ==========================================================================
+   Natehure Quizz - responsive.css
+   Fenetres basses et ecrans etroits (tablette en portrait, telephone) : menu resserre.
+   Memes seuils que GeoNohyne Quizz et Anotehomy Quizz.
+   ========================================================================== */
+@media (max-width: 899px) {
+  .menu-edition { display: none; }
+}
+@media (max-width: 640px) {
+  .menu-hero { padding-top: 84px; }
+  .menu-sous-titre { font-size: 1.12rem; }
+  .chapitres { margin-top: 26px; }
+  .chapitre-ligne { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; padding: 12px 14px; }
+  .chapitre-nom { font-size: 1.05rem; }
+  .menu-atlas { padding-top: 10px; }
+  .planche-cadre { height: min(56vh, 460px); }
+  .planche-etiquette { padding: 2px 5px; font-size: .5rem; letter-spacing: .08em; }
+  .planche-repere::after { width: 8px; }
+  .planche-repere--d .planche-etiquette { left: calc(100% + 8px); }
+  .planche-repere--g .planche-etiquette { right: calc(100% + 8px); }
+  .saisons { width: 60px; height: 60px; bottom: 34px; }
+  .chapitre { padding-top: 44px; }
+  .cartes { gap: 14px; padding-top: 20px; }
+  .carte { min-height: 0; padding: 18px; }
+  .carte-titre { font-size: 1.3rem; }
+  /* cartes etroites : le texte justifie ferait des trous, il repasse au fil */
+  .carte-desc { text-align: left; }
+  .menu-pied { margin-top: 40px; padding: 18px 0 28px; }
+}
+/* Fenetre basse : la planche se resserre pour que les cartes restent visibles sans long defilement */
+@media (max-height: 700px) {
+  .menu-hero { padding-top: 88px; }
+  .planche-cadre { height: min(52vh, 420px); }
+  .menu-legende { margin-top: 14px; }
+  .chapitre { padding-top: 44px; }
+}

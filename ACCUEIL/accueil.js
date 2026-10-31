@@ -1,7 +1,8 @@
 /* ==========================================================================
    ACCUEIL/accueil.js — Page d'accueil : la liste des jeux et le bouton du compte
 
-   Liste des jeux : COMMUN/jeux.js (sans lui, les liens écrits dans index.html restent).
+   Les quatre jeux : COMMUN/jeux.js (sans lui, les rectangles écrits dans index.html restent).
+   Le bouton « Statistiques », sous les jeux : ACCUEIL/stats.js.
    Bouton du compte, en haut à gauche : un menu déroulant sur le modèle de celui des jeux (GéoNohyne
    Quizz), qui se ferme d'un clic ailleurs ou avec Échap. Comptes : COMMUN/comptes.js (sans lui, pas de
    bouton ; sans serveur, on reste invité).
@@ -17,13 +18,28 @@
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  /* ---------- Liste des jeux ---------- */
+  /* ---------- Les quatre jeux ----------
+     Un grand rectangle par jeu, au fond de sa couleur dominante (champs « couleur » et « accent » de
+     COMMUN/jeux.js). Jeux.publics, et non Jeux.liste : un jeu « masque » n'aurait aucun rectangle ici.
+     Un jeu « bloque » garde le sien, entièrement visible, mais ce n'est plus un lien : une <div>
+     inerte, grisée, marquée d'un cadenas. */
+  const CADENAS = '<span class="jeu__cadenas" title="Fermé pour le moment"><svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>';
+
   if (window.Jeux) {
-    $('#jeux').innerHTML = Jeux.liste.map((j) =>
-      '<a class="jeu" href="' + esc(Jeux.lien(j)) + '"><span class="jeu__tete"><span class="jeu__icone" aria-hidden="true">' + esc(j.icone) + '</span>' +
-      (j.version ? '<span class="jeu__version" title="Version du jeu">v' + esc(j.version) + '</span>' : '') + '</span>' +
-      '<span class="jeu__nom">' + esc(j.nom) + '</span><span class="jeu__desc">' + esc(j.description) + '</span>' +
-      '<span class="jeu__aller">Jouer →</span></a>').join('');
+    $('#jeux').innerHTML = Jeux.publics.map((j) => {
+      const style = ' style="--jeu-couleur:' + esc(j.couleur || '#1e293b') + ';--jeu-accent:' + esc(j.accent || '#94a3b8') + '"';
+      const corps = '<span class="jeu__tete"><span class="jeu__icone" aria-hidden="true">' + esc(j.icone) + '</span>' +
+        '<span class="jeu__coin">' +
+          (j.version ? '<span class="jeu__version" title="Version du jeu">v' + esc(j.version) + '</span>' : '') +
+          (j.bloque ? CADENAS : '') + '</span></span>' +
+        '<span class="jeu__nom">' + esc(j.nom) + '</span><span class="jeu__desc">' + esc(j.description) + '</span>';
+      return j.bloque
+        ? '<div class="jeu jeu--bloque"' + style + ' aria-disabled="true">' + corps +
+          '<span class="jeu__aller">Fermé pour le moment</span></div>'
+        : '<a class="jeu"' + style + ' href="' + esc(Jeux.lien(j)) + '">' + corps +
+          '<span class="jeu__aller">Jouer <span aria-hidden="true">→</span></span></a>';
+    }).join('');
     if (Jeux.version) $('#version').textContent = $('#admin-version').textContent = 'Les jeux · version ' + Jeux.version;
   }
 
