@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!-- ==========================================================================
+     ACCUEIL/outils/gravures.html — fabrique les images de fond de la page d'accueil
+     (ACCUEIL/img/<jeu>.webp) à partir des gravures sources (voir ACCUEIL/img/CREDITS.md).
+
+     1. Télécharger chaque gravure depuis Wikimedia Commons et l'enregistrer sous
+        ACCUEIL/outils/sources/<dossier>/source.jpg (dossiers : vesale-tertia, globe-delisle, arbre,
+        histoire-deroy, portrait-alexandre, portraits/p1 = Napoléon, portraits/p2 = Jeanne d'Arc).
+        Ce dossier n'est pas versionné (.gitignore) : les sources pèsent une dizaine de Mo.
+     2. Ouvrir cette page dans Chrome ou Edge lancé avec --allow-file-access-from-files (sinon la
+        lecture des pixels d'une image locale est interdite), ou la servir par un petit serveur.
+     3. La page affiche un JSON { nom: data:image/webp } : décoder chaque entrée vers
+        ACCUEIL/img/ (globe -> geonohyne.webp, anatomie -> anotehomy.webp, histoire ->
+        histehory.webp, nature -> natehure.webp).
+     Réglages : IMAGES ci-dessous (coupe en fractions de l'image source, seuils, gommes, bords,
+     position et rayon des médaillons en pixels de sortie).
+     ========================================================================== -->
+<meta charset="utf-8"><body><pre id="o">en cours</pre>
+<script>
+/* Gravures -> traits blancs sur fond transparent (WebP).
+   mode 'encre'   : l'encre devient lumiere, le papier disparait (canal max : taches et tampons colores s'effacent)
+   mode 'lumiere' : le clair devient lumiere, le fond sombre disparait (portraits sur fond hachure) */
+const T = 'sources/';
+const W = 600;
+const IMAGES = {
+  anatomie: { w: W, h: 1003, calques: [
+    { src: 'vesale-tertia', mode: 'encre', coupe: [0.08, 0.065, 0.92, 0.86], seuil: [0.2, 0.72],
+      gommes: [[0.19, 0.055, 0.365, 0.125]], bords: { g: .07, d: .07, b: .08, h: 0 } } ] },
+  globe: { w: W, h: 1000, calques: [
+    { src: 'globe-delisle', mode: 'encre', coupe: [0.1834, 0.1993, 0.4004, 0.5564], seuil: [0.22, 0.75], vignette: [0.55, 1.0] } ] },
+  nature: { w: W, h: 720, calques: [
+    { src: 'arbre', mode: 'encre', coupe: [0, 0, 1, 0.665], seuil: [0.2, 0.72], bords: { g: .03, d: .03, b: .04, h: 0 } } ] },
+  histoire: { w: W, h: 829, calques: [
+    { src: 'histoire-deroy', mode: 'encre', coupe: [0, 0, 1, 1], seuil: [0.24, 0.75],
+      gommes: [[0.08, 0.965, 0.22, 1]], bords: { g: .04, d: .04, b: .05, h: 0 } },
+    { src: 'portrait-alexandre', mode: 'encre', cercle: [480, 482, 472], centre: [117, 150], r: 73, seuil: [0.25, 0.75] },
+    { src: 'portraits/p2', mode: 'lumiere', cercle: [575, 285, 195], centre: [479, 208], r: 73, niveaux: [0.35, 0.98] },
+    { src: 'portraits/p1', mode: 'lumiere', cercle: [352, 368, 172], centre: [125, 325], r: 73, niveaux: [0.35, 0.98] } ] }
+};
+
+const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const charge = (n) => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('image ' + n)); i.src = T + n + '/source.jpg'; });
+const toile = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+function centile(hist, total, p) { let s = 0; for (let i = 0; i < 256; i++) { s += hist[i]; if (s >= total * p) return i; } return 255; }
+
+/* Un calque traite : renvoie une toile (dw x dh) de traits blancs avec alpha */
+function traite(img, c, dw, dh) {
+  const src = toile(img.naturalWidth, img.naturalHeight);
+  const sx = src.getContext('2d');
+  sx.drawImage(img, 0, 0);
+  sx.fillStyle = c.mode === 'encre' ? '#fff' : '#000';
+  (c.gommes || []).forEach(([x0, y0, x1, y1]) => sx.fillRect(x0 * src.width, y0 * src.height, (x1 - x0) * src.width, (y1 - y0) * src.height));
+  let cx, cy, cw, ch;
+  if (c.cercle) { const [x, y, r] = c.cercle; cx = x - r; cy = y - r; cw = ch = 2 * r; }
+  else { const [x0, y0, x1, y1] = c.coupe; cx = x0 * src.width; cy = y0 * src.height; cw = (x1 - x0) * src.width; ch = (y1 - y0) * src.height; }
+  const t = toile(dw, dh); const tx = t.getContext('2d');
+  tx.imageSmoothingQuality = 'high';
+  tx.drawImage(src, cx, cy, cw, ch, 0, 0, dw, dh);
+  const d = tx.getImageData(0, 0, dw, dh); const p = d.data;
+  const dans = (i) => { if (!c.cercle) return true; const x = (i % dw) - dw / 2 + .5, y = Math.floor(i / dw) - dh / 2 + .5; return x * x + y * y <= (dw / 2) * (dw / 2); };
+  const hist = new Array(256).fill(0); let n = 0;
+  const L = new Uint8Array(dw * dh);
+  for (let i = 0; i < dw * dh; i++) {
+    const r = p[4 * i], g = p[4 * i + 1], b = p[4 * i + 2];
+    L[i] = c.mode === 'encre' ? Math.max(r, g, b) : Math.round(.299 * r + .587 * g + .114 * b);
+    if (dans(i)) { hist[L[i]]++; n++; }
+  }
+  let a;
+  if (c.mode === 'encre') {
+    const P = centile(hist, n, .9), K = centile(hist, n, .005);
+    a = (v) => sm(c.seuil[0], c.seuil[1], (P - v) / Math.max(1, P - K));
+  } else {
+    const lo = centile(hist, n, c.niveaux[0]), hi = centile(hist, n, c.niveaux[1]);
+    a = (v) => sm(0, 1, (v - lo) / Math.max(1, hi - lo));
+  }
+  for (let i = 0; i < dw * dh; i++) {
+    const x = i % dw, y = Math.floor(i / dw);
+    let f = a(L[i]);
+    if (c.bords) { const b = c.bords;
+      if (b.g) f *= sm(0, b.g, x / dw); if (b.d) f *= sm(0, b.d, 1 - x / dw);
+      if (b.h) f *= sm(0, b.h, y / dh); if (b.b) f *= sm(0, b.b, 1 - y / dh); }
+    if (c.vignette) { const u = (x / dw - .5) * 2, v = (y / dh - .5) * 2; f *= 1 - sm(c.vignette[0], c.vignette[1], Math.sqrt(u * u + v * v)); }
+    if (c.cercle) { const u = x - dw / 2 + .5, v = y - dh / 2 + .5; f *= sm(0, 2.5, dw / 2 - Math.sqrt(u * u + v * v)); }
+    p[4 * i] = p[4 * i + 1] = p[4 * i + 2] = 255; p[4 * i + 3] = Math.round(255 * f);
+  }
+  tx.putImageData(d, 0, 0);
+  return t;
+}
+
+(async () => {
+  const sortie = {};
+  try {
+    for (const [nom, def] of Object.entries(IMAGES)) {
+      const o = toile(def.w, def.h); const ox = o.getContext('2d');
+      for (const c of def.calques) {
+        const img = await charge(c.src);
+        if (c.cercle) {
+          const d = 2 * c.r, [x, y] = c.centre;
+          ox.globalCompositeOperation = 'destination-out';
+          ox.beginPath(); ox.arc(x, y, c.r + 9, 0, 7); ox.fill();
+          ox.globalCompositeOperation = 'source-over';
+          ox.drawImage(traite(img, c, d, d), x - c.r, y - c.r);
+          ox.strokeStyle = '#fff'; ox.globalAlpha = .9;
+          ox.lineWidth = 2.5; ox.beginPath(); ox.arc(x, y, c.r + 3, 0, 7); ox.stroke();
+          ox.lineWidth = 1; ox.beginPath(); ox.arc(x, y, c.r + 7.5, 0, 7); ox.stroke();
+          ox.globalAlpha = 1;
+        } else {
+          ox.drawImage(traite(img, c, def.w, def.h), 0, 0);
+        }
+      }
+      sortie[nom] = o.toDataURL('image/webp', 0.78);
+    }
+    document.getElementById('o').textContent = JSON.stringify(sortie);
+  } catch (e) { document.getElementById('o').textContent = 'ERREUR ' + e.message; }
+})();
+</script>

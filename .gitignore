@@ -6,3 +6,5 @@ IGNORED_BY_CLAUDE/
 # fichiers produits par Python
 __pycache__/
 *.pyc
+# gravures sources des images de la page d'accueil (voir ACCUEIL/img/CREDITS.md)
+ACCUEIL/outils/sources/

@@ -26,6 +26,8 @@ ACCUEIL/                … son apparence et ses scripts
   accueil.css           apparence (thème clair ou sombre selon le système)
   accueil.js            les rectangles des jeux + bouton du compte (en haut à gauche)
   stats.js              bouton « Statistiques » et son panneau : les totaux du joueur, jeu par jeu
+  img/                  images de fond des quatre rectangles (gravures du domaine public) + CREDITS.md
+  outils/gravures.html  fabrique ces images à partir des gravures sources (mode d'emploi en tête)
   admin.js              tableau de bord de l'administrateur : comptes, défis de la semaine
 README.md               ce fichier : fonctionnement général
 COMMUN/                 ce que les jeux partagent (facultatif pour eux : sans lui, chaque jeu marche en invité)
@@ -197,7 +199,7 @@ Historique de l'ensemble :
 
 | Version | Date | Changements |
 |---|---|---|
-| 1.2.0 | 31/10/2026 | Quatrième jeu, **Natehure Quizz** (nature, agriculture & végétaux) : son menu, ses trois chapitres et ses dix-huit cartes, aucun mode de jeu encore. **Page d'accueil refondue** : un grand rectangle par jeu, haut (jusqu'à 65 % de la hauteur de la fenêtre) et au fond de sa couleur dominante — 4 de front sur ordinateur (au plus 65 % de la largeur), 2 × 2 sur tablette, 1 colonne sur téléphone ; un **fond animé** de bulles aux couleurs des quatre jeux ; et un bouton **« Statistiques »** qui rassemble les totaux du joueur pour tous les jeux. Deux réglages d'accès dans `COMMUN/jeux.js` : `masque` (le jeu disparaît de la page d'accueil et du menu « Jeux ») et `bloque` (son rectangle reste visible mais inerte, marqué d'un cadenas). Histehory Quizz et Natehure Quizz sont tous deux fermés. |
+| 1.2.0 | 31/10/2026 | Quatrième jeu, **Natehure Quizz** (nature, agriculture & végétaux) : son menu, ses trois chapitres et ses dix-huit cartes, aucun mode de jeu encore. **Page d'accueil refondue** : un grand rectangle par jeu, haut (jusqu'à 65 % de la hauteur de la fenêtre) et au fond de sa couleur dominante — 4 de front sur ordinateur (au plus 65 % de la largeur), 2 × 2 sur tablette, 1 colonne sur téléphone ; un **fond animé** de bulles aux couleurs des quatre jeux ; dans chaque rectangle, sous ses libellés, une **gravure ancienne** fondue dans la couleur du jeu (globe de Delisle, écorché de Vésale, frise de monuments et médaillons d'Alexandre, Jeanne d'Arc et Napoléon, orme de Loudon) ; et un bouton **« Statistiques »** qui rassemble les totaux du joueur pour tous les jeux. Deux réglages d'accès dans `COMMUN/jeux.js` : `masque` (le jeu disparaît de la page d'accueil et du menu « Jeux ») et `bloque` (son rectangle reste visible mais inerte, marqué d'un cadenas). Histehory Quizz et Natehure Quizz sont tous deux fermés. |
 | 1.1.1 | 29/10/2026 | Publication sur GitHub Pages ; sur un hébergement sans le serveur des jeux, les comptes ne sont plus proposés (on joue en invité). |
 | 1.1.0 | 29/10/2026 | Bouton du compte sur la page d'accueil (changer de compte, comptes déjà utilisés ici) ; compte administrateur et son tableau de bord (comptes, préparation des défis de la semaine) ; modes de jeu dans `COMMUN/jeux.js`. |
 | 1.0.0 | 28/10/2026 | Première version numérotée : page d'accueil, comptes communs, serveur des jeux, trois jeux (GéoNohyne Quizz, Anotehomy Quizz, Histehory Quizz). |

@@ -28,7 +28,7 @@
 
   if (window.Jeux) {
     $('#jeux').innerHTML = Jeux.publics.map((j) => {
-      const style = ' style="--jeu-couleur:' + esc(j.couleur || '#1e293b') + ';--jeu-accent:' + esc(j.accent || '#94a3b8') + '"';
+      const style = ' data-jeu="' + esc(j.id) + '" style="--jeu-couleur:' + esc(j.couleur || '#1e293b') + ';--jeu-accent:' + esc(j.accent || '#94a3b8') + '"';
       const corps = '<span class="jeu__tete"><span class="jeu__icone" aria-hidden="true">' + esc(j.icone) + '</span>' +
         '<span class="jeu__coin">' +
           (j.version ? '<span class="jeu__version" title="Version du jeu">v' + esc(j.version) + '</span>' : '') +

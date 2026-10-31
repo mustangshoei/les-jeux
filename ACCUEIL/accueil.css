@@ -74,7 +74,9 @@ body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); o
 }
 h1 { margin: 0; font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 800; line-height: 1.1; letter-spacing: -.02em; }
 .lead { margin: .7rem 0 0; font-size: 1.06rem; color: var(--ink-2); }
-footer { margin-top: 2.5rem; text-align: center; font-size: .85rem; color: var(--ink-2); }
+footer { margin-top: 2.5rem; text-align: center; font-size: .85rem; line-height: 1.7; color: var(--ink-2); }
+footer .credits { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+footer .credits:hover { color: var(--accent); }
 svg { flex: none; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -124,6 +126,29 @@ svg { flex: none; }
   opacity: .24;
   pointer-events: none;
 }
+/* Image du thème (gravure du domaine public, ACCUEIL/img/<jeu>.webp) : des traits blancs sur fond
+   transparent, posés en bas du rectangle. Ils se fondent dans sa couleur (fusion « soft-light » :
+   le trait prend un ton plus clair de la teinte du jeu, au lieu d'un blanc plaqué) et s'effacent vers
+   le haut, sous les libellés. Un jeu sans image n'a simplement rien ici. */
+.jeu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--jeu-image, none) center bottom / 100% auto no-repeat;
+  mix-blend-mode: soft-light;
+  opacity: .85;
+  /* effacée sous les libellés, et un peu atténuée tout en bas, derrière « Jouer » */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 24%, #000 56%, #000 82%, rgba(0, 0, 0, .45) 100%);
+  mask-image: linear-gradient(to bottom, transparent 24%, #000 56%, #000 82%, rgba(0, 0, 0, .45) 100%);
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+a.jeu:hover::before, a.jeu:focus-visible::before { opacity: 1; }
+.jeu[data-jeu="geonohyne"] { --jeu-image: url(img/geonohyne.webp); }
+.jeu[data-jeu="anotehomy"] { --jeu-image: url(img/anotehomy.webp); }
+.jeu[data-jeu="histehory"] { --jeu-image: url(img/histehory.webp); }
+.jeu[data-jeu="natehure"] { --jeu-image: url(img/natehure.webp); }
+.jeu { isolation: isolate; }
 .jeu > * { position: relative; z-index: 1; }
 /* Survol : seuls les jeux ouverts réagissent (agrandissement + ombre portée) */
 a.jeu:hover, a.jeu:focus-visible {
@@ -193,6 +218,19 @@ a.jeu:active { transform: scale(1.01); }
    65 vh feraient un défilement interminable : ils se raccourcissent. */
 @media (max-width: 1100px) { .jeu { min-height: clamp(17rem, 44vh, 26rem); } }
 @media (max-width: 620px) { .jeu { min-height: clamp(13rem, 30vh, 19rem); } }
+
+/* Rectangles plus larges que hauts (tablette, téléphone) : l'image se range à droite, à pleine
+   hauteur, et s'efface vers la gauche (le texte) comme vers le haut (les libellés). */
+@media (max-width: 1100px) {
+  .jeu::before {
+    background-size: auto 100%;
+    background-position: right 4% bottom;
+    -webkit-mask-image: linear-gradient(to right, transparent 30%, #000 68%), linear-gradient(to bottom, transparent 8%, #000 42%);
+    mask-image: linear-gradient(to right, transparent 30%, #000 68%), linear-gradient(to bottom, transparent 8%, #000 42%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}
 
 /* ---------- Bouton « Statistiques », centré sous les quatre jeux ----------
    Volontairement différent des rectangles : une pastille bordée, aux couleurs de la page. */
