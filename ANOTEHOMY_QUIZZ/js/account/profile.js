@@ -91,7 +91,7 @@
   const current = () => connected() ? space.donnees() : guest;
   function player() {
     if (connected()) { const c = C.compte(); return { id: c.id, name: c.nom, color: c.couleur, guest: false }; }
-    return { id: 'guest', name: 'Invite', color: GUEST_COLOR, guest: true };
+    return { id: 'guest', name: 'Invité', color: GUEST_COLOR, guest: true };
   }
   function notify() { listeners.forEach(f => { try { f(); } catch (e) { console.error(e); } }); }
   /* apres chaque modification : enregistrement local, puis envoi au serveur (compte) */
@@ -106,6 +106,9 @@
     if (gameId === 'muscles-localisation') return names(st.mRegions, D.MUSCLE_REGION) + (st.mPrincipal ? ' - muscles principaux' : ' - tous les muscles');
     if (gameId === 'vaisseaux') return names(st.vRegions, D.VESSEL_REGION) + ' - ' +
       (st.vTypes === 'a' ? 'artères' : st.vTypes === 'v' ? 'veines' : 'artères et veines') + (st.vPrincipal ? ', principaux' : ', tous');
+    if (gameId === 'organes') return names(st.gSystems, D.ORGAN_SYSTEM) + (st.gPrincipal ? ' - organes principaux' : ' - tous les organes') +
+      (st.gSex === 'f' ? ' - corps féminin' : '');
+    if (gameId === 'splanchnologie') return s.sDef ? AQ.game.ADAPTERS['splanchnologie'].organTitle(s.sDef) : '';
     return names(st.regions, D.REGION) + (st.precise ? ' - numéro et côté exigés' : '');
   }
 

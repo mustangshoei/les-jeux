@@ -128,7 +128,9 @@
   const WORDS = {
     os: { one: ' os masqué', many: ' os masqués', pick: 'Choisir un os', hide: 'Masquer un os' },
     muscle: { one: ' muscle masqué', many: ' muscles masqués', pick: 'Choisir un muscle', hide: 'Masquer un muscle' },
-    vaisseau: { one: ' vaisseau masqué', many: ' vaisseaux masqués', pick: 'Choisir un vaisseau', hide: 'Masquer un vaisseau' }
+    vaisseau: { one: ' vaisseau masqué', many: ' vaisseaux masqués', pick: 'Choisir un vaisseau', hide: 'Masquer un vaisseau' },
+    organe: { one: ' organe masqué', many: ' organes masqués', pick: 'Choisir un organe', hide: 'Masquer un organe' },
+    partie: { one: ' partie masquée', many: ' parties masquées', pick: 'Choisir une partie', hide: 'Masquer une partie' }
   };
   let words = WORDS.os;
   function setObjectWords(kind) {

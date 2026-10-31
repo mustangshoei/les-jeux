@@ -39,6 +39,10 @@
   .setup-sous-titre { display: none; }
   .choix-carte__desc { display: none; }
   .choix-carte__icone { grid-row: auto; }
+  /* cases et onglets resserrés : les listes d'appareils ou de zones tiennent sans défiler */
+  .zones { gap: .3rem; }
+  .zone { padding: .3rem .7rem; }
+  .onglet > span { padding-block: .24rem; }
 }
 /* Écran étroit : une seule colonne. Tout ne peut plus tenir dans la hauteur : l'écran défile alors en
    entier (et non plus un bloc à l'intérieur). */

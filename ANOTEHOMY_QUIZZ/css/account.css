@@ -1,20 +1,18 @@
 /* ==========================================================================
    Anotehomy Quizz - account.css
-   Compte du joueur : bouton en haut à gauche, fenêtre du compte, écran des statistiques ; et place du
+   Compte du joueur : bouton en haut à gauche, menu du compte, écran des statistiques ; et place du
    sélecteur « Jeux » en haut à droite (../COMMUN/jeux.js, apparence de base dans ../COMMUN/jeux.css).
    Les deux boutons ne s'affichent que hors des parties (menu, configuration, résultats), comme dans
    GéoNohyne Quizz.
    ========================================================================== */
 
 /* ---------- Bouton de compte et sélecteur de jeu ---------- */
-.acct-btn, .jeux-coin { display: none; }
-body:has(> .overlay:not([hidden])) .acct-btn { display: inline-flex; }
+.acct-coin, .jeux-coin { display: none; }
+body:has(> .overlay:not([hidden])) .acct-coin { display: block; }
 body:has(> .overlay:not([hidden])) .jeux-coin { display: block; }
+.acct-coin { position: fixed; top: 16px; left: 16px; z-index: 30; font-size: .92rem; line-height: 1.3; text-align: left; }
 .acct-btn {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 30;
+  display: inline-flex;
   align-items: center;
   gap: .55rem;
   max-width: calc(100vw - 9.5rem);      /* place pour « Jeux », à droite */
@@ -30,7 +28,7 @@ body:has(> .overlay:not([hidden])) .jeux-coin { display: block; }
   backdrop-filter: blur(6px);
   transition: border-color .2s ease;
 }
-.acct-btn:hover { border-color: var(--rose); }
+.acct-btn:hover, .acct-coin.is-ouvert .acct-btn { border-color: var(--rose); }
 .acct-btn:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
 .acct-name { max-width: 11rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .acct-av {
@@ -64,28 +62,63 @@ body:has(> .overlay:not([hidden])) .jeux-coin { display: block; }
 }
 .jeux-coin .jx-bouton { height: 2.75rem; }
 
-/* ---------- Fenêtre du compte ---------- */
-.acct-dialog {
-  width: min(440px, calc(100vw - 32px));
-  max-height: calc(100dvh - 32px);
-  padding: 22px;
+/* ---------- Menu du compte ---------- */
+/* Même construction que le menu « Jeux » (../COMMUN/jeux.css) : un titre, le joueur (comme le jeu « où
+   vous êtes »), des lignes d'action (comme les autres jeux), une note. */
+.acct-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1000;
+  width: min(22rem, calc(100vw - 32px));
+  max-height: calc(100dvh - 6rem);
+  overflow-y: auto;
+  padding: .6rem;
   border: 1px solid var(--line-2);
-  border-radius: 22px;
-  background: var(--verre), linear-gradient(180deg, #2a1624, #1b0e18);
+  border-radius: 16px;
+  background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow);
 }
-.acct-dialog::backdrop { background: rgba(12, 6, 11, .7); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
-.acct-dialog[open] { animation: pop .25s ease; }
-.acct-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.acct-head h2 { margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: -.01em; }
-.acct-head .ico svg { width: 16px; height: 16px; }
-.acct-help { margin: 6px 0 0; font-size: .86rem; color: var(--ink-2); }
-.acct-tabs { display: flex; gap: 4px; margin-top: 14px; padding: 3px; border: 1px solid var(--line); border-radius: 12px; background: var(--champ); }
+.acct-menu[hidden] { display: none; }
+.acct-menu__titre {
+  margin: .2rem .5rem .5rem;
+  font: 600 .66rem/1.3 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.acct-menu__note { margin: .5rem .5rem .2rem; font-size: .78rem; line-height: 1.4; color: var(--ink-2); }
+.acct-menu__note:empty { display: none; }
+.acct-identite, .acct-ligne { display: flex; align-items: center; gap: .75rem; padding: .6rem; border-radius: 12px; }
+.acct-identite { box-shadow: inset 0 0 0 1.5px var(--rose); }
+.acct-ligne { width: 100%; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.acct-ligne:hover, .acct-ligne:focus-visible { background: rgba(255, 235, 242, .06); outline: none; }
+.acct-ligne:disabled { opacity: .5; cursor: not-allowed; }
+.acct-ligne__icone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10px;
+  background: rgba(255, 235, 242, .06);
+  color: var(--ink-2);
+  transition: color .2s ease;
+}
+.acct-ligne__icone svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.acct-ligne:hover .acct-ligne__icone, .acct-ligne:focus-visible .acct-ligne__icone { color: var(--rose); }
+.acct-ligne__texte { display: flex; flex-direction: column; min-width: 0; }
+.acct-ligne__texte b { font-weight: 800; overflow-wrap: anywhere; }
+.acct-ligne__texte small { font-size: .8rem; color: var(--ink-2); }
+.acct-identite small { color: var(--rose); }
+.acct-ligne--danger b, .acct-ligne--danger .acct-ligne__icone { color: #ffadb8; }
+.acct-lignes { margin-top: .5rem; padding-top: .5rem; border-top: 1px solid var(--line); }
+.acct-tabs { display: flex; gap: 4px; margin-top: 10px; padding: 3px; border: 1px solid var(--line); border-radius: 12px; background: var(--champ); }
 .acct-tabs button { flex: 1; height: 34px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ink-2); font-weight: 600; transition: background-color .2s ease, color .2s ease; }
 .acct-tabs button:hover { color: var(--ink); }
 .acct-tabs button.on { border-color: rgba(255, 92, 138, .5); background: rgba(255, 92, 138, .14); color: var(--ink); }
-.acct-form { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.acct-form { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
 .acct-form .btn-row { margin-top: 0; }
 .acct-field { display: flex; flex-direction: column; gap: 4px; font-size: .86rem; font-weight: 600; color: var(--ink-2); }
 .acct-field input {
@@ -103,12 +136,8 @@ body:has(> .overlay:not([hidden])) .jeux-coin { display: block; }
 .acct-check input { flex: none; width: 16px; height: 16px; margin: 1px 0 0; accent-color: var(--rose); }
 .acct-err { margin: 0; font-size: .86rem; color: var(--ko); }
 .acct-err:empty { display: none; }
-.acct-info { margin: 12px 0 0; font-size: .86rem; font-weight: 600; color: var(--ok); }
-.acct-card { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--champ); }
-.acct-card b { display: block; font-size: 1.1rem; overflow-wrap: anywhere; }
-.acct-card small { font-size: .82rem; color: var(--muted); }
-.acct-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
-.acct-actions .btn, .acct-form .btn { padding: .5rem .8rem; font-size: .86rem; }
+.acct-info { margin: 10px .5rem 0; font-size: .82rem; font-weight: 600; color: var(--ok); }
+.acct-form .btn { padding: .5rem .8rem; font-size: .86rem; }
 .acct-danger { border-color: rgba(255, 74, 95, .45); color: #ffadb8; }
 .acct-danger:hover { border-color: var(--sang); background: rgba(255, 74, 95, .12); }
 .acct-form.danger { padding: 12px; border: 1px solid rgba(255, 74, 95, .45); border-radius: 12px; background: rgba(255, 74, 95, .08); }

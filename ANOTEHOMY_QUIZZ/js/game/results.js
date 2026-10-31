@@ -2,7 +2,9 @@
    Anotehomy Quizz - game/results.js
    FIN DE PARTIE (score, pourcentage, temps, recapitulatif des erreurs) et
    REVISION (exploration apres la partie : os du squelette, ou parties de
-   l'os etudie). Le contenu propre a chaque jeu vient de son adaptateur.
+   l'os ou de l'organe etudie). Le contenu propre a chaque jeu vient de son
+   adaptateur ; A.results (osteologie, splanchnologie descriptive) : rappel du
+   sujet etudie et boutons « Explorer », « Autre ... au hasard », « Rejouer ... ».
    ========================================================================== */
 (function (NS) {
   'use strict';
@@ -42,17 +44,16 @@
   const shownName = l => (l.disp && l.disp.name) || l.item.name;
 
   function renderResults(aborted) {
-    const A = NS.adapter(), osteo = !!EN.osteoCurrent();
+    const A = NS.adapter(), R = A.results || null, other = R ? R.other() : '';
     const n = session.log.length, pct = n ? Math.round(session.ok / n * 100) : 0, C = 2 * Math.PI * 58;
     const errs = session.log.map((l, i) => [l, i]).filter(([l]) => !l.ok);
     const typos = session.log.map((l, i) => [l, i]).filter(([l]) => l.ok && l.typo);
     const msg = pct === 100 ? 'Parfait\u00a0!' : pct >= 80 ? 'Excellent travail\u00a0!' : pct >= 50 ? 'Bon travail, continuez\u00a0!' : 'Continuez à vous entraîner\u00a0!';
     const item = ([l, i], cls, text) => `<li${cls ? ' class="' + cls + '"' : ''}><div><div class="en">${esc(shownName(l))}<i>${esc(l.item.latin)}</i></div>` +
       `<div class="ea">${text}</div></div><button type="button" class="btn" data-review="${i}">Voir</button></li>`;
-    const random = osteo && settings.oPick === 'random';
     $('resultsCard').innerHTML =
       `<h2 class="res-title">Partie terminée — ${msg}</h2>
-      ${osteo ? `<p class="res-sub">Os étudié : <b>${esc(A.boneTitle(session.oDef))}</b></p>` : ''}
+      ${R ? `<p class="res-sub">${R.subject()}</p>` : ''}
       <div class="res-top">
         <div class="ring"><svg viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="58"/><circle class="fg" id="ringFg" cx="70" cy="70" r="58" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}"/></svg><div class="pct">${pct}%</div></div>
         <div class="kpis">
@@ -67,9 +68,9 @@
       ${errs.length ? `<ul class="errs">${errs.map(e => item(e, '', answerText(e[0]))).join('')}</ul>` : `<div class="perfect">Aucune erreur, toutes les réponses sont correctes en nomenclature TA2.</div>`}
       ${typos.length ? `<h3 class="res-sec">Acceptées avec une faute de frappe (${typos.length})</h3><ul class="errs">${typos.map(t => item(t, 'typo', `Saisi : <b>« ${esc(t[0].given)} »</b>`)).join('')}</ul>` : ''}
       <div class="res-actions"><button type="button" class="btn ghost" id="btnHome">Menu principal</button><button type="button" class="btn" id="btnNewCfg">Nouvelle configuration</button>` +
-      (osteo ? `<button type="button" class="btn" id="btnExplore">Explorer l'os</button>` : '') +
-      (random ? `<button type="button" class="btn" id="btnOther">Autre os au hasard</button>` : '') +
-      `<button type="button" class="btn primary" id="btnReplay">${osteo ? 'Rejouer cet os' : 'Rejouer'}</button></div>`;
+      (R ? `<button type="button" class="btn" id="btnExplore">${esc(R.explore)}</button>` : '') +
+      (other ? `<button type="button" class="btn" id="btnOther">${esc(other)}</button>` : '') +
+      `<button type="button" class="btn primary" id="btnReplay">${R ? esc(R.replay) : 'Rejouer'}</button></div>`;
     /* animation de l'anneau apres insertion dans la page */
     requestAnimationFrame(() => requestAnimationFrame(() => { const r = $('ringFg'); if (r) r.style.strokeDashoffset = (C * (1 - pct / 100)).toFixed(1); }));
     $('resultsCard').querySelectorAll('[data-review]').forEach(btn => btn.addEventListener('click', () => {
@@ -79,10 +80,8 @@
     $('btnReplay').addEventListener('click', () => NS.startGame({ same: true }));
     $('btnNewCfg').addEventListener('click', () => NS.showSetup());
     $('btnHome').addEventListener('click', () => NS.showHome());
-    if (osteo) {
-      $('btnExplore').addEventListener('click', () => { startReview(null, null); EN.setAtlas(true); NS.updateDock(); });
-      if (random) $('btnOther').addEventListener('click', () => NS.startGame());
-    }
+    if (R) $('btnExplore').addEventListener('click', () => { startReview(null, null); if (R.onExplore) R.onExplore(); NS.updateDock(); });
+    if (other) $('btnOther').addEventListener('click', () => NS.startGame());
   }
 
   /* ---------------- Revision ---------------- */

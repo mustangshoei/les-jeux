@@ -26,6 +26,9 @@
       desc: 'Explorer librement le corps humain et consulter la fiche de chaque élément.' }
   ];
 
+  /* organes distincts (la vessie, l'uretre et les ureteres ont une version par sexe du corps, de meme nom) */
+  const organs = list => new Set(list.map(o => o.name)).size;
+
   /* Regroupements : une carte pour plusieurs jeux (elle prend la place du premier d'entre eux) */
   const GROUPS = [
     { id: 'osteologie', icon: 'os', tint: 'nacre',
@@ -35,7 +38,7 @@
     { id: 'splanchnologie-humains', icon: 'organe', tint: 'rose',
       name: 'Splanchnologie des humains',
       tagline: 'Les organes du corps humain : leur place, puis leurs parties en détail.',
-      meta: '2 jeux' }
+      meta: '2 jeux · ' + organs(NS.ORGANS) + ' organes · ' + NS.SPLANCHNO.length + ' détaillés' }
   ];
 
   const muscles = () => NS.MUSCLES.length;
@@ -56,12 +59,16 @@
       tagline: 'Reconnaître et situer les muscles, zone par zone.',
       desc: 'Un muscle s\'illumine sur le corps en 3D : donnez son nom (Nommage), ou cliquez sur le muscle demandé (Ciblage).',
       meta: muscles() + ' muscles · ' + NS.MUSCLES.filter(m => m.principal).length + ' principaux' },
-    { id: 'organes', chapter: 'corps', group: 'splanchnologie-humains', kind: 'jeu', status: 'soon', icon: 'organe',
+    { id: 'organes', chapter: 'corps', group: 'splanchnologie-humains', kind: 'jeu', status: 'ready', icon: 'organe', tint: 'peche',
       name: 'Les organes',
-      tagline: 'Reconnaître et situer les organes du corps humain.' },
-    { id: 'splanchnologie', chapter: 'corps', group: 'splanchnologie-humains', kind: 'jeu', status: 'soon', icon: 'splanchno',
+      tagline: 'Reconnaître et situer les organes du corps humain, appareil par appareil.',
+      desc: 'Un organe s\'illumine sur le corps en 3D : donnez son nom (Nommage), ou cliquez sur l\'organe demandé (Ciblage).',
+      meta: organs(NS.ORGANS) + ' organes · ' + organs(NS.ORGANS.filter(o => o.principal)) + ' principaux' },
+    { id: 'splanchnologie', chapter: 'corps', group: 'splanchnologie-humains', kind: 'jeu', status: 'ready', icon: 'splanchno', tint: 'menthe',
       name: 'Splanchnologie descriptive',
-      tagline: 'Nommer et situer les parties d\'un organe, comme l\'ostéologie pour les os.' },
+      tagline: 'Nommer et situer les parties d\'un organe, comme l\'ostéologie pour les os.',
+      desc: 'Un organe tiré au sort (ou choisi) est affiché seul, découpé en parties : identifiez ses segments, faces, cavités et conduits.',
+      meta: NS.SPLANCHNO.length + ' organes détaillés · ' + NS.SPLANCHNO.reduce((n, d) => n + d.parts.length, 0) + ' parties' },
     { id: 'nerfs', chapter: 'corps', kind: 'jeu', status: 'soon', icon: 'nerf',
       name: 'Les nerfs',
       tagline: 'Suivre les nerfs : origines, trajets et territoires.' },

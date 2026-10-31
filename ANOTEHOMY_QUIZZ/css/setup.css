@@ -104,6 +104,9 @@
 /* ---------- Onglets (os au hasard / choisi ; muscles principaux / tous) ---------- */
 .onglets { display: inline-flex; gap: .2rem; padding: .2rem; border: 1px solid var(--line); border-radius: 12px; background: var(--champ); }
 .onglets--large { display: flex; }
+/* deux groupes d'onglets côte à côte (sexe du corps et organes proposés…), l'un sous l'autre si la place manque */
+.onglets-ligne { display: flex; flex-wrap: wrap; gap: .4rem; }
+.onglets-ligne > .onglets { flex: 1 1 13rem; }
 .onglets--large .onglet { flex: 1; }
 .onglet { position: relative; cursor: pointer; }
 .onglet input { position: absolute; opacity: 0; pointer-events: none; }

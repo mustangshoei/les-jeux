@@ -8,7 +8,7 @@ Anotehomy Quizz fait partie du dossier des jeux (voir le [README à la racine](.
 avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif qui permet de jouer à
 plusieurs sur un réseau.
 
-**Version 2.1.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 2.3.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
@@ -35,7 +35,7 @@ ouvrant directement le fichier. Chaque fichier range ses fonctions dans l'espace
 
 ```
 index.html                  page unique : écran de jeu (panneau latéral + scène 3D), menu, configuration,
-                            résultats, statistiques, bouton de compte, fenêtre du compte
+                            résultats, statistiques, bouton de compte, menu du compte
 CREDITS.md                  crédits et licences (modèles 3D, Three.js, polices, algorithmes)
 css/                        apparence, un fichier par partie de l'écran (base, layout, panel, stage, skeleton,
                             home, setup, results, account, responsive)
@@ -44,16 +44,17 @@ img/                        planches des chapitres du menu (images figées du mo
 js/main.js                  point d'entrée : menu immédiat, chargement du modèle 3D au lancement d'une partie,
                             raccourcis clavier
 js/core/                    espace de noms AQ, utilitaires
-js/data/                    données : zones du corps, catalogue des os, découpage des os, catalogues des muscles
-                            et des vaisseaux,
+js/data/                    données : zones du corps, catalogue des os, découpage des os, catalogues des muscles,
+                            des vaisseaux et des organes, organes découpés en parties (splanchnology.js),
                             catalogue du menu (games.js), modèles 3D compressés (*-model.js, générés)
+js/data/splanchno/          un modèle 3D par organe détaillé (splanchnologie descriptive, généré)
 js/engine/                  moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles,
-                            vaisseaux
+                            vaisseaux et organes (fabrique commune systems.js), organe isolé (splanchno.js)
 js/game/                    logique de jeu : menu, correction des réponses, configuration, partie, résultats,
                             révision, et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js,
-                            vessel-game.js)
+                            vessel-game.js, organ-game.js, splanchno-game.js)
 js/account/profile.js       statistiques du joueur (invité ou compte commun)
-js/account/account.js       bouton de compte, fenêtre du compte, écran des statistiques
+js/account/account.js       bouton de compte, menu du compte, écran des statistiques
 js/vendor/three.min.js      Three.js r158 (licence MIT)
 tools/                      (facultatif) régénération des modèles 3D, voir tools/README.md
 ```
@@ -64,8 +65,8 @@ Même construction que le menu de GéoNohyne Quizz (`js/game/home.js`, catalogue
 
 - **Trois chapitres** :
   1. **Le corps humain** : **Ostéologie des humains** (les os du squelette, l'ostéologie descriptive),
-     les muscles, les vaisseaux sanguins ; annoncés : **Splanchnologie des humains** (les organes, la
-     splanchnologie descriptive : les parties de chaque organe, comme l'ostéologie pour les os), les nerfs ;
+     les muscles, les vaisseaux sanguins, **Splanchnologie des humains** (les organes, la splanchnologie
+     descriptive : les parties de chaque organe, comme l'ostéologie pour les os) ; annoncés : les nerfs ;
   2. **La langue médicale** : annoncés : les pathologies, les termes médicaux (le vocabulaire du milieu
      médical) ;
   3. **Apprendre la Vie** : annoncé : le module « Le corps humain » (explorer librement le corps et
@@ -91,8 +92,8 @@ Même construction que le menu de GéoNohyne Quizz (`js/game/home.js`, catalogue
 4. **Résultats**, puis **révision** libre sur le modèle 3D.
 
 **La 3D ne démarre qu'au lancement d'une partie** : le squelette se charge au premier lancement
-(« Chargement du modèle 3D… »), les os détaillés (ostéologie), les muscles et les vaisseaux au premier lancement du jeu
-concerné. Dès qu'on quitte la partie (menu, configuration), l'affichage 3D est **mis en pause** : rien ne
+(« Chargement du modèle 3D… »), les os détaillés (ostéologie), les muscles, les vaisseaux et les organes au premier lancement du jeu
+concerné, chaque organe détaillé (splanchnologie descriptive) quand il est tiré ou choisi. Dès qu'on quitte la partie (menu, configuration), l'affichage 3D est **mis en pause** : rien ne
 tourne en arrière-plan.
 
 ## Apparence
@@ -126,7 +127,7 @@ Code : `js/game/matcher.js`.
 ## Modes de jeu (communs à tous les jeux)
 
 - **Nommage** : un élément s'illumine (en rouge ; en bleu pour les muscles ; en jaune pour les
-  vaisseaux) ; on tape son nom dans le
+  vaisseaux ; en cyan pour les organes) ; on tape son nom dans le
   panneau de gauche, puis Valider (ou Entrée). « Passer » compte la question comme ratée.
   **Autocomplétion** (option) : dès 2 caractères, les noms TA2 de **tous** les éléments du jeu (pas
   seulement ceux de la partie, pour ne pas donner d'indice), la saisie surlignée même tapée sans accent ;
@@ -218,6 +219,70 @@ Reconnaître et localiser les artères et les veines sur le corps en 3D. Code : 
 - Les segments et les petites branches d'un vaisseau forment un seul objet cliquable par côté du corps
   (ex. l'artère cérébrale moyenne avec ses branches corticales).
 
+## Jeu 5 : Les organes
+
+Reconnaître et localiser les organes sur le corps en 3D (carte « Splanchnologie des humains »). Code :
+`js/game/organ-game.js`, `js/game/organ-setup.js`, moteur `js/engine/organs.js`, catalogue
+`js/data/organs.js`.
+
+- **205 organes** (192 dans le corps masculin, 196 dans le corps féminin), dont 103 principaux, dans
+  9 **appareils** : digestif (de la langue au côlon sigmoïde, foie, pancréas, glandes salivaires…),
+  respiratoire (cavité nasale, cartilages du larynx, trachée, bronches, lobes des poumons), urinaire,
+  génital, glandes endocrines, organes lymphoïdes (rate, thymus, tonsilles et 39 groupes de nœuds
+  lymphatiques), cœur (cavités, valves), encéphale et moelle (lobes, sillons, noyaux gris, ventricules,
+  tronc cérébral, cervelet, moelle spinale), organes des sens (œil, voies lacrymales, oreille moyenne et
+  interne).
+- **Sexe du corps** : masculin ou féminin (réglage partagé avec la splanchnologie descriptive). Le corps
+  féminin remplace les organes génitaux masculins, la vessie, l'urètre et les uretères par leurs
+  équivalents féminins : ovaires, trompes utérines, utérus, vagin, ligaments de l'utérus et de l'ovaire,
+  clitoris, bulbes du vestibule, glandes vestibulaires majeures, glandes mammaires, vessie, urètre
+  féminin, uretères prolongés jusqu'à la vessie.
+- **Organes proposés** : principaux seulement, ou tous. Les organes des appareils non cochés, et ceux de
+  l'autre sexe, sont **cachés** pendant la partie, ne sont pas cliquables et ne sont pas proposés par
+  l'autocomplétion.
+- Chaque organe a sa couleur (foie brun, vésicule verte, ventricules cérébraux bleus…) ; la cible est
+  **cyan**. Le squelette est affiché en transparence.
+- **Nommage** : un organe caché par d'autres (cristallin dans l'œil, noyaux gris dans le cerveau…) est
+  dégagé automatiquement. **Ciblage** : un organe caché est signalé (**Maj + clic** écarte un organe
+  gênant).
+- Le modèle Z-Anatomy est **masculin**. Les organes féminins viennent des organes de référence de la
+  femme du **Human Reference Atlas** (HuBMAP), recalés dans le bassin du modèle (similitude ajustée sur la
+  symphyse pubienne, le promontoire et le coccyx) et sur le thorax (glandes mammaires). Le clitoris, les
+  bulbes du vestibule, les glandes vestibulaires majeures et l'urètre féminin, absents des deux modèles,
+  sont **générés** (formes simples placées d'après la symphyse, les rameaux ischio-pubiens et l'orifice du
+  vagin). Le bassin osseux reste celui du modèle masculin.
+- Le grand omentum, la plèvre, le péritoine et le ligament large de l'utérus ne sont pas repris (ils
+  cacheraient tout le reste ; le ligament large est en splanchnologie descriptive).
+
+## Jeu 6 : Splanchnologie descriptive
+
+Nommer et situer les parties d'un organe, comme l'ostéologie descriptive pour les os (carte
+« Splanchnologie des humains »). Code : `js/game/splanchno-game.js`, `js/game/splanchno-setup.js`,
+moteur `js/engine/splanchno.js`, catalogue `js/data/splanchnology.js`, un modèle par organe dans
+`js/data/splanchno/`.
+
+- **20 organes détaillés, 335 parties** : duodénum et pancréas (têtes, col, corps, queue, conduits,
+  parties du duodénum), foie (8 segments, vésicule, cholédoque), gros intestin (cæcum, côlons, angles,
+  rectum, valve iléo-cæcale), larynx (cartilages, os hyoïde), trachée et bronches (jusqu'aux bronches
+  segmentaires), poumons droit et gauche (segments, hile), rein (capsule, cortex, colonnes, pyramides,
+  papilles, calices, pelvis, hile), vessie, organes génitaux masculins, utérus et annexes (fond, corps,
+  col, trompes, ovaires, ligaments, vagin), glande mammaire, rate (faces, hile), nœud lymphatique,
+  cœur (cavités, valves, artères et veines coronaires, gros vaisseaux), hémisphère cérébral (gyrus et
+  sillons), tronc cérébral et cervelet (lobules, vermis), noyaux gris et ventricules, bulbe de l'œil
+  (tuniques, milieux transparents, muscles), oreille (tympan, osselets, cochlée, vestibule).
+- **Organe étudié** : tiré au hasard parmi des appareils (jamais deux fois de suite le même), ou choisi
+  dans une liste ; **sexe du corps** partagé avec le jeu des organes (utérus et glande mammaire : corps
+  féminin ; organes génitaux masculins : corps masculin).
+- L'organe est affiché **seul, à une taille commune** (un nœud lymphatique aussi grand que le cœur),
+  chaque partie dans sa couleur. **Nommage** : une partie cachée par d'autres (pyramides sous la capsule
+  du rein, cristallin dans l'œil…) est dégagée automatiquement. **Ciblage** : une partie cachée est
+  signalée (**Maj + clic** écarte une partie gênante).
+- Résultats : « Explorer l'organe » (toutes ses parties, une à une), « Autre organe au hasard »,
+  « Rejouer cet organe ». L'autocomplétion propose les parties de tous les organes (aucun indice).
+- Modèles : organes de référence de la femme du Human Reference Atlas (HuBMAP) pour la plupart (organes
+  communs aux deux sexes compris), Z-Anatomy pour le foie, le larynx, les bronches, l'encéphale,
+  l'oreille et les organes génitaux masculins.
+
 ## Commandes de la vue 3D
 
 Le bouton **?** (ou la touche **H**) affiche l'aide ; elle s'ouvre seule à la première visite.
@@ -237,14 +302,16 @@ voisins (**V**) et atlas des parties (**C**, en révision).
 
 ## Compte et statistiques
 
-- **Bouton de compte** en haut à gauche (menu, configuration et résultats) : il affiche « Invité » ou le
-  nom du compte connecté, et ouvre la fenêtre du compte.
+- **Bouton de compte** en haut à gauche (menu, configuration et résultats) : il affiche l'initiale et le
+  nom du joueur (« Invité » ou le compte connecté), et ouvre le **menu du compte** : un menu déroulant
+  juste en dessous, construit comme le menu « Jeux » d'en face (un titre, le joueur, des lignes d'action
+  avec leur pictogramme, une note). Il se ferme d'un clic ailleurs ou avec **Échap**.
 - **Comptes** (seulement quand le jeu est ouvert depuis le serveur) : nom + mot de passe (4 caractères au
   moins), **communs à tous les jeux du dossier** : un compte créé ici sert aussi dans GéoNohyne Quizz, et
-  inversement. À l'arrivée, une fenêtre propose de se connecter, de créer un compte ou de continuer en
-  invité (une fois par session du navigateur, tous jeux confondus). La connexion est mémorisée et
+  inversement. À l'arrivée, le menu s'ouvre seul et propose de se connecter, de créer un compte ou de
+  continuer en invité (une fois par session du navigateur, tous jeux confondus). La connexion est mémorisée et
   partagée par les jeux : on reste connecté en changeant de jeu.
-- **Fenêtre du compte** connecté : mes statistiques, renommer, changer le mot de passe (les autres
+- **Menu du compte** connecté : mes statistiques, renommer, changer le mot de passe (les autres
   appareils devront se reconnecter), se déconnecter, supprimer le compte (mot de passe demandé ; le compte
   et ses statistiques disparaissent de **tous** les jeux).
 - **Invité** : toujours possible ; statistiques gardées dans ce navigateur (`localStorage`, clé
@@ -252,7 +319,7 @@ voisins (**V**) et atlas des parties (**C**, en révision).
   l'invité**.
 - **Ce qui est enregistré** : chaque partie terminée (ou interrompue, marquée comme telle) : jeu, mode,
   configuration (zones, os étudié), bonnes réponses, score, temps.
-- **Écran des statistiques** (bouton « Mes statistiques » de la fenêtre du compte) :
+- **Écran des statistiques** (ligne « Mes statistiques » du menu du compte) :
   - totaux : parties, temps de jeu, taux de bonnes réponses, questions ;
   - **par jeu et par mode** : parties, réussite moyenne, **meilleure partie** (meilleure réussite, puis le
     plus de questions, puis le temps le plus court ; parties complètes seulement) ;
@@ -283,15 +350,17 @@ Un nouveau chapitre se déclare dans `CHAPTERS` (`js/data/games.js`) et sa planc
 
 ## Modèles 3D, outils et crédits
 
-- Squelette et os détaillés : **BodyParts3D** (DBCLS, CC BY 4.0) ; muscles et vaisseaux : **Z-Anatomy**
-  (CC BY-SA 4.0, `js/data/muscle-model.js` et `js/data/vessel-model.js` sont donc distribués sous la même
-  licence) ; rendu : **Three.js** (MIT) ;
+- Squelette et os détaillés : **BodyParts3D** (DBCLS, CC BY 4.0) ; muscles, vaisseaux et organes :
+  **Z-Anatomy** (CC BY-SA 4.0, `js/data/muscle-model.js`, `js/data/vessel-model.js` et
+  `js/data/organ-model.js` sont donc distribués sous la même licence) ; organes féminins et la plupart
+  des organes détaillés : **Human Reference Atlas** (HuBMAP, CC BY 4.0) ; rendu : **Three.js** (MIT) ;
   polices : **Bricolage Grotesque** et **IBM Plex Mono** (OFL). Détails et modifications : `CREDITS.md`.
 - Les planches du menu (`img/chapitre-*.webp`) sont des rendus figés de ces modèles, faits une fois pour
   toutes dans le navigateur ; elles suivent la licence du modèle dont elles viennent (voir `CREDITS.md`).
 - Les modèles compressés de `js/data/*-model.js` sont générés par les scripts de `tools/` (PowerShell +
   C#, rien à installer) : **inutiles pour jouer**, ils servent à changer le niveau de détail ou la liste
-  des os, des muscles et des vaisseaux. Mode d'emploi : `tools/README.md`.
+  des os, des muscles, des vaisseaux et des organes, et le découpage des organes détaillés. Mode
+  d'emploi : `tools/README.md`.
 
 ## Versions
 
@@ -301,6 +370,8 @@ Numérotation **MAJEUR.MINEUR.CORRECTIF** commune à tous les jeux (règles : «
 
 | Version | Date | Changements |
 |---|---|---|
+| 2.3.0 | 31/10/2026 | Menu du compte (en haut à gauche) au même style que GéoNohyne Quizz : menu déroulant sous le bouton (titre, joueur, lignes d'action avec pictogramme, note), au lieu d'une fenêtre au centre de l'écran ; l'invité reprend son accent (« Invité »). Les organes : **sexe du corps** au choix (masculin ou féminin) ; 16 organes féminins (ovaires, trompes, utérus, vagin, ligaments, clitoris, bulbes du vestibule, glandes vestibulaires majeures, glandes mammaires, vessie, urètre et uretères féminins), tirés du Human Reference Atlas (HuBMAP, CC BY 4.0) recalé dans le bassin, ou générés. Nouveau jeu **Splanchnologie descriptive** : 20 organes découpés en 335 parties (foie, rein, cœur, poumons, encéphale, œil, utérus et annexes…), un organe affiché seul, au hasard ou choisi ; résultats avec exploration de l'organe. |
+| 2.2.0 | 30/10/2026 | Nouveau jeu **Les organes** (192 organes dans 9 appareils, dont 97 principaux, modèle 3D Z-Anatomy) : la carte « Splanchnologie des humains » s'ouvre ; choix des appareils (les organes des autres appareils sont cachés et absents de l'autocomplétion), squelette en transparence, cible cyan. |
 | 2.1.0 | 30/10/2026 | Groupes de jeux : « Ostéologie des humains » (les os du squelette, ostéologie descriptive) et « Splanchnologie des humains » (organes, splanchnologie descriptive) n'ont plus qu'une carte, qui ouvre une fenêtre coupée en deux pour choisir le jeu ; « Les termes médicamenteux » deviennent « Les termes médicaux » (tout le vocabulaire du milieu médical) ; nouveau jeu **Les vaisseaux sanguins** (279 artères et veines, dont 101 principales, modèle 3D Z-Anatomy, choix des zones et des artères et/ou veines, squelette et cœur en transparence) ; os ou partie d'os survolé bien plus visible (rose franc et contour lumineux, au lieu d'un blanc à peine plus clair). |
 | 2.0.0 | 30/10/2026 | Refonte graphique complète, inspirée de GéoNohyne Quizz : thème « Planches anatomiques » (rose et blanc sur fond sombre), menu en trois chapitres (Le corps humain, La langue médicale, Apprendre la Vie) avec une planche tirée du modèle 3D ; jeux annoncés (organes, splanchnologie descriptive, nerfs, vaisseaux sanguins, pathologies, termes médicamenteux, module « Le corps humain ») ; configuration sur un seul écran, sans défilement ; 3D chargée au lancement de la partie et en pause hors des parties ; accents dans tous les textes et tous les noms (toujours facultatifs dans les réponses). |
 | 1.0.0 | 28/10/2026 | Première version numérotée : les os du squelette, ostéologie descriptive (53 os détaillés), les muscles (194, dont 101 principaux), modes Nommage et Ciblage, comptes communs et statistiques. |

@@ -20,7 +20,9 @@
     default: { target: 0xff2f24, ko: 0xff2f24, ok: 0x2fe08a, mt: [0xff3a2f, 0xff1a0a], mk: [0xff3a2f, 0xc8150a], hv: [0xff8fb4, 0x9e1f52], hg: 0xff6f9c },
     muscle: { target: 0x2f8cff, ko: 0xffa31a, ok: 0x2fe08a, mt: [0x3d97ff, 0x0a4cff], mk: [0xffa31a, 0xb35f00], hv: [0xf4a898, 0x4a1c12], hg: 0xffd6c8 },
     /* vaisseaux (arteres rouges, veines bleues) : cible jaune, faux en violet, survol blanc */
-    vessel: { target: 0xffd21f, ko: 0xd84dff, ok: 0x2fe08a, mt: [0xffd84a, 0xc79400], mk: [0xd84dff, 0x7a16a0], hv: [0xfff3e6, 0x6a5a48], hg: 0xffffff }
+    vessel: { target: 0xffd21f, ko: 0xd84dff, ok: 0x2fe08a, mt: [0xffd84a, 0xc79400], mk: [0xd84dff, 0x7a16a0], hv: [0xfff3e6, 0x6a5a48], hg: 0xffffff },
+    /* organes (toutes les couleurs) : cible cyan electrique, faux en violet, survol blanc */
+    organ: { target: 0x1fe4ff, ko: 0xd84dff, ok: 0x2fe08a, mt: [0x3ae8ff, 0x0096b4], mk: [0xd84dff, 0x7a16a0], hv: [0xfff6ee, 0x6a5a48], hg: 0xffffff }
   };
   let hoverGlowColor = PALETTES.default.hg;
   function setMarkPalette(name) {
@@ -32,6 +34,7 @@
     hoverGlowColor = p.hg;
     document.body.classList.toggle('pal-muscle', name === 'muscle');
     document.body.classList.toggle('pal-vessel', name === 'vessel');
+    document.body.classList.toggle('pal-organ', name === 'organ');
     NS.requestRender();
   }
   const marked = new Map();        /* instance -> { state, extras: [maillages] } */

@@ -48,14 +48,14 @@
         { id: 'morpion-monde', nom: 'Le morpion du monde', groupe: 'Monde', variantes: DUEL, bientot: true },
         { id: 'grand-chemin-monde', nom: 'Le Grand Chemin du monde', groupe: 'Monde', bientot: true }
       ] },
-    { id: 'anotehomy', dossier: 'ANOTEHOMY_QUIZZ', nom: 'Anotehomy Quizz', icone: '🦴', version: '2.1.0',
-      description: 'Anatomie humaine en 3D : os, ostéologie descriptive, muscles, vaisseaux sanguins.',
+    { id: 'anotehomy', dossier: 'ANOTEHOMY_QUIZZ', nom: 'Anotehomy Quizz', icone: '🦴', version: '2.3.0',
+      description: 'Anatomie humaine en 3D : os, ostéologie descriptive, muscles, vaisseaux sanguins, organes, splanchnologie descriptive.',
       modes: [
         { id: 'os-squelette', nom: 'Les os du squelette', groupe: 'Ostéologie des humains', variantes: NOMMAGE },
         { id: 'os-descriptive', nom: 'Ostéologie descriptive', groupe: 'Ostéologie des humains', variantes: NOMMAGE },
         { id: 'muscles-localisation', nom: 'Les muscles du corps humain', groupe: 'Le corps humain', variantes: NOMMAGE },
-        { id: 'organes', nom: 'Les organes', groupe: 'Splanchnologie des humains', bientot: true },
-        { id: 'splanchnologie', nom: 'Splanchnologie descriptive', groupe: 'Splanchnologie des humains', bientot: true },
+        { id: 'organes', nom: 'Les organes', groupe: 'Splanchnologie des humains', variantes: NOMMAGE },
+        { id: 'splanchnologie', nom: 'Splanchnologie descriptive', groupe: 'Splanchnologie des humains', variantes: NOMMAGE },
         { id: 'nerfs', nom: 'Les nerfs', groupe: 'Le corps humain', bientot: true },
         { id: 'vaisseaux', nom: 'Les vaisseaux sanguins', groupe: 'Le corps humain', variantes: NOMMAGE },
         { id: 'pathologies', nom: 'Les pathologies', groupe: 'La langue médicale', bientot: true },

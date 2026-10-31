@@ -55,6 +55,62 @@ proviennent aussi de **Z-Anatomy** :
 - En conséquence, **`js/data/vessel-model.js` est distribué sous la même licence CC BY-SA 4.0**
   (partage dans les mêmes conditions, avec cette attribution).
 
+## Modèle anatomique 3D des organes : Z-Anatomy
+
+Les organes du jeu « Les organes » (avec le squelette affiché en transparence) proviennent aussi de
+**Z-Anatomy** :
+
+- Source : https://github.com/LluisV/Z-Anatomy (branche `PC-Version`, `Resources/Models/FBX/` :
+  `VisceralSystem100.fbx`, `LymphoidOrgans100.fbx`, `NervousSystem100.fbx`, `CardioVascular41.fbx`
+  (cavités et valves du cœur) et `SkeletalSystem100.fbx` (cartilages du larynx et du nez, osselets,
+  squelette))
+- Licence : [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)
+- Modifications apportées pour ce projet (`tools/build-organs.ps1`) :
+  - regroupement des maillages par organe (parties réunies, un objet par côté du corps), selon le
+    catalogue `js/data/organs.js` (noms TA2 en français) ; la moelle spinale est représentée par sa
+    seule substance blanche ;
+  - squelette en décor ;
+  - simplification des maillages (environ 340 000 triangles au total), quantification 16 bits,
+    compression gzip ;
+  - calcul des vues où chaque organe est visible (`tools/Visibility.cs`).
+- En conséquence, **`js/data/organ-model.js` est distribué sous la même licence CC BY-SA 4.0**
+  (partage dans les mêmes conditions, avec cette attribution).
+
+## Organes de référence de la femme : Human Reference Atlas (HuBMAP)
+
+Les organes féminins du jeu « Les organes » et la plupart des organes de la « Splanchnologie
+descriptive » (duodénum et pancréas, gros intestin, poumons, rein, vessie, utérus et annexes, glande
+mammaire, rate, nœud lymphatique, cœur, bulbe de l'œil) proviennent du **Human Reference Atlas** du
+programme HuBMAP :
+
+- Kristen Browne et Heidi Schlehlein, Human Reference Atlas / HuBMAP, *3D Reference Organ Set for
+  Female v1.5* (2023), construit à partir du Visible Human Female (National Library of Medicine) ;
+  nœud lymphatique : modèle de Yao inclus dans cet ensemble.
+- Source : https://lod.humanatlas.io/ref-organ/united-female/v1.5 (fichier `3d-vh-f-united.glb`),
+  DOI https://doi.org/10.48539/HBM352.BTSQ.586
+- Licence : [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
+- Modifications apportées pour ce projet :
+  - « Les organes » (`tools/build-organs.ps1`) : organes génitaux féminins, vessie et glandes mammaires
+    recalés sur le modèle Z-Anatomy (similitude dans le plan sagittal ajustée sur la symphyse pubienne,
+    le promontoire et le coccyx des deux modèles ; glandes mammaires : boîte des poumons, puis posées
+    devant les côtes), regroupés par organe, simplifiés ; ils sont rangés dans `js/data/organ-model.js` ;
+  - « Splanchnologie descriptive » (`tools/build-splanchno.ps1`) : regroupement des maillages par partie
+    (catalogue `js/data/splanchnology.js`), vaisseaux coupés près de l'organe, centrage et mise à
+    l'échelle, simplification, quantification 16 bits, compression gzip (`js/data/splanchno/*.js`,
+    même licence CC BY 4.0, avec cette attribution).
+
+Organes générés pour ce projet (absents des deux modèles) : clitoris, bulbes du vestibule, glandes
+vestibulaires majeures, urètre féminin et raccord des uretères à la vessie féminine (formes simples :
+tubes et ellipsoïdes, `tools/GlbRead.cs` et `tools/build-organs.ps1`).
+
+## Splanchnologie descriptive : Z-Anatomy
+
+Le foie (segments), le larynx, la trachée et les bronches, l'encéphale (hémisphère, tronc cérébral et
+cervelet, noyaux gris et ventricules), l'oreille et les organes génitaux masculins de la « Splanchnologie
+descriptive » viennent de **Z-Anatomy** (mêmes fichiers et même licence CC BY-SA 4.0 que ci-dessus) ;
+leurs fichiers `js/data/splanchno/*.js` sont donc distribués sous licence **CC BY-SA 4.0**. Chaque
+fichier indique sa source et sa licence en en-tête.
+
 ## Planches du menu
 
 Images figées des chapitres du menu, rendues une fois pour toutes dans le navigateur à partir des

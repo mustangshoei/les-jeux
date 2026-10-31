@@ -207,7 +207,7 @@
     clearTimeout(session.nextT);
     clearInterval(session.timer);
     session.phase = 'home';
-    EN.clearMarks(); EN.setHoverEnabled(false); EN.closeBone(); EN.deactivateMuscles(); EN.deactivateVessels(); EN.showAll();
+    EN.clearMarks(); EN.setHoverEnabled(false); EN.closeBone(); EN.deactivateMuscles(); EN.deactivateSystems(); EN.showAll();
     NS.hideNotice(); NS.hideTip(); NS.setPrompt(null); NS.updateDock();
     ['qA', 'qB', 'feedback', 'reviewBox', 'setup', 'results'].forEach(id => { $(id).hidden = true; });
     $('app').className = 'mode-a';

@@ -4,7 +4,9 @@
    synchronises), mode de jeu et options. Jeu 1 : zones du corps (ici).
    Jeu 2 : choix de l'os (js/game/osteo-setup.js). Muscles : zones et filtre
    des muscles proposes (js/game/muscle-setup.js). Vaisseaux : zones, type et
-   filtre des vaisseaux proposes (js/game/vessel-setup.js).
+   filtre des vaisseaux proposes (js/game/vessel-setup.js). Organes : appareils, sexe
+   du corps et filtre des organes proposes (js/game/organ-setup.js). Splanchnologie
+   descriptive : choix de l'organe et sexe du corps (js/game/splanchno-setup.js).
    ========================================================================== */
 (function (NS) {
   'use strict';
@@ -17,7 +19,10 @@
   const isOsteoGame = () => gameId() === 'os-descriptive';
   const isMuscleGame = () => gameId() === 'muscles-localisation';
   const isVesselGame = () => gameId() === 'vaisseaux';
-  const kind = () => isOsteoGame() ? 'osteo' : isMuscleGame() ? 'muscles' : isVesselGame() ? 'vessels' : 'bones';
+  const isOrganGame = () => gameId() === 'organes';
+  const isSplanchnoGame = () => gameId() === 'splanchnologie';
+  const kind = () => isOsteoGame() ? 'osteo' : isMuscleGame() ? 'muscles' : isVesselGame() ? 'vessels' : isOrganGame() ? 'organs'
+    : isSplanchnoGame() ? 'splanchno' : 'bones';
 
   /* textes des modes (une phrase courte, comme dans GéoNohyne Quizz), titre du nombre de questions et
      crédits selon le jeu */
@@ -32,7 +37,13 @@
       credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (muscles et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' },
     vessels: { modes: ['Un vaisseau s\'illumine en jaune : écrivez son nom.', 'Un nom de vaisseau s\'affiche : cliquez sur ce vaisseau.'],
       count: 'Nombre de vaisseaux à trouver', old: 'artère humérale, saphène interne, sous-clavière, artère pédieuse…',
-      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (vaisseaux, cœur et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' }
+      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (vaisseaux, cœur et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; simplifié pour le web.' },
+    organs: { modes: ['Un organe s\'illumine en cyan : écrivez son nom.', 'Un nom d\'organe s\'affiche : cliquez sur cet organe.'],
+      count: 'Nombre d\'organes à trouver', old: 'oreillette, bassinet, canal cholédoque, bulbe rachidien…',
+      credits: 'Modèle anatomique 3D : <b>Z-Anatomy</b> (organes et squelette), licence CC BY-SA 4.0, dérivé de BodyParts3D (DBCLS) ; organes féminins : <b>Human Reference Atlas</b> (HuBMAP), CC BY 4.0 ; simplifié pour le web.' },
+    splanchno: { modes: ['Une partie de l\'organe s\'illumine en cyan : écrivez son nom.', 'Un nom de partie s\'affiche : cliquez sur cette partie.'],
+      count: 'Nombre de parties à trouver', old: 'bassinet, oreillette, scissure de Rolando, canal de Wirsung…',
+      credits: 'Modèles anatomiques 3D : <b>Human Reference Atlas</b> (HuBMAP), CC BY 4.0, et <b>Z-Anatomy</b>, CC BY-SA 4.0 ; simplifiés pour le web.' }
   };
 
   function initSetup() {
@@ -74,6 +85,8 @@
     NS.initOsteoSetup();
     NS.initMuscleSetup();
     NS.initVesselSetup();
+    NS.initOrganSetup();
+    NS.initSplanchnoSetup();
     configure();
     updatePool();
     updateOpts();
@@ -84,13 +97,15 @@
 
   /* blocs et textes propres au jeu choisi */
   function configure() {
-    const o = isOsteoGame(), m = isMuscleGame(), v = isVesselGame(), t = GAME_TEXT[kind()];
-    $('stepZones').hidden = o || m || v;
+    const o = isOsteoGame(), m = isMuscleGame(), v = isVesselGame(), g = isOrganGame(), sp = isSplanchnoGame(), t = GAME_TEXT[kind()];
+    $('stepZones').hidden = o || m || v || g || sp;
     $('stepOsteo').hidden = !o;
     $('stepMuscles').hidden = !m;
     $('stepVessels').hidden = !v;
+    $('stepOrgans').hidden = !g;
+    $('stepSplanchno').hidden = !sp;
     $('optNeighWrap').hidden = !o;
-    $('optPreciseWrap').hidden = o || m || v;
+    $('optPreciseWrap').hidden = o || m || v || g || sp;
     $('countTitle').textContent = t.count;
     $('setupOld').textContent = t.old;
     $('modeADesc').textContent = t.modes[0];
@@ -101,12 +116,16 @@
   /* nombre maximal de questions pour la configuration courante */
   const countMax = () => isOsteoGame() ? NS.osteoCounts().max
     : isMuscleGame() ? NS.ADAPTERS['muscles-localisation'].pool().length
-    : isVesselGame() ? NS.ADAPTERS['vaisseaux'].pool().length : NS.pool().length;
+    : isVesselGame() ? NS.ADAPTERS['vaisseaux'].pool().length
+    : isOrganGame() ? NS.ADAPTERS['organes'].pool().length
+    : isSplanchnoGame() ? NS.splanchnoCounts().max : NS.pool().length;
 
   function updatePool() {
     if (isOsteoGame()) { NS.updateOsteoPool(); return; }
     if (isMuscleGame()) { NS.updateMusclePool(); return; }
     if (isVesselGame()) { NS.updateVesselPool(); return; }
+    if (isOrganGame()) { NS.updateOrganPool(); return; }
+    if (isSplanchnoGame()) { NS.updateSplanchnoPool(); return; }
     const n = NS.pool().length;
     $('countNum').max = $('countRange').max = Math.max(1, n);
     $('countOf').textContent = `sur ${n} os disponibles`;
@@ -115,10 +134,12 @@
     $('setupWarn').textContent = n === 0 ? 'Sélectionnez au moins une zone du corps.' : '';
   }
 
-  /* synchronisation champ numerique <-> curseur (os du squelette, parties de l'os, muscles, vaisseaux) ;
+  /* synchronisation champ numerique <-> curseur (os du squelette, parties de l'os, muscles, vaisseaux,
+     organes) ;
      keep : simple mise a jour de l'affichage (le nombre souhaite est conserve, meme s'il
      depasse le maximum de la configuration courante, qui peut encore changer) */
-  const countKey = () => isOsteoGame() ? 'oCount' : isMuscleGame() ? 'mCount' : isVesselGame() ? 'vCount' : 'count';
+  const countKey = () => isOsteoGame() ? 'oCount' : isMuscleGame() ? 'mCount' : isVesselGame() ? 'vCount' : isOrganGame() ? 'gCount'
+    : isSplanchnoGame() ? 'sCount' : 'count';
   function setCount(v, typing, keep) {
     const key = countKey();
     let c = parseInt(v, 10);
@@ -151,14 +172,14 @@
     ['qA', 'qB', 'feedback', 'reviewBox', 'results'].forEach(id => { $(id).hidden = true; });
     $('setup').hidden = false;
     $('app').className = 'mode-a';
-    /* aucune 3D derrière la configuration : les modèles (squelette, os détaillés, muscles, vaisseaux) ne se
+    /* aucune 3D derrière la configuration : les modèles (squelette, os détaillés, muscles, vaisseaux, organes) ne se
        chargent qu'au lancement de la partie (js/game/play.js), et l'affichage est en pause */
-    EN.deactivateMuscles(); EN.deactivateVessels();
+    EN.deactivateMuscles(); EN.deactivateSystems();
     EN.pause();
     NS.updateDock();
     configure();
     updatePool();
   }
 
-  Object.assign(NS, { initSetup, showSetup, updatePool, setCount, isOsteoGame, isMuscleGame, isVesselGame });
+  Object.assign(NS, { initSetup, showSetup, updatePool, setCount, isOsteoGame, isMuscleGame, isVesselGame, isOrganGame, isSplanchnoGame });
 })(AQ.game);

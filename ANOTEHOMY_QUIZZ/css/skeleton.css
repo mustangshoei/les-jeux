@@ -22,5 +22,8 @@
 /* jeu des vaisseaux : la cible est jaune (artères en rouge, veines en bleu) */
 .pal-vessel .halo:not(.ok) { border-color: var(--jaune); box-shadow: 0 0 16px rgba(255, 210, 31, .6), inset 0 0 12px rgba(255, 210, 31, .3); }
 .pal-vessel .stage-prompt .dot { background: var(--jaune); box-shadow: 0 0 10px var(--jaune); }
+/* jeu des organes : la cible est cyan (les organes ont toutes les couleurs) */
+.pal-organ .halo:not(.ok) { border-color: var(--cyan); box-shadow: 0 0 16px rgba(31, 228, 255, .6), inset 0 0 12px rgba(31, 228, 255, .3); }
+.pal-organ .stage-prompt .dot { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
 
 @keyframes halo { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }

@@ -40,13 +40,20 @@
 <script defer src="js/data/muscles.js"></script>
 <!-- catalogue des vaisseaux sanguins (jeu « Les vaisseaux sanguins ») -->
 <script defer src="js/data/vessels.js"></script>
+<!-- catalogue des organes (jeu « Les organes ») -->
+<script defer src="js/data/organs.js"></script>
+<!-- organes découpés en parties (jeu « Splanchnologie descriptive ») -->
+<script defer src="js/data/splanchnology.js"></script>
 <!-- catalogue du menu : chapitres et cartes -->
 <script defer src="js/data/games.js"></script>
 <!-- modèle 3D généré par tools/build-model.ps1 (BodyParts3D, CC BY 4.0) : simples données, décodées seulement
      au lancement de la première partie. Chargés à la demande : js/data/osteo-model.js (os détaillés) et
-     js/data/muscle-model.js (muscles) et js/data/vessel-model.js (vaisseaux), tous deux Z-Anatomy, CC BY-SA 4.0. -->
+     js/data/muscle-model.js (muscles), js/data/vessel-model.js (vaisseaux) et js/data/organ-model.js (organes),
+     tous Z-Anatomy, CC BY-SA 4.0 (organes féminins : HuBMAP, CC BY 4.0), et js/data/splanchno/*.js (un organe
+     découpé en parties par fichier, Z-Anatomy ou HuBMAP). -->
 <script defer src="js/data/skeleton-model.js"></script>
-<!-- moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles, vaisseaux -->
+<!-- moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles, vaisseaux, organes,
+     organe isolé -->
 <script defer src="js/engine/model.js"></script>
 <script defer src="js/engine/scene.js"></script>
 <script defer src="js/engine/camera.js"></script>
@@ -55,19 +62,27 @@
 <script defer src="js/engine/segment.js"></script>
 <script defer src="js/engine/osteo.js"></script>
 <script defer src="js/engine/muscles.js"></script>
+<script defer src="js/engine/systems.js"></script>
 <script defer src="js/engine/vessels.js"></script>
+<script defer src="js/engine/organs.js"></script>
+<script defer src="js/engine/splanchno.js"></script>
 <!-- logique de jeu -->
 <script defer src="js/game/state.js"></script>
 <script defer src="js/game/matcher.js"></script>
-<!-- adaptateurs des jeux : os du squelette, ostéologie descriptive, muscles, vaisseaux -->
+<!-- adaptateurs des jeux : os du squelette, ostéologie descriptive, muscles, vaisseaux, organes, splanchnologie
+     descriptive -->
 <script defer src="js/game/skeleton-game.js"></script>
 <script defer src="js/game/osteo-game.js"></script>
 <script defer src="js/game/muscle-game.js"></script>
 <script defer src="js/game/vessel-game.js"></script>
+<script defer src="js/game/organ-game.js"></script>
+<script defer src="js/game/splanchno-game.js"></script>
 <script defer src="js/game/setup.js"></script>
 <script defer src="js/game/osteo-setup.js"></script>
 <script defer src="js/game/muscle-setup.js"></script>
 <script defer src="js/game/vessel-setup.js"></script>
+<script defer src="js/game/organ-setup.js"></script>
+<script defer src="js/game/splanchno-setup.js"></script>
 <script defer src="js/game/play.js"></script>
 <script defer src="js/game/results.js"></script>
 <script defer src="js/game/autocomplete.js"></script>
@@ -351,14 +366,67 @@
           </div>
           <!-- cases générées par js/game/vessel-setup.js à partir de js/data/vessels.js -->
           <div class="zones" id="vZones"></div>
-          <div class="onglets onglets--large" role="radiogroup" aria-label="Type de vaisseaux">
-            <label class="onglet"><input type="radio" name="vtype" value="av" checked><span>Artères et veines</span></label>
-            <label class="onglet"><input type="radio" name="vtype" value="a"><span>Artères</span></label>
-            <label class="onglet"><input type="radio" name="vtype" value="v"><span>Veines</span></label>
+          <div class="onglets-ligne">
+            <div class="onglets onglets--large" role="radiogroup" aria-label="Type de vaisseaux">
+              <label class="onglet"><input type="radio" name="vtype" value="av" checked><span>Les deux</span></label>
+              <label class="onglet"><input type="radio" name="vtype" value="a"><span>Artères</span></label>
+              <label class="onglet"><input type="radio" name="vtype" value="v"><span>Veines</span></label>
+            </div>
+            <div class="onglets onglets--large" role="radiogroup" aria-label="Vaisseaux proposés">
+              <label class="onglet"><input type="radio" name="vset" value="main" checked><span>Principaux · <span id="vSetMainN"></span></span></label>
+              <label class="onglet"><input type="radio" name="vset" value="all"><span>Tous · <span id="vSetAllN"></span></span></label>
+            </div>
           </div>
-          <div class="onglets onglets--large" role="radiogroup" aria-label="Vaisseaux proposés">
-            <label class="onglet"><input type="radio" name="vset" value="main" checked><span>Principaux · <span id="vSetMainN"></span></span></label>
-            <label class="onglet"><input type="radio" name="vset" value="all"><span>Tous · <span id="vSetAllN"></span></span></label>
+        </div>
+
+        <!-- jeu « Les organes » : sexe du corps, appareils et organes proposés -->
+        <div class="setup-bloc setup-bloc--souple" id="stepOrgans" hidden>
+          <div class="setup-bloc__tete">
+            <span class="setup-etiquette">Appareils</span>
+            <span><button type="button" class="link" id="gAllSystems">Tout</button><button type="button" class="link" id="gNoSystems">Aucun</button></span>
+          </div>
+          <!-- cases générées par js/game/organ-setup.js à partir de js/data/organs.js -->
+          <div class="zones" id="gSystems"></div>
+          <!-- deux groupes d'onglets sur une ligne (ils passent l'un sous l'autre si la place manque) -->
+          <div class="onglets-ligne">
+            <div class="onglets onglets--large" role="radiogroup" aria-label="Sexe du corps">
+              <label class="onglet"><input type="radio" name="gsex" value="m" checked><span>Corps masculin</span></label>
+              <label class="onglet"><input type="radio" name="gsex" value="f"><span>Corps féminin</span></label>
+            </div>
+            <div class="onglets onglets--large" role="radiogroup" aria-label="Organes proposés">
+              <label class="onglet"><input type="radio" name="gset" value="main" checked><span>Principaux · <span id="gSetMainN"></span></span></label>
+              <label class="onglet"><input type="radio" name="gset" value="all"><span>Tous · <span id="gSetAllN"></span></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- jeu « Splanchnologie descriptive » : organe tiré au hasard (parmi des appareils) ou choisi, sexe du corps -->
+        <div class="setup-bloc setup-bloc--souple" id="stepSplanchno" hidden>
+          <div class="setup-bloc__tete">
+            <span class="setup-etiquette">Organe à étudier</span>
+            <div class="onglets" role="radiogroup" aria-label="Choix de l'organe">
+              <label class="onglet"><input type="radio" name="spick" value="random" checked><span>🎲 Au hasard</span></label>
+              <label class="onglet"><input type="radio" name="spick" value="chosen"><span>Organe choisi</span></label>
+            </div>
+          </div>
+          <div class="pick-pane" id="sRandomPane">
+            <div class="setup-bloc__tete sous-tete">
+              <span class="sub-t">Parmi ces appareils</span>
+              <span><button type="button" class="link" id="sAllSystems">Tout</button><button type="button" class="link" id="sNoSystems">Aucun</button></span>
+            </div>
+            <!-- cases générées par js/game/splanchno-setup.js -->
+            <div class="zones" id="sSystems"></div>
+          </div>
+          <div class="pick-pane" id="sChosenPane" hidden>
+            <label class="sel-wrap"><span class="sub-t">Organe</span>
+              <!-- liste générée par js/game/splanchno-setup.js, groupée par appareil -->
+              <select id="sOrgan" aria-label="Organe à étudier"></select>
+            </label>
+            <p class="pk-info" id="sOrganInfo"></p>
+          </div>
+          <div class="onglets onglets--large" role="radiogroup" aria-label="Sexe du corps">
+            <label class="onglet"><input type="radio" name="ssex" value="m" checked><span>Corps masculin</span></label>
+            <label class="onglet"><input type="radio" name="ssex" value="f"><span>Corps féminin</span></label>
           </div>
         </div>
 
@@ -437,19 +505,18 @@
 
 <!-- ===================== COMPTE ET CHANGEMENT DE JEU ===================== -->
 <!-- visibles seulement hors des parties (menu, configuration, résultats) : css/account.css -->
-<!-- bouton de compte (en haut à gauche) : js/account/account.js -->
-<button type="button" class="acct-btn" id="acctBtn" aria-haspopup="dialog"></button>
+<!-- compte (en haut à gauche) : bouton et menu déroulant, sur le modèle du menu « Jeux » (à droite) ;
+     js/account/account.js -->
+<div class="acct-coin">
+  <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="acctMenu"></button>
+  <div class="acct-menu" id="acctMenu" role="dialog" aria-labelledby="acctTitle" hidden>
+    <p class="acct-menu__titre" id="acctTitle">Compte</p>
+    <!-- rempli par js/account/account.js : connexion / création de compte, ou gestion du compte connecté -->
+    <div id="acctBody"></div>
+    <p class="acct-menu__note" id="acctHelp"></p>
+  </div>
+</div>
 <!-- changer de jeu (en haut à droite) : rempli par ../COMMUN/jeux.js -->
 <div class="jeux-coin" data-jeux-selecteur="anotehomy"></div>
-
-<dialog class="acct-dialog" id="acctDialog" aria-labelledby="acctTitle">
-  <div class="acct-head">
-    <h2 id="acctTitle">Compte</h2>
-    <button type="button" class="ico sm-ico" data-close aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <p class="acct-help" id="acctHelp"></p>
-  <!-- rempli par js/account/account.js : connexion / création de compte, ou gestion du compte connecté -->
-  <div id="acctBody"></div>
-</dialog>
 </body>
 </html>

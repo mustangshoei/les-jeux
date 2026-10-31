@@ -18,11 +18,18 @@
      principaux seulement), mCount (nombre de muscles a trouver).
      Vaisseaux : vRegions (zones cochees, js/data/vessels.js), vTypes ('av' arteres et veines, 'a', 'v'),
      vPrincipal (vaisseaux principaux seulement), vCount (nombre de vaisseaux a trouver).
+     Organes : gSystems (appareils coches, js/data/organs.js), gPrincipal (organes principaux seulement),
+     gCount (nombre d'organes a trouver), gSex (corps 'm' masculin ou 'f' feminin, aussi pour la
+     splanchnologie descriptive).
+     Splanchnologie descriptive : sPick ('random' | 'chosen'), sSystems (appareils du tirage), sKey
+     (organe choisi, js/data/splanchnology.js), sCount (nombre de parties a trouver).
      Communs : mode ('A' nommage | 'B' ciblage), auto (autocompletion), tol (fautes tolerees). */
   const settings = { regions: new Set(['ms', 'mi']), count: 10, mode: 'A', auto: true, tol: true, precise: false,
     oPick: 'random', oZones: new Set(['ms', 'mi', 'pelvis', 'vert', 'crane', 'axial']), oKey: null, oCount: 30, neighbors: false,
     mRegions: new Set(['ms', 'mi']), mPrincipal: true, mCount: 15,
-    vRegions: new Set(['ms', 'mi']), vTypes: 'av', vPrincipal: true, vCount: 15 };
+    vRegions: new Set(['ms', 'mi']), vTypes: 'av', vPrincipal: true, vCount: 15,
+    gSystems: new Set(['digestif', 'respiratoire', 'urinaire']), gPrincipal: true, gCount: 15, gSex: 'm',
+    sPick: 'random', sSystems: new Set(['digestif', 'respiratoire', 'urinaire', 'coeur']), sKey: 'rein', sCount: 15 };
 
   /* session en cours.
      game : jeu choisi (js/data/games.js)
@@ -32,8 +39,8 @@
      log : une entree par reponse donnee */
   const session = { game: null, phase: 'setup', queue: [], idx: 0, log: [], ok: 0, ko: 0, points: 0, t0: 0, elapsed: 0, timer: 0, nextT: 0 };
 
-  /* adaptateurs des jeux (js/game/skeleton-game.js, osteo-game.js, muscle-game.js, vessel-game.js), par
-     identifiant de jeu */
+  /* adaptateurs des jeux (js/game/skeleton-game.js, osteo-game.js, muscle-game.js, vessel-game.js,
+     organ-game.js, splanchno-game.js), par identifiant de jeu */
   const ADAPTERS = {};
   const adapter = () => ADAPTERS[session.game ? session.game.id : 'os-squelette'];
 

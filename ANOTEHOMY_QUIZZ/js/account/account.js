@@ -1,10 +1,13 @@
 /* ==========================================================================
    Anotehomy Quizz - account/account.js
    COMPTE DU JOUEUR : bouton en haut a gauche (sur les ecrans superposes :
-   accueil, configuration, resultats), fenetre du compte et ecran des
-   statistiques. Les donnees sont gerees par js/account/profile.js.
+   accueil, configuration, resultats), menu du compte et ecran des
+   statistiques. Le menu est un menu deroulant sous le bouton, sur le modele du
+   menu "Jeux" (../COMMUN/jeux.js) : un titre, le joueur, des lignes d'action
+   (pictogramme, titre, precision) et une note ; il se ferme d'un clic ailleurs
+   ou avec Echap. Les donnees sont gerees par js/account/profile.js.
      - non connecte : se connecter ou creer un compte (nom + mot de passe), ou
-       continuer en invite ; la fenetre s'ouvre seule a l'arrivee, une fois par
+       continuer en invite ; le menu s'ouvre seul a l'arrivee, une fois par
        session du navigateur (tous jeux confondus) ;
      - connecte : statistiques, renommer, mot de passe, se deconnecter, supprimer ;
      - sans serveur (index.html ouvert directement) : invite seulement.
@@ -20,14 +23,24 @@
   const MODES = { A: 'Nommage', B: 'Ciblage' };
   const HISTORY_STEP = 30;               /* parties affichees par "Afficher plus" */
 
-  /* vues de la fenetre : 'login' ou 'register' (non connecte) ; connecte : formulaire ouvert
+  /* vues du menu : 'login' ou 'register' (non connecte) ; connecte : formulaire ouvert
      null, 'rename', 'pwd' ou 'delete' */
   let view = 'login';
   let form = null;
   let message = '';
-  let welcome = false;                   /* fenetre ouverte automatiquement a l'arrivee */
+  let welcome = false;                   /* menu ouvert automatiquement a l'arrivee */
   let busy = false;                      /* requete en cours : boutons desactives */
   let historyMax = HISTORY_STEP;
+
+  /* pictogrammes des lignes du menu (traits sur une grille de 24 x 24), par action */
+  const ICONS = {
+    stats: '<path d="M4 20V11M10 20V5M16 20v-6M2 20h20"/>',
+    guest: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    rename: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/>',
+    pwd: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M14.5 8.5l2 2"/>',
+    logout: '<path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M15 17l5-5-5-5M20 12H9"/>',
+    delete: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
+  };
 
   const initial = n => (String(n).trim().charAt(0) || '?').toUpperCase();
   const avatar = (p, big) => `<span class="acct-av${big ? ' big' : ''}" style="--av:${esc(p.color)}" aria-hidden="true">${esc(initial(p.name))}</span>`;
@@ -47,18 +60,30 @@
     b.innerHTML = avatar(p) + `<span class="acct-name">${esc(p.name)}</span>`;
     const what = p.guest ? 'se connecter, créer un compte, statistiques' : 'compte, statistiques';
     b.title = (p.guest ? 'Invité' : 'Compte : ' + p.name) + ' (' + what + ')';
-    b.setAttribute('aria-label', (p.guest ? 'Vous jouez en invité' : 'Compte : ' + p.name) + '. Ouvrir la fenêtre du compte (' + what + ')');
+    b.setAttribute('aria-label', (p.guest ? 'Vous jouez en invité' : 'Compte : ' + p.name) + '. Ouvrir le menu du compte (' + what + ')');
   }
 
-  /* ---------------- Fenetre du compte ---------------- */
+  /* ---------------- Menu du compte ---------------- */
   const field = (label, name, type, auto, extra) => `<label class="acct-field">${label}<input name="${name}" type="${type}" autocomplete="${auto}" spellcheck="false" required${extra || ''}></label>`;
   const errHtml = () => `<p class="acct-err" role="alert">${esc(message)}</p>`;
   const dis = () => busy ? ' disabled' : '';
 
+  /* une ligne du menu : pictogramme, titre et precision (comme un jeu du menu "Jeux") */
+  const line = (act, title, detail, danger) => `<button type="button" class="acct-ligne${danger ? ' acct-ligne--danger' : ''}" data-act="${act}"${dis()}>` +
+    `<span class="acct-ligne__icone" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[act]}</svg></span>` +
+    `<span class="acct-ligne__texte"><b>${title}</b><small>${detail}</small></span></button>`;
+  /* le joueur, en tete du menu (comme le jeu "ou vous etes" du menu "Jeux") */
+  const identity = (p, detail) => `<div class="acct-identite">${avatar(p)}<span class="acct-ligne__texte"><b>${esc(p.name)}</b><small>${detail}</small></span></div>`;
+  function guestIdentity() {
+    const n = P.stats().totals.played;
+    return identity(P.player(), n ? plural(n, 'partie') + ' · statistiques gardées dans ce navigateur' : 'Statistiques gardées dans ce navigateur');
+  }
+
   /* non connecte : formulaires reconnus par les gestionnaires de mots de passe */
   function visitorView() {
     const reg = view === 'register', played = P.stats().totals.played;
-    return `<div class="acct-tabs" role="tablist">` +
+    return guestIdentity() +
+      `<div class="acct-tabs" role="tablist">` +
         `<button type="button" role="tab" class="${reg ? '' : 'on'}" aria-selected="${!reg}" data-view="login">Se connecter</button>` +
         `<button type="button" role="tab" class="${reg ? 'on' : ''}" aria-selected="${reg}" data-view="register">Créer un compte</button></div>` +
       `<form class="acct-form" data-form="${view}">` +
@@ -69,16 +94,18 @@
         errHtml() +
         `<button type="submit" class="btn primary"${dis()}>${busy ? '…' : reg ? 'Créer mon compte' : 'Se connecter'}</button>` +
       `</form>` +
-      `<div class="acct-actions"><button type="button" class="btn" data-act="guest">Continuer en invité</button>` +
-        `<button type="button" class="btn" data-act="stats">Statistiques de l'invité</button></div>`;
+      `<div class="acct-lignes">` +
+        line('stats', 'Statistiques de l\'invité', 'Parties, réussite, éléments à revoir') +
+        (welcome ? line('guest', 'Continuer en invité', 'Vous pourrez vous connecter plus tard') : '') +
+      `</div>`;
   }
 
   /* connecte : le compte et ses actions */
   function accountView() {
     const p = P.player(), t = P.stats().totals;
-    const state = P.pending() ? (P.serverAvailable() ? 'synchronisation…' : 'serveur injoignable : vos dernières parties partiront dès son retour')
+    const state = P.pending() ? (P.serverAvailable() ? 'synchronisation…' : '⚠️ serveur injoignable : vos dernières parties partiront dès son retour')
       : 'statistiques enregistrées sur le serveur';
-    let h = `<div class="acct-card">${avatar(p, true)}<div><b>${esc(p.name)}</b><small>${plural(t.played, 'partie')} - ${state}</small></div></div>`;
+    let h = identity(p, plural(t.played, 'partie') + ' · ' + state);
     const buttons = (label, cls) => `<div class="btn-row"><button type="submit" class="btn ${cls}"${dis()}>${label}</button><button type="button" class="btn ghost" data-act="cancel">Annuler</button></div>`;
     if (form === 'rename') {
       h += `<form class="acct-form" data-form="rename">` + field('Nouveau nom', 'name', 'text', 'username', ` maxlength="${P.NAME_MAX}" value="${esc(p.name)}"`) +
@@ -92,46 +119,61 @@
     } else if (form === 'delete') {
       h += `<form class="acct-form danger" data-form="delete"><p>Supprimer le compte "${esc(p.name)}" et ses statistiques <b>dans tous les jeux</b> ? C'est définitif.</p>` +
         field('Mot de passe', 'pwd', 'password', 'current-password') + errHtml() + buttons('Supprimer définitivement', 'danger') + `</form>`;
-    } else if (message) {
-      h += `<p class="acct-info" role="status">${esc(message)}</p>`;
+    } else {
+      if (message) h += `<p class="acct-info" role="status">${esc(message)}</p>`;
+      h += `<div class="acct-lignes">` +
+        line('stats', 'Mes statistiques', 'Parties, réussite, éléments à revoir') +
+        line('rename', 'Renommer', 'Votre nom dans tous les jeux') +
+        line('pwd', 'Mot de passe', 'Le changer pour tous vos appareils') +
+        line('logout', 'Se déconnecter', 'De tous les jeux, dans ce navigateur') +
+        line('delete', 'Supprimer le compte', 'Définitif, pour tous les jeux', true) +
+        `</div>`;
     }
-    return h + `<div class="acct-actions">` +
-      `<button type="button" class="btn primary" data-act="stats">Mes statistiques</button>` +
-      `<button type="button" class="btn" data-act="rename">Renommer</button>` +
-      `<button type="button" class="btn" data-act="pwd">Mot de passe</button>` +
-      `<button type="button" class="btn" data-act="logout">Se déconnecter</button>` +
-      `<button type="button" class="btn acct-danger" data-act="delete">Supprimer le compte</button></div>`;
+    return h;
   }
 
-  function renderDialog() {
+  function renderMenu() {
     const on = P.connected(), server = P.serverAvailable();
     $('acctTitle').textContent = on ? 'Mon compte' : welcome ? 'Bienvenue sur Anotehomy Quizz\u00a0!' : 'Compte';
     $('acctHelp').textContent = on
-      ? 'Vos statistiques vous suivent sur tous vos appareils. Ce compte sert aussi dans les autres jeux : vous restez connecté en changeant de jeu.'
+      ? 'Votre compte est commun à tous les jeux : vous restez connecté en changeant de jeu. Vos statistiques vous suivent sur tous vos appareils.'
       : server
-        ? 'Connectez-vous pour retrouver vos statistiques sur tous vos appareils, ou continuez en invité (statistiques gardées dans ce navigateur). Un seul compte pour tous les jeux.'
-        : 'Vous jouez en invité : vos statistiques restent dans ce navigateur. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, à la racine du dossier des jeux.';
+        ? 'Un seul compte pour tous les jeux : vos statistiques vous suivent sur tous vos appareils.'
+        : 'Sans serveur, on joue en invité. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, à la racine du dossier des jeux.';
     $('acctBody').innerHTML = on ? accountView() : server ? visitorView()
-      : `<div class="acct-actions"><button type="button" class="btn primary" data-act="stats">Mes statistiques</button></div>`;
+      : guestIdentity() + `<div class="acct-lignes">${line('stats', 'Mes statistiques', 'Parties, réussite, éléments à revoir')}</div>`;
   }
 
+  /* premier champ d'un formulaire, sinon premiere ligne : le menu est pret pour le clavier */
   function focusFirst() {
-    const c = document.querySelector('#acctBody input:not([hidden]):not([type="checkbox"])');
+    const c = document.querySelector('#acctBody input:not([hidden]):not([type="checkbox"])') || document.querySelector('#acctBody button:not([disabled])');
     if (c) c.focus();
   }
 
-  function openDialog(auto) {
+  const menuOpen = () => !$('acctMenu').hidden;
+
+  function openMenu(auto) {
     welcome = !!auto;
     view = 'login';
     form = null;
     message = P.error();
     P.clearError();
-    renderDialog();
-    const d = $('acctDialog');
-    if (!d.open) d.showModal();
+    renderMenu();
+    $('acctMenu').hidden = false;
+    $('acctBtn').setAttribute('aria-expanded', 'true');
+    document.querySelector('.acct-coin').classList.add('is-ouvert');
     focusFirst();
   }
-  const closeDialog = () => { const d = $('acctDialog'); if (d.open) d.close(); };
+
+  /* giveFocus : le bouton du compte reprend le focus (fermeture au clavier) */
+  function closeMenu(giveFocus) {
+    if (!menuOpen()) return;
+    if ($('acctMenu').contains(document.activeElement)) document.activeElement.blur();   /* pas de focus dans un menu cache */
+    $('acctMenu').hidden = true;
+    $('acctBtn').setAttribute('aria-expanded', 'false');
+    document.querySelector('.acct-coin').classList.remove('is-ouvert');
+    if (giveFocus) $('acctBtn').focus();
+  }
 
   /* requete au serveur : boutons desactives pendant l'attente, message d'erreur sinon */
   async function run(action, after) {
@@ -139,7 +181,7 @@
     document.querySelectorAll('#acctBody input[type="text"]').forEach(i => { typed[i.name] = i.value; });
     const restore = () => Object.keys(typed).forEach(n => { const i = document.querySelector(`#acctBody input[name="${n}"]`); if (i) i.value = typed[n]; });
     busy = true; message = '';
-    renderDialog(); restore();
+    renderMenu(); restore();
     try {
       await action();
       busy = false;
@@ -147,44 +189,46 @@
     } catch (err) {
       busy = false;
       message = err.message;
-      renderDialog(); restore(); focusFirst();
+      renderMenu(); restore(); focusFirst();
     }
   }
 
   function submit(f) {
     const v = n => f.elements[n] ? f.elements[n].value : '';
-    const mismatch = (a, b) => { if (a !== b) { message = 'Les deux mots de passe ne sont pas identiques.'; renderDialog(); return true; } return false; };
-    const done = () => { message = ''; closeDialog(); };
+    const mismatch = (a, b) => { if (a !== b) { message = 'Les deux mots de passe ne sont pas identiques.'; renderMenu(); return true; } return false; };
+    const done = () => { message = ''; closeMenu(true); };
     switch (f.dataset.form) {
       case 'login': return run(() => P.login(v('username'), v('password')), done);
       case 'register':
         if (mismatch(v('password'), v('confirm'))) return;
         return run(() => P.register(v('username'), v('password'), f.elements.take ? f.elements.take.checked : false), done);
-      case 'rename': return run(() => P.rename(v('name')), () => { form = null; message = 'Nom changé.'; renderDialog(); });
+      case 'rename': return run(() => P.rename(v('name')), () => { form = null; message = 'Nom changé.'; renderMenu(); });
       case 'pwd':
         if (mismatch(v('new'), v('confirm'))) return;
-        return run(() => P.changePassword(v('old'), v('new')), () => { form = null; message = 'Mot de passe changé. Vos autres appareils devront se reconnecter.'; renderDialog(); });
-      case 'delete': return run(() => P.deleteAccount(v('pwd')), () => { form = null; message = ''; view = 'login'; renderDialog(); });
+        return run(() => P.changePassword(v('old'), v('new')), () => { form = null; message = 'Mot de passe changé. Vos autres appareils devront se reconnecter.'; renderMenu(); });
+      case 'delete': return run(() => P.deleteAccount(v('pwd')), () => { form = null; message = ''; view = 'login'; renderMenu(); });
     }
   }
 
-  function bindDialog() {
-    $('acctBtn').addEventListener('click', () => openDialog(false));
-    const d = $('acctDialog');
-    d.addEventListener('click', e => {
-      if (e.target === d || e.target.closest('[data-close]')) { closeDialog(); return; }   /* clic sur le fond : fermeture */
+  function bindMenu() {
+    const coin = document.querySelector('.acct-coin'), menu = $('acctMenu');
+    $('acctBtn').addEventListener('click', () => (menuOpen() ? closeMenu(false) : openMenu(false)));
+    /* clic ailleurs : fermeture. Le chemin du clic est celui du moment du clic (le menu a pu etre redessine depuis). */
+    document.addEventListener('click', e => { if (menuOpen() && !e.composedPath().includes(coin)) closeMenu(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen()) closeMenu(true); });
+    menu.addEventListener('click', e => {
       const b = e.target.closest('button');
       if (!b || b.disabled) return;
-      if (b.dataset.view) { view = b.dataset.view; message = ''; renderDialog(); focusFirst(); return; }
+      if (b.dataset.view) { view = b.dataset.view; message = ''; renderMenu(); focusFirst(); return; }
       switch (b.dataset.act) {
-        case 'guest': closeDialog(); break;
-        case 'stats': closeDialog(); openStats(); break;
-        case 'rename': case 'pwd': case 'delete': form = b.dataset.act; message = ''; renderDialog(); focusFirst(); break;
-        case 'cancel': form = null; message = ''; renderDialog(); break;
-        case 'logout': run(() => P.logout(), () => { message = ''; view = 'login'; renderDialog(); }); break;
+        case 'guest': closeMenu(true); break;
+        case 'stats': closeMenu(false); openStats(); break;
+        case 'rename': case 'pwd': case 'delete': form = b.dataset.act; message = ''; renderMenu(); focusFirst(); break;
+        case 'cancel': form = null; message = ''; renderMenu(); break;
+        case 'logout': run(() => P.logout(), () => { message = ''; view = 'login'; renderMenu(); }); break;
       }
     });
-    d.addEventListener('submit', e => { e.preventDefault(); if (!busy) submit(e.target); });
+    menu.addEventListener('submit', e => { e.preventDefault(); if (!busy) submit(e.target); });
   }
 
   /* ---------------- Ecran des statistiques ---------------- */
@@ -255,24 +299,24 @@
       else if (b.dataset.st === 'reset' && confirm('Effacer toutes les statistiques de "' + P.player().name + '" ? Le compte est gardé. C\'est définitif.')) P.reset();
     });
     $('stats').addEventListener('click', e => { if (e.target === $('stats')) closeStats(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('stats').hidden && !$('acctDialog').open) closeStats(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('stats').hidden && !menuOpen()) closeStats(); });
   }
 
   /* a l'arrivee (une fois par session, tous jeux confondus) : si le serveur repond et qu'aucun
      compte n'est memorise, on propose de se connecter ou de creer un compte */
   function proposeLogin() {
-    if (P.serverAvailable() && !P.connected() && !$('home').hidden && P.firstVisit()) openDialog(true);
+    if (P.serverAvailable() && !P.connected() && !$('home').hidden && P.firstVisit()) openMenu(true);
   }
 
   function init() {
     updateButton();
-    bindDialog();
+    bindMenu();
     bindStats();
     P.onChange(() => {
       updateButton();
-      if ($('acctDialog').open && !busy) {
+      if (menuOpen() && !busy) {
         const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest('#acctBody form');
-        if (!typing) renderDialog();       /* pas de redessin pendant la saisie d'un formulaire */
+        if (!typing) renderMenu();       /* pas de redessin pendant la saisie d'un formulaire */
       }
       renderStats();
     });

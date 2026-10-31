@@ -60,6 +60,14 @@
     boneTitle, zoneOf, pool,
     /* os etudie, affiche en permanence pendant la partie et la revision */
     subject() { const cur = EN.osteoCurrent(); return cur ? { label: 'Os étudié', name: boneTitle(cur.def) } : null; },
+    /* resultats : rappel de l'os et boutons propres au jeu (js/game/results.js) ; l'exploration montre l'atlas */
+    results: {
+      subject: () => session.oDef ? 'Os étudié : <b>' + esc(boneTitle(session.oDef)) + '</b>' : '',
+      explore: 'Explorer l\'os',
+      other: () => settings.oPick === 'random' ? 'Autre os au hasard' : '',
+      replay: 'Rejouer cet os',
+      onExplore: () => EN.setAtlas(true)
+    },
 
     /* os de la partie : choisi, tire au hasard, ou le meme que la partie precedente (opts.same) */
     pickDef(opts = {}) {
@@ -75,7 +83,7 @@
     build(opts = {}) {
       const def = A.pickDef(opts);
       if (!def) return Promise.reject(new Error('Aucun os à étudier : cochez au moins une zone du corps.'));
-      EN.deactivateMuscles(); EN.deactivateVessels();
+      EN.deactivateMuscles(); EN.deactivateSystems();
       const ld = $('loading');
       ld.textContent = 'Préparation de l\'os : ' + boneTitle(def) + '…';
       ld.hidden = false;

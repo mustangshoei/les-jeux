@@ -68,6 +68,7 @@
   --accent2: #c9a2ff;
   --bleu: #6aa8ff;                         /* cible du jeu des muscles */
   --jaune: #ffd21f;                        /* cible du jeu des vaisseaux */
+  --cyan: #1fe4ff;                         /* cible du jeu des organes */
   --radius: 16px;
   --verre: linear-gradient(180deg, rgba(255, 235, 242, .07), rgba(255, 235, 242, .02));
   --verre-ombre: inset 0 1px 0 rgba(255, 255, 255, .08), 0 24px 50px -30px rgba(0, 0, 0, .9);

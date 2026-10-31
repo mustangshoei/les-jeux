@@ -94,7 +94,7 @@
   /* bascule vers les muscles : squelette du jeu 1 masque, muscles cliquables */
   function activateMuscles() {
     if (!group || active) return;
-    if (NS.deactivateVessels) NS.deactivateVessels();
+    if (NS.deactivateSystems) NS.deactivateSystems();
     active = true;
     NS.closeBone();
     NS.clearMarks(); NS.setHover(null);
