@@ -424,7 +424,7 @@
   // Version du jeu, en bas du menu (liste des jeux : ../COMMUN/jeux.js ; sans elle, rien n'est affiché)
   function afficherVersion() {
     const jeu = window.Jeux && Jeux.liste.find((j) => j.id === 'geonohyne');
-    if (jeu && jeu.version) $('#menu-version').textContent = 'GéoNohyne Quizz · version ' + jeu.version;
+    if (jeu && jeu.version) $('#menu-version').textContent = 'Géonohyne Quizz · version ' + jeu.version;
   }
 
   /* ---------- Événements ---------- */

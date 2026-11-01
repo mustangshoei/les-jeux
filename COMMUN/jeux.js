@@ -42,14 +42,14 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.2.0';
+  const VERSION = '1.2.1';
 
   const CIBLAGE = ['Ciblage', 'Nommage'];
   const NOMMAGE = ['Nommage', 'Ciblage'];
   const DUEL = ['Solo', 'Duel'];
 
   const JEUX = [
-    { id: 'geonohyne', dossier: 'GEONOHYNE_QUIZZ', nom: 'GéoNohyne Quizz', icone: '🌍', version: '2.1.0',
+    { id: 'geonohyne', dossier: 'GEONOHYNE_QUIZZ', nom: 'Géonohyne Quizz', icone: '🌍', version: '2.1.0',
       couleur: '#0d3b4a', accent: '#ff7a59',
       description: 'Géographie : départements, fleuves, pays et mers du monde.',
       totaux: { cle: 'totaux', parties: 'parties', bonnes: 'bonnes', questions: 'questions', temps: 'tempsMs', ms: true },

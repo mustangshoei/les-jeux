@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GéoNohyne Quizz</title>
+  <title>Géonohyne Quizz</title>
   <!-- Commun à tous les jeux (dossier ../COMMUN) : sélecteur « Changer de jeu ». S'il manque, le jeu marche sans. -->
   <link rel="stylesheet" href="../COMMUN/jeux.css">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Police des titres, commune à tout le site : à changer dans ../COMMUN/police.css (en dernier) -->
+  <link rel="stylesheet" href="../COMMUN/police.css">
   <!-- En premier : reprend les réglages enregistrés sous l'ancien nom du jeu (GéoQuiz) -->
   <script src="js/ancien-nom.js"></script>
 </head>
@@ -35,7 +37,7 @@
   <div class="menu-hero">
     <div class="menu-intro">
       <p class="surtitre">Quiz · Jeux · Cartes</p>
-      <h1 class="menu-titre">GéoNohyne<br><span>Quizz</span></h1>
+      <h1 class="menu-titre">Géonohyne<br><span>Quizz</span></h1>
       <p class="menu-sous-titre">Apprenez la géographie en vous amusant.</p>
       <!-- Chapitres (grandes catégories) : remplis par js/menu.js, qui décrit aussi les cartes de chacun -->
       <nav id="menu-chapitres" class="chapitres" aria-label="Chapitres"></nav>

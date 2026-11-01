@@ -183,7 +183,7 @@
   function majMenu() {
     const connecte = P.connecte();
     const serveur = P.serveurDisponible();
-    $('#compte-titre').textContent = connecte ? 'Mon compte' : accueil ? 'Bienvenue sur GéoNohyne Quizz' : 'Compte';
+    $('#compte-titre').textContent = connecte ? 'Mon compte' : accueil ? 'Bienvenue sur Géonohyne Quizz' : 'Compte';
     $('#compte-aide').textContent = connecte
       ? 'Votre compte est commun à tous les jeux : vous restez connecté en changeant de jeu. Les autres joueurs ne voient que votre nom et vos records.'
       : serveur

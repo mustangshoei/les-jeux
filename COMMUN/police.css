@@ -1,0 +1,81 @@
+/* ==========================================================================
+   COMMUN/police.css — La police des TITRES, pour tout le site (accueil et quatre jeux)
+
+   Chargé en DERNIER par chaque page (après ses propres feuilles de style), pour que la police
+   ci-dessous l'emporte sur les titres. Le texte courant (questions, réponses, paragraphes) garde
+   la police de chaque jeu.
+
+   CHANGER DE POLICE
+     1. Déposer le fichier (.woff2, .woff, .ttf ou .otf) dans COMMUN/polices/.
+     2. Remplacer son chemin dans « src: url(...) » ci-dessous : il part de ce dossier COMMUN/.
+        Pour un .otf, écrire format('opentype') ; pour un .woff2, format('woff2').
+     3. Régler « size-adjust » si la nouvelle police paraît trop grande ou trop petite.
+     Rien d'autre à toucher : le nom « Police des titres » ne change pas, quelle que soit la police.
+
+   CHOISIR LES TITRES CONCERNÉS : la liste en bas de ce fichier. Supprimer une ligne rend à ce
+   titre la police du texte ; ajouter un sélecteur lui donne la police des titres.
+
+   Police actuelle : Dumbledor 1 (GemFonts, G. Meade), freeware gratuit pour un usage non
+   commercial. Sa licence est à côté du fichier : polices/dumbledor/LICENCE-gemfont.txt.
+   ========================================================================== */
+
+@font-face {
+   font-family: 'Police des titres';
+   src: url('polices/Doctor\ Soos\ Bold\ 2.1.ttf') format('truetype');
+
+   /* Taille de la police dans tous les titres à la fois (100 % = taille d'origine). Dumbledor
+     est dessinée petite : à 115 %, ses capitales égalent celles de l'ancienne police. */
+   size-adjust: 125%;
+
+   /* Le fichier n'a qu'une graisse : elle sert pour toutes, sinon le navigateur fabrique un
+     faux gras baveux sur les titres en gras. À retirer pour une police qui a un vrai gras. */
+   font-weight: 100 900;
+
+   font-display: swap;
+}
+
+:root {
+   /* Si le fichier manque ou ne se charge pas, les titres prennent la première police
+     disponible de la suite de cette liste. */
+   --police-titres: 'Police des titres', Georgia, 'Times New Roman', serif;
+}
+
+/* ---------- Les titres écrits avec cette police ---------- */
+/* Accueil (index.html à la racine) */
+.accueil h1,
+.jeu__nom,
+.stats-tete h2,
+.admin h1,
+.defis-jeu h2,
+.dialogue__tete h2,
+
+/* GéoNohyne, Anotehomy et natehure : menu, chapitres, cartes des modes, écrans de réglage */
+h1.menu-titre,
+.chapitre-tete h2,
+.chapitre-nom,
+.carte-titre,
+.setup-titre,
+.setup-col__nom,
+
+/* GéoNohyne : titres des jeux, fins de partie, fenêtres, liste, statistiques, fiches */
+.panel>h2,
+.dialogue--fin h2,
+.dialogue-tete h2,
+.liste-titre,
+.end-record__titre,
+.chemin-fin__titre,
+.stats-entete h1,
+.fiche-nom,
+
+/* Anotehomy : nom du jeu en partie, résultats et statistiques */
+.brand h1,
+.res-title,
+
+/* Histehory : titre de l'accueil, catégories (et la fenêtre du compte, plus haut) */
+.hero h1,
+.cat-title {
+   font-family: var(--police-titres);
+   /* Les jeux resserraient leurs titres pour l'ancienne police : avec celle-ci, les lettres se
+     touchaient. « normal » rend l'espacement prévu par la police (valeur en em pour le régler). */
+   letter-spacing: normal;
+}

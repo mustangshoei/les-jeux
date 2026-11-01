@@ -11,6 +11,8 @@
        Quizz et Natehure Quizz ci-dessous) ; un jeu « masque » n'en aurait aucune. Dans les deux cas
        le dossier du jeu est intact : son index.html s'ouvre toujours à la main. -->
   <link rel="stylesheet" href="ACCUEIL/accueil.css">
+  <!-- Police des titres, commune à tout le site : à changer dans COMMUN/police.css (en dernier) -->
+  <link rel="stylesheet" href="COMMUN/police.css">
 </head>
 <body data-vue="jeux">
 
@@ -55,7 +57,7 @@
   <p class="lead">Choisissez un jeu. Un seul compte pour tous : vous restez connecté d'un jeu à l'autre.</p>
 
   <div id="jeux" class="jeux">
-    <a class="jeu" data-jeu="geonohyne" style="--jeu-couleur:#0d3b4a;--jeu-accent:#ff7a59" href="GEONOHYNE_QUIZZ/index.html"><span class="jeu__nom">GéoNohyne Quizz</span><span class="jeu__aller">Jouer →</span></a>
+    <a class="jeu" data-jeu="geonohyne" style="--jeu-couleur:#0d3b4a;--jeu-accent:#ff7a59" href="GEONOHYNE_QUIZZ/index.html"><span class="jeu__nom">Géonohyne Quizz</span><span class="jeu__aller">Jouer →</span></a>
     <a class="jeu" data-jeu="anotehomy" style="--jeu-couleur:#3a1529;--jeu-accent:#ff5c8a" href="ANOTEHOMY_QUIZZ/index.html"><span class="jeu__nom">Anotehomy Quizz</span><span class="jeu__aller">Jouer →</span></a>
     <div class="jeu jeu--bloque" data-jeu="histehory" style="--jeu-couleur:#33230d;--jeu-accent:#f59e0b" aria-disabled="true"><span class="jeu__nom">Histehory Quizz</span><span class="jeu__aller">Fermé pour le moment</span></div>
     <div class="jeu jeu--bloque" data-jeu="natehure" style="--jeu-couleur:#12331f;--jeu-accent:#5fe08a" aria-disabled="true"><span class="jeu__nom">Natehure Quizz</span><span class="jeu__aller">Fermé pour le moment</span></div>

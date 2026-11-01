@@ -4,7 +4,7 @@ Ce dossier regroupe plusieurs jeux éducatifs, en HTML, CSS et JavaScript purs (
 connexion Internet). Chaque jeu fonctionne **seul et indépendamment** des autres ; tous partagent un
 **compte commun** et peuvent tourner en même temps, servis par un même petit serveur facultatif.
 
-**Version de l'ensemble : 1.2.0** (voir [Versions](#versions)).
+**Version de l'ensemble : 1.2.1** (voir [Versions](#versions)).
 
 **Jouer en ligne : <https://mustangshoei.github.io/les-jeux/>** (GitHub Pages, en invité : voir « Jouer »).
 
@@ -34,6 +34,8 @@ COMMUN/                 ce que les jeux partagent (facultatif pour eux : sans lu
   comptes.js            les comptes communs, côté navigateur (connexion, statistiques de chaque jeu)
   jeux.js               LA liste des jeux (versions, modes de jeu) + le bouton « Jeux » (changer de jeu) que chaque jeu affiche
   jeux.css              apparence de ce bouton
+  police.css            LA police des titres de tout le site : la changer ici (mode d'emploi en tête)
+  polices/              … ses fichiers (Dumbledor 1, avec sa licence)
 SERVEUR/                le serveur des jeux (facultatif, jamais envoyé aux navigateurs)
   serveur.py            sert tous les jeux et gère les comptes communs (Python 3.8+, sans dépendance)
   docker-compose.yml    … pour le lancer dans Docker, sur un NAS
@@ -200,6 +202,7 @@ Historique de l'ensemble :
 | Version | Date | Changements |
 |---|---|---|
 | 1.2.0 | 31/10/2026 | Quatrième jeu, **Natehure Quizz** (nature, agriculture & végétaux) : son menu, ses trois chapitres et ses dix-huit cartes, aucun mode de jeu encore. **Page d'accueil refondue** : un grand rectangle par jeu, haut (jusqu'à 65 % de la hauteur de la fenêtre) et au fond de sa couleur dominante — 4 de front sur ordinateur (au plus 65 % de la largeur), 2 × 2 sur tablette, 1 colonne sur téléphone ; un **fond animé** de bulles aux couleurs des quatre jeux ; dans chaque rectangle, sous ses libellés, une **gravure ancienne** fondue dans la couleur du jeu (globe de Delisle, écorché de Vésale, frise de monuments et médaillons d'Alexandre, Jeanne d'Arc et Napoléon, orme de Loudon) ; et un bouton **« Statistiques »** qui rassemble les totaux du joueur pour tous les jeux. Deux réglages d'accès dans `COMMUN/jeux.js` : `masque` (le jeu disparaît de la page d'accueil et du menu « Jeux ») et `bloque` (son rectangle reste visible mais inerte, marqué d'un cadenas). Histehory Quizz et Natehure Quizz sont tous deux fermés. |
+| 1.2.1 | 31/10/2026 | Nouvelle **police des titres**, Dumbledor 1, pour l'accueil et les quatre jeux (le texte courant ne change pas). Elle se règle en un seul endroit, `COMMUN/police.css` : fichier de la police, taille, et liste des titres concernés. |
 | 1.1.1 | 29/10/2026 | Publication sur GitHub Pages ; sur un hébergement sans le serveur des jeux, les comptes ne sont plus proposés (on joue en invité). |
 | 1.1.0 | 29/10/2026 | Bouton du compte sur la page d'accueil (changer de compte, comptes déjà utilisés ici) ; compte administrateur et son tableau de bord (comptes, préparation des défis de la semaine) ; modes de jeu dans `COMMUN/jeux.js`. |
 | 1.0.0 | 28/10/2026 | Première version numérotée : page d'accueil, comptes communs, serveur des jeux, trois jeux (GéoNohyne Quizz, Anotehomy Quizz, Histehory Quizz). |
@@ -296,6 +299,8 @@ du fichier) : un jeu n'appelle jamais ces routes lui-même.
    `<script src="../COMMUN/jeux.js"></script>` et `<div class="jeux-coin" data-jeux-selecteur="<id>"></div>`,
    placé en haut à droite par sa propre feuille de style (couleurs : variables `--jx-*`, voir
    `COMMUN/jeux.css`).
+   Pour la police des titres : `<link rel="stylesheet" href="../COMMUN/police.css">` en **dernière**
+   feuille de style, puis ajoutez ses titres à la liste en bas de `COMMUN/police.css`.
 4. Pour les comptes : `<script src="../COMMUN/comptes.js"></script>` avant ses scripts, puis
    `Comptes.espace('<id>', { completer, fusionner, publiques })` pour ses statistiques. Toujours vérifier
    `window.Comptes` et prévoir le mode invité : le jeu doit marcher sans `COMMUN/`. Exemples :

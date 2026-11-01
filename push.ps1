@@ -1,7 +1,7 @@
 # push.ps1 — git add / commit / push rapide
 # Usage : .\push.ps1 "message du commit"
 param(
-    [Parameter(Mandatory, HelpMessage='Message du commit')]
+    [Parameter(Mandatory, HelpMessage = 'Message du commit')]
     [string]$Message
 )
 
@@ -21,7 +21,7 @@ $stagnes = git diff --cached --name-only
 foreach ($chemin in $stagnes) {
     foreach ($interdit in $INTERDITS) {
         if ($chemin -like "$interdit*") {
-            Write-Host "`nARRET : fichier sensible detecte dans l'index :" -ForegroundColor Red
+            Write-Host "`nARRET : fichier sensiwle detecte dans l'index :" -ForegroundColor Red
             Write-Host "  $chemin" -ForegroundColor Red
             git reset HEAD -- $chemin | Out-Null
             Write-Error "Push annule. Relancez apres correction."
