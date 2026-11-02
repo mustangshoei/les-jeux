@@ -430,9 +430,7 @@
     const blocs = GeoNohyne.listeRecords().map((cat) => {
       const ratees = P.zonesRatees(cat.id, null, MAX_REVISION);
       if (!ratees.length) return '';
-      const carte = GeoCarte.obtenir(cat.carte);
-      const noms = {};
-      if (carte) carte.elements.forEach((e) => { noms[e.code] = e.nom; });
+      const noms = cat.noms || {};                  // nom à trouver de chaque zone (la préfecture, pour ce quiz-là)
       const codes = ratees.filter((r) => noms[r.code]).map((r) => r.code).join(',');
       return '<div class="stats-bloc stats-bloc--revoir"><h3>' + esc(cat.icone) + ' ' + esc(cat.titre) + '</h3><div class="chips">' +
         ratees.map((r) => '<span class="chip">' + esc(noms[r.code] || r.code) + ' <small>ratée ' + r.ratees + ' fois sur ' + r.vues + '</small></span>').join('') +

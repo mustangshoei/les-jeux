@@ -20,24 +20,24 @@
    ========================================================================== */
 
 @font-face {
-   font-family: 'Police des titres';
-   src: url('polices/Doctor\ Soos\ Bold\ 2.1.ttf') format('truetype');
+  font-family: 'Police des titres';
+  src: url('polices/Doctor\ Soos\ Bold\ 2.1.ttf') format('truetype');
 
-   /* Taille de la police dans tous les titres à la fois (100 % = taille d'origine). Dumbledor
+  /* Taille de la police dans tous les titres à la fois (100 % = taille d'origine). Dumbledor
      est dessinée petite : à 115 %, ses capitales égalent celles de l'ancienne police. */
-   size-adjust: 125%;
+  size-adjust: 125%;
 
-   /* Le fichier n'a qu'une graisse : elle sert pour toutes, sinon le navigateur fabrique un
+  /* Le fichier n'a qu'une graisse : elle sert pour toutes, sinon le navigateur fabrique un
      faux gras baveux sur les titres en gras. À retirer pour une police qui a un vrai gras. */
-   font-weight: 100 900;
+  font-weight: 100 900;
 
-   font-display: swap;
+  font-display: swap;
 }
 
 :root {
-   /* Si le fichier manque ou ne se charge pas, les titres prennent la première police
+  /* Si le fichier manque ou ne se charge pas, les titres prennent la première police
      disponible de la suite de cette liste. */
-   --police-titres: 'Police des titres', Georgia, 'Times New Roman', serif;
+  --police-titres: 'Police des titres', Georgia, 'Times New Roman', serif;
 }
 
 /* ---------- Les titres écrits avec cette police ---------- */
@@ -74,8 +74,8 @@ h1.menu-titre,
 /* Histehory : titre de l'accueil, catégories (et la fenêtre du compte, plus haut) */
 .hero h1,
 .cat-title {
-   font-family: var(--police-titres);
-   /* Les jeux resserraient leurs titres pour l'ancienne police : avec celle-ci, les lettres se
+  font-family: var(--police-titres);
+  /* Les jeux resserraient leurs titres pour l'ancienne police : avec celle-ci, les lettres se
      touchaient. « normal » rend l'espacement prévu par la police (valeur en em pour le régler). */
-   letter-spacing: normal;
+  letter-spacing: normal;
 }

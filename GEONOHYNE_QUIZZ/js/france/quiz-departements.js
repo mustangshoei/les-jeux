@@ -5,22 +5,21 @@
    (core.js) les textes du jeu et l'identifiant de la carte à utiliser.
    La carte elle-même est dans data/france/carte-departements.js.
    Sa place dans le menu : { quiz: 'departements' } dans js/menu.js.
-   Il réunit les anciennes cartes « Les Départements » et « Les Préfectures » (à venir) : seul le titre
-   a changé pour l'instant, les questions portent toujours sur les départements.
+   La carte du menu réunit deux quiz : celui-ci (les départements, colonne de gauche de l'écran de choix)
+   et celui des préfectures (js/france/quiz-prefectures.js, colonne de droite).
    ========================================================================== */
 GeoNohyne.registerCategory({
   id: 'departements',
   titre: 'Les départements et leurs préfectures',
   icone: '🗺️',
-  description: 'Placez les départements français sur la carte.',
+  description: 'Placer et deviner les départements français et leurs préfectures sur une carte.',
   consigne: 'Un nom s\'affiche : cliquez sur le bon département de la carte. ' +
             'Choisissez la longueur de la partie.',
   question: 'Où se trouve…',
 
-  // Écran de choix : titre de la colonne de ce quiz, et colonne droite réservée au jeu des préfectures
-  // (structure seulement dans index.html, #setup-prefectures ; aucune logique pour l'instant)
+  // Écran de choix : titre de la colonne de ce quiz, et à droite la colonne du quiz des préfectures
   nomColonne: 'Départements',
-  colonneDroite: 'setup-prefectures',
+  colonneDroite: 'prefectures',
 
   // Identifiant de la carte, donné par son fichier de data/ : GeoCarte.enregistrer('france-departements', …)
   carte: 'france-departements',

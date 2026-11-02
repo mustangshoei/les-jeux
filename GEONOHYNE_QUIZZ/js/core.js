@@ -30,12 +30,29 @@
      icone, description   textes de la carte du menu
      consigne        phrase d'explication de la catégorie (l'écran de choix décrit lui-même ciblage et nommage)
      nomColonne      titre de sa colonne sur l'écran de choix (défaut : « Votre partie »)
-     colonneDroite   id d'une seconde colonne de l'écran de choix (index.html), affichée à droite (ex.
-                     'setup-prefectures') ; sans elle, une seule colonne, centrée
+     colonneDroite   id d'une autre catégorie, montrée dans une seconde colonne, à droite, avec les mêmes réglages
+                     (ex. 'prefectures' à côté des départements) ; ouvrir cette autre catégorie (révision depuis les
+                     statistiques) ouvre ce même écran. Sans colonneDroite, une seule colonne, centrée
      question        texte au-dessus du nom à trouver (défaut : « Où se trouve… »)
+     questionNommage, consigneNommage   en nommage : texte au-dessus de la zone à nommer (défaut : « Quel est le nom
+                     de la zone en surbrillance ? ») et message d'attente (défaut : « Tapez le nom de la zone… »)
+     aideCiblage, aideNommage   phrases des cartes « Ciblage » et « Nommage » de l'écran de choix
+     nomZone(zone)   (facultatif) nom à trouver pour une zone de la carte (ex. la préfecture d'un département) ;
+                     par défaut, le nom de la zone
+     detail(zone)    (facultatif) précision donnée entre parenthèses dans les messages (ex. le département d'une préfecture)
+     points          { code: [x, y] } : un point sur chaque zone (ex. sa préfecture), de taille fixe à l'écran. Il prend
+                     les états de sa zone (trouvée, ratée…), un clic dessus vaut un clic sur elle, et le repère de la
+                     bonne réponse s'y pose
+     nomPoints       ce que sont ces points, pour la légende (ex. « préfecture »)
+     credit          (facultatif) source des données de la catégorie, ajoutée au crédit de la carte (écran de choix)
+     tolerance       true : en nommage, les fautes de frappe légères sont acceptées (aucune jusqu'à 4 lettres, 1 jusqu'à
+                     7, 2 jusqu'à 12, 3 au-delà ; une inversion de deux lettres = une faute), si le nom tapé n'est pas
+                     plus proche d'une autre zone ; l'article du début peut être omis et « St » vaut « Saint »
+     alias           { code: ['autre nom', …] } : autres noms acceptés en nommage (ex. « Cergy » pour Pontoise)
      unite           nom des zones, au pluriel (« départements »), pour le sélecteur de nombre
      libelleOrdre    texte de la case « ordre des codes » (la case n'apparaît que s'il est défini)
-     indice(zone)    renvoie le code à afficher à côté du nom : « Nom (code) » (active la case à cocher)
+     indice(zone)    renvoie le texte de l'indice, affiché à côté du nom : « Nom (code) » (active la case à cocher)
+     indiceDessous   true : l'indice s'affiche sous le nom, sur sa propre ligne (« 💡 Meurthe-et-Moselle (54) »)
      libelleIndice   texte de cette case à cocher
      libelleOrdreCourt, libelleIndiceCourt   (facultatifs) versions courtes, affichées sur l'écran de choix
                      (la version complète reste en info-bulle)
@@ -103,6 +120,8 @@
   const ZOOM_MAX = 14;                // zoom maximal par défaut (une carte peut fixer le sien : zoomMax)
   const RAYON_POINT = 4.5;            // rayon à l'écran (px) du point d'une petite zone…
   const RAYON_POINT_CLIC = 11;        // … et de la surface cliquable autour de lui
+  const RAYON_REPERE = 3.6;           // rayon à l'écran (px) des points des zones (def.points : les préfectures)…
+  const RAYON_REPERE_CLIC = 6;        // … et de leur surface cliquable (petite : à Paris, les points sont serrés)
 
   /* Pauses avant la question suivante (en millisecondes) */
   const DELAI_BONNE = 500;
@@ -127,7 +146,7 @@
   const zones = new Map();        // code -> { nom, el, cx, cy, brut }
 
   let svg = null;
-  let categorie = null;           // catégorie ouverte
+  let categorie = null;           // catégorie de la partie en cours (ou de la dernière jouée)
   let carte = null;               // carte de cette catégorie
   let base = { x: 0, y: 0, w: 100, h: 100 };
   let vue = { ...base };
@@ -136,13 +155,10 @@
   let cerclesPoints = [];         // points des petites zones : leur taille à l'écran ne dépend pas du zoom
   let jeu = null;                 // état de la partie en cours
   let derniereTaille = 20;        // dernier nombre de questions choisi
-  let miniCarte = null;           // écran de choix : mini-carte des groupes de la catégorie ouverte (<svg>)
   const CLE_RECORD = 'geonohyne.setup.record';   // dernier état de l'interrupteur « Mode record »
   let derniereConfig = null;      // réglages de la dernière partie (bouton « Rejouer »)
-  let mode = 'nombre';            // mode de sélection (occasionnel) : 'nombre' ou 'groupes'
-  let jeuType = 'ciblage';        // façon de jouer : 'ciblage' ou 'nommage' (gardée d'une catégorie à l'autre)
-  let partieType = 'occasionnel'; // 'occasionnel' (par défaut) ou 'record'
-  let perimetre = 'tout';         // périmètre du record : 'tout' ou le nom d'un groupe
+  let jeuType = 'ciblage';        // dernière façon de jouer choisie : 'ciblage' ou 'nommage' (gardée d'un écran à l'autre)
+  let colonnes = [];              // écran de choix : une colonne par catégorie affichée (voir creerColonne)
   let apprendre = null;           // module « Apprendre » ouvert (null : la carte sert au quiz)
   let selection = null;           // code de la zone affichée dans la fiche
   let activite = null;            // jeu à part en cours (reçoit les clics sur la carte)
@@ -202,15 +218,21 @@
     else if (type === 'page') { const p = trouver('page', id); if (p) { arreterPartie(); p.ouvrir(); } }
   }
 
-  // Pour les statistiques (js/compte.js) : chaque catégorie de quiz et ses périmètres de record
+  // Pour les statistiques (js/compte.js) : chaque catégorie de quiz, ses périmètres de record et le nom de ses
+  // zones (noms : code -> nom à trouver, ex. la préfecture pour la catégorie des préfectures)
   function listeRecords() {
     return categories.map((cat) => {
       const c = GeoCarte.obtenir(cat.carte);
       const perimetres = [{ id: 'tout', nom: cat.nomTout || 'Tout', n: c ? c.elements.length : 0 }];
       Object.keys(cat.groupes || {}).forEach((g) => perimetres.push({ id: g, nom: g, n: cat.groupes[g].length }));
-      return { id: cat.id, titre: cat.titre, icone: cat.icone || '🧭', carte: cat.carte, perimetres };
+      const noms = {};
+      if (c) c.elements.forEach((e) => { noms[e.code] = nomDe(cat, e); });
+      return { id: cat.id, titre: cat.titre, icone: cat.icone || '🧭', carte: cat.carte, perimetres, noms };
     });
   }
+
+  // Nom à trouver pour un élément de carte : def.nomZone (ex. la préfecture), sinon le nom de l'élément
+  const nomDe = (def, el) => (def && typeof def.nomZone === 'function' && def.nomZone(el)) || el.nom;
 
   window.GeoNohyne = {
     registerCategory, registerApprentissage, registerJeu, registerPage, trouver, ouvrir,
@@ -252,57 +274,61 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Ouverture d'une catégorie                                           */
+  /* Écran de choix de la partie : une colonne par catégorie             */
   /* ------------------------------------------------------------------ */
-  // Active ou désactive tous les réglages de l'écran de choix de la partie
-  function activerChoix(actif) {
-    ['#count-range', '#count-input', '#opt-ordre', '#opt-indice', '#opt-rattrapage', '#opt-extras', '#opt-record', '#btn-start']
-      .forEach((s) => { $(s).disabled = !actif; });
-  }
+  // L'écran montre la catégorie ouverte et, si elle en déclare une (colonneDroite), une seconde catégorie à
+  // droite (ex. les préfectures à côté des départements). Chaque colonne est faite à partir du même modèle
+  // (<template id="setup-modele"> de index.html) et a ses propres réglages :
+  //   col = { racine (<section>), cat, carte, codes (Set des zones de sa carte), index,
+  //           jeuType, partieType ('occasionnel' | 'record'), mode ('nombre' | 'groupes'),
+  //           perimetre (du record : 'tout' ou un groupe), miniCarte (<svg> des groupes) }
+
+  // Élément d'une colonne, marqué data-r dans le modèle
+  const dans = (col, nom) => col.racine.querySelector('[data-r="' + nom + '"]');
 
   /* ---------- Sélection par groupes (régions…) ---------- */
 
   // Codes des zones des groupes cochés (les codes absents de la carte sont ignorés)
-  function codesChoisis() {
+  function codesChoisis(col) {
     const codes = [];
-    document.querySelectorAll('#groupes-liste input:checked').forEach((i) => {
-      categorie.groupes[i.value].forEach((c) => { if (zones.has(c)) codes.push(c); });
+    dans(col, 'groupes').querySelectorAll('input:checked').forEach((i) => {
+      col.cat.groupes[i.value].forEach((c) => { if (col.codes.has(c)) codes.push(c); });
     });
     return codes;
   }
 
   // Texte et état du bouton « Lancer » selon le mode
-  function majBoutonLancer() {
-    const b = $('#btn-start');
-    if (!carte) return;
-    if (partieType === 'record') {
-      b.textContent = 'Lancer le record (' + codesPerimetre().length + ' ' + (categorie.unite || 'zones') + ')';
+  function majBoutonLancer(col) {
+    const b = dans(col, 'lancer');
+    if (!col.carte) return;
+    const unite = col.cat.unite || 'zones';
+    if (col.partieType === 'record') {
+      b.textContent = 'Lancer le record (' + codesPerimetre(col).length + ' ' + unite + ')';
       b.disabled = false;
       return;
     }
-    if (mode !== 'groupes') { b.textContent = 'Lancer la partie'; b.disabled = false; return; }
-    const n = codesChoisis().length;
-    b.textContent = n ? 'Lancer la partie (' + n + ' ' + (categorie.unite || 'zones') + ')'
-                      : 'Cochez au moins un groupe';
+    if (col.mode !== 'groupes') { b.textContent = 'Lancer la partie'; b.disabled = false; return; }
+    const n = codesChoisis(col).length;
+    b.textContent = n ? 'Lancer la partie (' + n + ' ' + unite + ')' : 'Cochez au moins un groupe';
     b.disabled = n === 0;
   }
 
   // Boutons d'un sélecteur (attribut data-<nom>) : celui de la valeur choisie est enfoncé
-  function enfoncer(attribut, valeur) {
-    document.querySelectorAll('.mode-btn[data-' + attribut + ']').forEach((b) => {
+  function enfoncer(col, attribut, valeur) {
+    col.racine.querySelectorAll('.mode-btn[data-' + attribut + ']').forEach((b) => {
       const actif = b.getAttribute('data-' + attribut) === valeur;
       b.classList.toggle('is-active', actif);
       b.setAttribute('aria-pressed', String(actif));
     });
   }
 
-  function definirMode(m) {
-    mode = m;
-    enfoncer('mode', m);
-    $('#mode-nombre').classList.toggle('hidden', m !== 'nombre');
-    $('#mode-groupes').classList.toggle('hidden', m !== 'groupes');
-    majBoutonLancer();
-    majMiniCarte();
+  function definirMode(col, m) {
+    col.mode = m;
+    enfoncer(col, 'mode', m);
+    dans(col, 'mode-nombre').classList.toggle('hidden', m !== 'nombre');
+    dans(col, 'mode-groupes').classList.toggle('hidden', m !== 'groupes');
+    majBoutonLancer(col);
+    majMiniCarte(col);
   }
 
   /* ---------- Façon de jouer (ciblage / nommage) et mode (occasionnel / record) ---------- */
@@ -311,28 +337,28 @@
                       'Le meilleur score l\'emporte, puis le meilleur temps.';
 
   // Sous les deux cartes (qui décrivent déjà ciblage et nommage) : seulement les règles du mode record
-  function majAide() {
-    const record = partieType === 'record';
-    $('#setup-aide').textContent = record ? AIDE_RECORD : '';
-    $('#setup-aide').classList.toggle('hidden', !record);
+  function majAide(col) {
+    const record = col.partieType === 'record';
+    dans(col, 'aide').textContent = record ? AIDE_RECORD : '';
+    dans(col, 'aide').classList.toggle('hidden', !record);
   }
 
-  function definirJeuType(t) {
-    jeuType = t;
-    enfoncer('jeu-type', t);
-    majAide();
-    majRecords();
+  function definirJeuType(col, t) {
+    col.jeuType = jeuType = t;
+    enfoncer(col, 'jeu-type', t);
+    majAide(col);
+    majRecords(col);
   }
 
-  function definirPartieType(t) {
-    partieType = t;
-    $('#opt-record').checked = t === 'record';
-    $('#partie-occasionnelle').classList.toggle('hidden', t !== 'occasionnel');
-    $('#partie-record').classList.toggle('hidden', t !== 'record');
-    majAide();
-    majRecords();
-    majBoutonLancer();
-    majMiniCarte();
+  function definirPartieType(col, t) {
+    col.partieType = t;
+    dans(col, 'record').checked = t === 'record';
+    dans(col, 'occasionnel').classList.toggle('hidden', t !== 'occasionnel');
+    dans(col, 'partie-record').classList.toggle('hidden', t !== 'record');
+    majAide(col);
+    majRecords(col);
+    majBoutonLancer(col);
+    majMiniCarte(col);
   }
 
   function lireRecord() {
@@ -341,10 +367,11 @@
 
   /* ---------- Mini-carte des groupes : une région cliquée est cochée (ou devient le périmètre du record) ---------- */
 
-  // Construite à l'ouverture de la catégorie, à partir de sa carte : chaque zone porte son groupe (data-groupe)
-  function preparerMiniCarte(cat) {
-    miniCarte = null;
-    document.querySelectorAll('[data-mini-carte]').forEach((p) => { p.innerHTML = ''; });
+  // Construite à l'ouverture de l'écran, à partir de la carte de la colonne : chaque zone porte son groupe (data-groupe)
+  function preparerMiniCarte(col) {
+    const cat = col.cat, carte = col.carte;
+    col.miniCarte = null;
+    col.racine.querySelectorAll('[data-mini-carte]').forEach((p) => { p.innerHTML = ''; });
     if (!cat.groupes || !carte) return;
     const groupeDe = {};
     Object.keys(cat.groupes).forEach((g) => cat.groupes[g].forEach((c) => { groupeDe[c] = g; }));
@@ -353,7 +380,7 @@
     // Carte en longueur (le monde) ou peu de groupes (types, niveaux) : la carte en grand, au-dessus de la liste ;
     // sinon (les régions), à côté
     const large = v.w / v.h > 1.3 || Object.keys(cat.groupes).length <= 4;
-    document.querySelectorAll('.groupes-choix').forEach((b) => b.classList.toggle('groupes-choix--large', large));
+    col.racine.querySelectorAll('.groupes-choix').forEach((b) => b.classList.toggle('groupes-choix--large', large));
     const ajouter = (e) => {
       if (!e.d && !e.point) return;
       const classe = 'mini-zone' + (e.ligne ? ' mini-zone--ligne' : '') + (e.dessous ? ' mini-zone--dessous' : '');
@@ -385,38 +412,40 @@
     if (fond) fond.elements.filter((e) => e.d && !exclus.has(e.code)).forEach((e) => svg.appendChild(creerSVG('path', 'mini-terre', { d: e.d })));
     carte.elements.filter((e) => !e.dessous).forEach(ajouter);
     decor('dessus');
-    miniCarte = svg;
+    col.miniCarte = svg;
   }
 
   // Place la mini-carte dans le panneau affiché (occasionnel par groupes, ou record) et colore les groupes choisis
-  function majMiniCarte() {
-    if (!miniCarte) return;
-    const place = document.querySelector('[data-mini-carte="' + (partieType === 'record' ? 'record' : 'groupes') + '"]');
-    if (place && miniCarte.parentNode !== place) place.appendChild(miniCarte);
-    const choisis = partieType === 'record'
-      ? (perimetre === 'tout' ? null : new Set([perimetre]))
-      : new Set([...document.querySelectorAll('#groupes-liste input:checked')].map((i) => i.value));
-    miniCarte.querySelectorAll('[data-groupe]').forEach((z) => {
+  function majMiniCarte(col) {
+    if (!col.miniCarte) return;
+    const record = col.partieType === 'record';
+    const place = col.racine.querySelector('[data-mini-carte="' + (record ? 'record' : 'groupes') + '"]');
+    if (place && col.miniCarte.parentNode !== place) place.appendChild(col.miniCarte);
+    const choisis = record
+      ? (col.perimetre === 'tout' ? null : new Set([col.perimetre]))
+      : new Set([...dans(col, 'groupes').querySelectorAll('input:checked')].map((i) => i.value));
+    col.miniCarte.querySelectorAll('[data-groupe]').forEach((z) => {
       z.classList.toggle('is-choisi', !choisis || choisis.has(z.dataset.groupe));
     });
   }
 
   // Survol : toute la région s'éclaire, sur la carte et dans la liste
-  function survolerGroupe(g) {
-    if (!miniCarte) return;
-    miniCarte.querySelectorAll('[data-groupe]').forEach((z) => z.classList.toggle('is-survol', z.dataset.groupe === g));
-    document.querySelectorAll('#groupes-liste input, #record-perimetres input').forEach((i) => {
+  function survolerGroupe(col, g) {
+    if (!col.miniCarte) return;
+    col.miniCarte.querySelectorAll('[data-groupe]').forEach((z) => z.classList.toggle('is-survol', z.dataset.groupe === g));
+    col.racine.querySelectorAll('[data-r="groupes"] input, [data-r="perimetres"] input').forEach((i) => {
       i.parentNode.classList.toggle('is-survol', i.value === g);
     });
   }
 
   /* ---------- Périmètres du record : toutes les zones, ou un seul groupe ---------- */
 
-  function codesPerimetre() {
-    if (perimetre === 'tout' || !categorie.groupes || !categorie.groupes[perimetre]) return [...zones.keys()];
-    return categorie.groupes[perimetre].filter((c) => zones.has(c));
+  function codesPerimetre(col) {
+    const g = col.cat.groupes;
+    if (col.perimetre === 'tout' || !g || !g[col.perimetre]) return [...col.codes];
+    return g[col.perimetre].filter((c) => col.codes.has(c));
   }
-  const nomPerimetre = () => (perimetre === 'tout' ? categorie.nomTout || 'Tout' : perimetre);
+  const nomPerimetre = (col) => (col.perimetre === 'tout' ? col.cat.nomTout || 'Tout' : col.perimetre);
 
   // Texte d'une case de groupe : le nom, et à droite le nombre de zones
   function puce(nom, n) {
@@ -429,32 +458,36 @@
     return texte;
   }
 
-  function preparerPerimetres(cat) {
-    const liste = $('#record-perimetres');
+  function preparerPerimetres(col) {
+    const cat = col.cat;
+    const liste = dans(col, 'perimetres');
     liste.innerHTML = '';
     const ajouter = (id, nom, n) => {
       const label = document.createElement('label');
       label.className = 'chip-check';
       const choix = document.createElement('input');
       choix.type = 'radio';
-      choix.name = 'perimetre';
+      choix.name = 'perimetre-' + col.index;          // un groupe de boutons radio par colonne
       choix.value = id;
-      choix.checked = id === perimetre;
+      choix.checked = id === col.perimetre;
       label.append(choix, puce(nom, n));
       liste.appendChild(label);
     };
-    ajouter('tout', cat.nomTout || 'Tout', zones.size);
+    ajouter('tout', cat.nomTout || 'Tout', col.codes.size);
     Object.keys(cat.groupes || {}).forEach((g) => {
-      const n = cat.groupes[g].filter((c) => zones.has(c)).length;
+      const n = cat.groupes[g].filter((c) => col.codes.has(c)).length;
       if (n) ajouter(g, g, n);
     });
   }
 
+  // Nom d'un joueur d'un classement : « Vous » si c'est le joueur qui joue
+  const nomJoueur = (j) => (j.id === GeoProfils.actif().id ? 'Vous' : j.nom);
+
   // Record du profil et meilleur de tous les profils, pour la façon de jouer et le périmètre choisis
-  function majRecords() {
-    const boite = $('#record-scores');
-    if (!categorie || !window.GeoProfils) { boite.innerHTML = ''; return; }
-    const cle = GeoProfils.cleRecord(categorie.id, jeuType, perimetre);
+  function majRecords(col) {
+    const boite = dans(col, 'scores');
+    if (!window.GeoProfils) { boite.innerHTML = ''; return; }
+    const cle = GeoProfils.cleRecord(col.cat.id, col.jeuType, col.perimetre);
     const moi = GeoProfils.recordDe(cle);
     const premier = GeoProfils.classement(cle)[0];
     const ligne = (libelle, r, detail) => '<div class="record-ligne"><span>' + libelle + '</span>' +
@@ -462,20 +495,21 @@
          : '<b class="record-vide">pas encore de record</b>') + '</div>';
     boite.innerHTML =
       ligne('Votre record (' + esc(GeoProfils.actif().nom) + ')', moi, moi ? 'le ' + new Date(moi.date).toLocaleDateString('fr-FR') : '') +
-      ligne('Meilleur de tous les joueurs', premier, premier ? premier.nom : '');
+      ligne('Meilleur de tous les joueurs', premier, premier ? nomJoueur(premier) : '');
   }
 
   // Une case à cocher par groupe ; sans groupes dans la catégorie, le choix du mode est masqué
-  function preparerGroupes(cat) {
-    const liste = $('#groupes-liste');
+  function preparerGroupes(col) {
+    const cat = col.cat;
+    const liste = dans(col, 'groupes');
     liste.innerHTML = '';
-    $('#mode-wrap').classList.toggle('hidden', !cat.groupes);
+    dans(col, 'modes').classList.toggle('hidden', !cat.groupes);
     if (cat.groupes) {
       const nom = cat.nomGroupes || 'groupes';
-      $('#mode-groupes-nom').textContent = nom;
-      $('#groupes-titre').textContent = nom.charAt(0).toUpperCase() + nom.slice(1) + ' à inclure';
+      dans(col, 'nom-groupes').textContent = nom;
+      dans(col, 'groupes-titre').textContent = nom.charAt(0).toUpperCase() + nom.slice(1) + ' à inclure';
       Object.keys(cat.groupes).forEach((g) => {
-        const n = cat.groupes[g].filter((c) => zones.has(c)).length;
+        const n = cat.groupes[g].filter((c) => col.codes.has(c)).length;
         if (!n) return;
         const label = document.createElement('label');
         label.className = 'chip-check';
@@ -493,38 +527,38 @@
         i.checked = !cat.groupesInitiaux || cat.groupesInitiaux.includes(i.value);
       });
     }
-    definirMode(parGroupes ? 'groupes' : 'nombre');
+    definirMode(col, parGroupes ? 'groupes' : 'nombre');
   }
 
   /* ---------- Zones optionnelles (ex. Outre-Mer) et plage du curseur ---------- */
 
   // Codes tirables en mode « par nombre » : null = toute la carte
-  function codesNombre() {
-    const opt = categorie.zonesOptionnelles;
-    if (!opt || $('#opt-extras').checked) return null;
+  function codesNombre(col) {
+    const opt = col.cat.zonesOptionnelles;
+    if (!opt || dans(col, 'extras').checked) return null;
     const ecarte = new Set(opt.codes);
-    return [...zones.keys()].filter((c) => !ecarte.has(c));
+    return [...col.codes].filter((c) => !ecarte.has(c));
   }
 
   // Curseur : de MIN_QUESTIONS au nombre de zones tirables
-  function majPlage() {
-    const dispo = codesNombre();
-    const total = dispo ? dispo.length : zones.size;
+  function majPlage(col) {
+    const dispo = codesNombre(col);
+    const total = dispo ? dispo.length : col.codes.size;
     const min = Math.min(MIN_QUESTIONS, total);
-    ['#count-range', '#count-input'].forEach((s) => { $(s).min = min; $(s).max = total; });
-    $('#count-min').textContent = min;
-    $('#count-max').textContent = total;
-    const v = Math.min(total, Math.max(min, parseInt($('#count-input').value, 10) || derniereTaille));
-    $('#count-range').value = $('#count-input').value = v;
-    majRaccourcis();
+    const curseur = dans(col, 'curseur'), champ = dans(col, 'nombre');
+    [curseur, champ].forEach((e) => { e.min = min; e.max = total; });
+    dans(col, 'min').textContent = min;
+    dans(col, 'max').textContent = total;
+    curseur.value = champ.value = Math.min(total, Math.max(min, parseInt(champ.value, 10) || derniereTaille));
+    majRaccourcis(col);
   }
 
   // Raccourcis 10, 20, 30, 50, « Tous » : celui de la valeur choisie est enfoncé ; ceux hors plage sont cachés
-  function majRaccourcis() {
-    const curseur = $('#count-range');
+  function majRaccourcis(col) {
+    const curseur = dans(col, 'curseur');
     const v = +curseur.value, min = +curseur.min, max = +curseur.max;
-    $('#count-tous').textContent = max;
-    document.querySelectorAll('#nombre-raccourcis [data-nombre]').forEach((b) => {
+    dans(col, 'tous').textContent = max;
+    dans(col, 'raccourcis').querySelectorAll('[data-nombre]').forEach((b) => {
       const tous = b.dataset.nombre === 'max';
       const n = tous ? max : Number(b.dataset.nombre);
       b.hidden = !tous && (n < min || n >= max);
@@ -533,68 +567,204 @@
     });
   }
 
+  // Nombre de questions choisi, ramené dans la plage du curseur
+  function nombreChoisi(col) {
+    const curseur = dans(col, 'curseur');
+    const v = parseInt(dans(col, 'nombre').value, 10);
+    return Math.min(+curseur.max, Math.max(+curseur.min, isNaN(v) ? +curseur.value : v));
+  }
+
+  /* ---------- Les colonnes : création, réglages, lancement ---------- */
+
+  // Une colonne pour la catégorie cat (index : 0 à gauche, 1 à droite), faite à partir du modèle de index.html
+  function creerColonne(cat, index) {
+    const racine = $('#setup-modele').content.firstElementChild.cloneNode(true);
+    const col = {
+      racine, cat, index, carte: GeoCarte.obtenir(cat.carte), codes: new Set(),
+      jeuType, partieType: lireRecord() ? 'record' : 'occasionnel', mode: 'nombre', perimetre: 'tout', miniCarte: null
+    };
+    const nom = dans(col, 'nom');
+    nom.id = 'setup-col-nom-' + index;
+    nom.textContent = cat.nomColonne || 'Votre partie';
+    racine.setAttribute('aria-labelledby', nom.id);
+    dans(col, 'deplier').setAttribute('aria-label', 'Afficher les réglages : ' + nom.textContent);
+    if (cat.aideCiblage) dans(col, 'aide-ciblage').textContent = cat.aideCiblage;
+    if (cat.aideNommage) dans(col, 'aide-nommage').textContent = cat.aideNommage;
+    dans(col, 'unite').textContent = cat.unite || 'zones';
+    // Options : libellé court sur l'écran (libelleOrdreCourt, libelleIndiceCourt, libelleCourt), le complet en info-bulle
+    dans(col, 'ordre-wrap').classList.toggle('hidden', !cat.libelleOrdre);
+    dans(col, 'ordre-label').textContent = cat.libelleOrdreCourt || cat.libelleOrdre || '';
+    dans(col, 'ordre-label').title = cat.libelleOrdreCourt ? cat.libelleOrdre : '';
+    dans(col, 'indice-wrap').classList.toggle('hidden', typeof cat.indice !== 'function');
+    dans(col, 'indice-label').textContent = cat.libelleIndiceCourt || cat.libelleIndice || 'Afficher un indice';
+    dans(col, 'indice-label').title = cat.libelleIndiceCourt ? cat.libelleIndice : '';
+    const opt = cat.zonesOptionnelles;
+    dans(col, 'extras-wrap').classList.toggle('hidden', !opt);
+    dans(col, 'extras-label').textContent = opt ? opt.libelleCourt || opt.libelle : '';
+    dans(col, 'extras-label').title = opt && opt.libelleCourt ? opt.libelle : '';
+    brancherColonne(col);
+
+    definirJeuType(col, col.jeuType);             // la façon de jouer est gardée ; le mode record est mémorisé
+    definirPartieType(col, col.partieType);
+    if (!col.carte) {
+      // Le détail technique va dans la console (développeur) ; le joueur ne voit qu'un message simple
+      console.error('core.js : carte introuvable « ' + cat.carte + ' » : vérifiez que son fichier (dossier data/) existe et est référencé dans index.html');
+      racine.querySelectorAll('input, button:not([data-r="deplier"])').forEach((e) => { e.disabled = true; });
+      dans(col, 'lancer').textContent = 'Carte indisponible';
+      return col;
+    }
+    col.carte.elements.forEach((e) => col.codes.add(e.code));
+    preparerGroupes(col);
+    preparerPerimetres(col);
+    preparerMiniCarte(col);
+    majMiniCarte(col);
+    majRecords(col);
+    dans(col, 'nombre').value = derniereTaille;
+    majPlage(col);
+    majBoutonLancer(col);
+    return col;
+  }
+
+  // Les réglages d'une colonne (chaque colonne a les siens)
+  function brancherColonne(col) {
+    const racine = col.racine;
+    const curseur = dans(col, 'curseur');
+    const champ = dans(col, 'nombre');
+
+    // Sélecteur de nombre : curseur et champ numérique restent synchronisés ; − et +, raccourcis (10, 20, 30, 50, tous)
+    curseur.addEventListener('input', () => { champ.value = curseur.value; majRaccourcis(col); });
+    champ.addEventListener('input', () => {
+      const v = parseInt(champ.value, 10);
+      if (!isNaN(v)) curseur.value = Math.min(+curseur.max, Math.max(+curseur.min, v));
+    });
+    champ.addEventListener('change', () => { champ.value = curseur.value = nombreChoisi(col); majRaccourcis(col); });
+    champ.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !dans(col, 'lancer').disabled) lancer(col); });
+    const choisirNombre = (n) => { champ.value = n; champ.dispatchEvent(new Event('change')); };
+    racine.querySelectorAll('[data-pas]').forEach((b) => {
+      b.addEventListener('click', () => { if (!champ.disabled) choisirNombre(nombreChoisi(col) + Number(b.dataset.pas)); });
+    });
+    dans(col, 'raccourcis').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-nombre]');
+      if (b && !champ.disabled) choisirNombre(b.dataset.nombre === 'max' ? +curseur.max : Number(b.dataset.nombre));
+    });
+    dans(col, 'extras').addEventListener('change', () => majPlage(col));
+    dans(col, 'lancer').addEventListener('click', () => lancer(col));
+
+    // Façon de jouer, mode (occasionnel / record), périmètre du record
+    racine.querySelectorAll('.mode-btn[data-jeu-type]').forEach((b) => {
+      b.addEventListener('click', () => definirJeuType(col, b.dataset.jeuType));
+    });
+    dans(col, 'record').addEventListener('change', (e) => {
+      try { localStorage.setItem(CLE_RECORD, e.target.checked ? '1' : '0'); } catch (err) { /* valable pour la session */ }
+      definirPartieType(col, e.target.checked ? 'record' : 'occasionnel');
+    });
+    dans(col, 'perimetres').addEventListener('change', (e) => {
+      if (e.target.type !== 'radio') return;
+      col.perimetre = e.target.value;
+      majRecords(col);
+      majBoutonLancer(col);
+      majMiniCarte(col);
+    });
+
+    // Mini-carte : un clic coche ou décoche la région (record : la choisit, un second clic revient à « tout »)
+    racine.querySelectorAll('[data-mini-carte]').forEach((place) => {
+      place.addEventListener('click', (e) => {
+        const z = e.target.closest('[data-groupe]');
+        if (!z) return;
+        const g = z.dataset.groupe;
+        if (col.partieType === 'record') {
+          const cible = col.perimetre === g ? 'tout' : g;
+          const r = [...dans(col, 'perimetres').querySelectorAll('input')].find((i) => i.value === cible);
+          if (r) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
+        } else {
+          const c = [...dans(col, 'groupes').querySelectorAll('input')].find((i) => i.value === g);
+          if (c) { c.checked = !c.checked; c.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
+      });
+      place.addEventListener('mouseover', (e) => {
+        const z = e.target.closest('[data-groupe]');
+        survolerGroupe(col, z ? z.dataset.groupe : null);
+      });
+      place.addEventListener('mouseleave', () => survolerGroupe(col, null));
+    });
+
+    // Mode de sélection (par nombre / par groupes) et cases des groupes
+    racine.querySelectorAll('.mode-btn[data-mode]').forEach((b) => {
+      b.addEventListener('click', () => definirMode(col, b.dataset.mode));
+    });
+    dans(col, 'groupes').addEventListener('change', () => { majBoutonLancer(col); majMiniCarte(col); });
+    racine.querySelectorAll('[data-groupes]').forEach((b) => {
+      b.addEventListener('click', () => {
+        dans(col, 'groupes').querySelectorAll('input').forEach((i) => { i.checked = b.dataset.groupes === 'tout'; });
+        majBoutonLancer(col);
+        majMiniCarte(col);
+      });
+    });
+
+    // Téléphone : une colonne réduite à son titre se déplie d'un clic sur celui-ci (l'autre se replie)
+    racine.querySelector('.setup-col__tete').addEventListener('click', (e) => {
+      if (racine.classList.contains('is-repliee') && !e.target.closest('label')) deplier(col);
+    });
+  }
+
+  // Téléphone : une seule colonne dépliée, les autres réduites à leur titre (css) ; sans effet sur un grand écran
+  function deplier(col) {
+    colonnes.forEach((c) => c.racine.classList.toggle('is-repliee', colonnes.length > 1 && c !== col));
+  }
+
+  // Bouton « Lancer » d'une colonne : la partie de sa catégorie, avec ses réglages
+  function lancer(col) {
+    if (!col.carte) return;
+    const base = { cat: col.cat, jeu: col.jeuType };
+    if (col.partieType === 'record') {
+      return demarrer(Object.assign(base, { record: true, codes: codesPerimetre(col), estompe: true,
+        perimetre: { id: col.perimetre, nom: nomPerimetre(col) } }));
+    }
+    Object.assign(base, {
+      ordonne: dans(col, 'ordre').checked, indice: dans(col, 'indice').checked, rattrapage: dans(col, 'rattrapage').checked
+    });
+    if (col.mode === 'groupes') {
+      const codes = codesChoisis(col);
+      const groupes = [...dans(col, 'groupes').querySelectorAll('input:checked')].map((i) => i.value);
+      if (codes.length) {
+        demarrer(Object.assign(base, { nombre: codes.length, codes, estompe: true,
+          description: (col.cat.nomGroupes || 'groupes') + ' : ' + groupes.join(', ') }));
+      }
+    } else {
+      const n = nombreChoisi(col);
+      derniereTaille = n;
+      demarrer(Object.assign(base, { nombre: n, codes: codesNombre(col), estompe: false,
+        description: n + ' ' + (col.cat.unite || 'zones') + ' au hasard' }));
+    }
+  }
+
+  // Ouvre l'écran de choix d'une catégorie ; renvoie sa colonne (null si la catégorie n'existe pas). Une catégorie
+  // montrée à droite d'une autre (colonneDroite, ex. les préfectures) s'ouvre sur l'écran de celle-ci.
   function ouvrirCategorie(id) {
     const cat = categories.find((c) => c.id === id);
-    if (!cat) return;
+    if (!cat) return null;
     arreterPartie();
-    categorie = cat;
-    carte = null;
     apprendre = null;
     activite = null;
 
-    $('#setup-titre').textContent = cat.titre;
-    // Colonne de la catégorie (nomColonne) et colonne droite facultative (colonneDroite : id d'une colonne de
-    // l'écran, ex. 'setup-prefectures') ; sans elle, une seule colonne, centrée
-    $('#setup-col-nom').textContent = cat.nomColonne || 'Votre partie';
-    document.querySelectorAll('.setup-col--droite').forEach((c) => c.classList.toggle('hidden', c.id !== cat.colonneDroite));
-    $('#setup-colonnes').classList.toggle('setup-colonnes--deux', !!cat.colonneDroite);
-    $('#count-unit').textContent = cat.unite || 'zones';
-    $('#opt-ordre').checked = false;
-    $('#opt-ordre-wrap').classList.toggle('hidden', !cat.libelleOrdre);
-    // Options : libellé court sur l'écran (libelleOrdreCourt, libelleIndiceCourt), le complet en info-bulle
-    $('#opt-ordre-label').textContent = cat.libelleOrdreCourt || cat.libelleOrdre || '';
-    $('#opt-ordre-label').title = cat.libelleOrdreCourt ? cat.libelleOrdre : '';
-    $('#opt-indice').checked = false;
-    $('#opt-indice-wrap').classList.toggle('hidden', typeof cat.indice !== 'function');
-    $('#opt-indice-label').textContent = cat.libelleIndiceCourt || cat.libelleIndice || 'Afficher un indice';
-    $('#opt-indice-label').title = cat.libelleIndiceCourt ? cat.libelleIndice : '';
-    $('#opt-rattrapage').checked = true;
-    $('#opt-extras').checked = false;
-    $('#opt-extras-wrap').classList.toggle('hidden', !cat.zonesOptionnelles);
-    const opt = cat.zonesOptionnelles;            // libellé court (libelleCourt) sur l'écran, le complet en info-bulle
-    $('#opt-extras-label').textContent = opt ? opt.libelleCourt || opt.libelle : '';
-    $('#opt-extras-label').title = opt && opt.libelleCourt ? opt.libelle : '';
-
-    $('#mode-wrap').classList.add('hidden');      // réaffiché une fois la carte chargée (si groupes)
-    perimetre = 'tout';
-    miniCarte = null;
-    definirJeuType(jeuType);                      // la façon de jouer est gardée ; le mode record est mémorisé
-    definirPartieType(lireRecord() ? 'record' : 'occasionnel');
-    definirMode('nombre');
-    activerChoix(false);
+    const hote = categories.find((c) => c.colonneDroite === cat.id) || cat;
+    const droite = hote.colonneDroite ? categories.find((c) => c.id === hote.colonneDroite) : null;
+    $('#setup-titre').textContent = hote.titre;
+    colonnes = [hote, droite].filter(Boolean).map(creerColonne);
+    const boite = $('#setup-colonnes');
+    boite.replaceChildren(...colonnes.map((c) => c.racine));
+    boite.classList.toggle('setup-colonnes--deux', colonnes.length > 1);
+    const col = colonnes.find((c) => c.cat === cat);
+    deplier(col);
     afficher('screen-setup');
 
-    carte = GeoCarte.obtenir(cat.carte);
-    if (!carte) {
-      // Le détail technique va dans la console (développeur) ; le joueur ne voit qu'un message simple
-      console.error('core.js : carte introuvable « ' + cat.carte + ' » : vérifiez que son fichier (dossier data/) existe et est référencé dans index.html');
-      $('#setup-status').innerHTML = '<span class="status-error">⚠️ Cette carte n\'est pas disponible pour le moment.</span>';
-      return;
-    }
-
-    construireSVG(carte, cat, false);
-    preparerGroupes(cat);
-    preparerPerimetres(cat);
-    preparerMiniCarte(cat);
-    majMiniCarte();
-    majRecords();
-
-    $('#count-input').value = derniereTaille;
-    majPlage();
-
-    // Seule la source des données reste affichée (crédit exigé par les licences des cartes)
-    $('#setup-status').innerHTML = carte.credit ? '<span class="credit">' + esc(carte.credit) + '</span>' : '';
-    activerChoix(true);
+    // Pied de l'écran : la source des données (crédit exigé par les licences des cartes), ou l'erreur
+    const credits = [];
+    colonnes.forEach((c) => [c.carte && c.carte.credit, c.cat.credit].forEach((t) => { if (t && !credits.includes(t)) credits.push(t); }));
+    $('#setup-status').innerHTML = colonnes.some((c) => !c.carte)
+      ? '<span class="status-error">⚠️ Cette carte n\'est pas disponible pour le moment.</span>'
+      : (credits.length ? '<span class="credit">' + credits.map(esc).join(' ') + '</span>' : '');
+    return col;
   }
 
   /* ------------------------------------------------------------------ */
@@ -635,8 +805,8 @@
   // Une zone cliquable. Surface : un <path>. Ligne (cours d'eau) : un groupe avec un tracé visible
   // et un tracé invisible plus large qui facilite le clic. Point (micro-État, détroit) : son éventuel
   // contour, un rond bien visible et un rond invisible plus large, de taille fixe à l'écran (majPoints).
-  // type : sert aux couleurs et aux filtres.
-  function creerZone(el, bulles) {
+  // type : sert aux couleurs et aux filtres. def : la catégorie ou le module (nom à trouver : def.nomZone).
+  function creerZone(el, bulles, def) {
     let z;
     if (el.ligne) {
       z = creerSVG('g', 'zone ligne');
@@ -659,9 +829,35 @@
       t.textContent = el.nom + (el.type ? '' : ' (' + el.code + ')');
       z.appendChild(t);
     }
-    zones.set(el.code, { nom: el.nom, el: z, cx: el.cx, cy: el.cy, brut: el });
+    zones.set(el.code, { nom: nomDe(def, el), el: z, cx: el.cx, cy: el.cy, brut: el });
     return z;
   }
+
+  // Points des zones (def.points, ex. la préfecture de chaque département) : au-dessus des zones et des limites,
+  // un rond de taille fixe à l'écran et sa surface cliquable. Le point devient le centre de sa zone (repère de la
+  // bonne réponse, étiquette « +1 ») et prend ses états (etat). Les plus petites zones en dernier : leur point passe
+  // devant ceux de leurs voisines (Paris devant Nanterre, Bobigny et Créteil).
+  function dessinerPoints(points) {
+    const g = creerSVG('g', 'reperes');
+    const aire = (code) => { const b = cadreZone(code); return (b[2] - b[0]) * (b[3] - b[1]); };
+    [...zones.keys()].filter((code) => points[code]).sort((a, b) => aire(b) - aire(a)).forEach((code) => {
+      const z = zones.get(code);
+      const [x, y] = points[code];
+      const p = creerSVG('g', 'zone zone--repere');
+      const clic = creerSVG('circle', 'repere-clic', { cx: x, cy: y });
+      const rond = creerSVG('circle', 'repere-rond', { cx: x, cy: y });
+      p.append(clic, rond);
+      p.dataset.code = code;
+      p.dataset.state = 'idle';
+      cerclesPoints.push([clic, RAYON_REPERE_CLIC], [rond, RAYON_REPERE]);
+      Object.assign(z, { pt: p, cx: x, cy: y });
+      g.appendChild(p);
+    });
+    svg.appendChild(g);
+  }
+
+  // Ce qui représente une zone sur la carte : sa forme et, s'il y en a un, son point (mêmes états, mêmes classes)
+  const formes = (z) => (z.pt ? [z.el, z.pt] : [z.el]);
 
   // Décor non cliquable : couche 'fond' (sous tout le reste), 'dessus' (au-dessus des zones) ou
   // 'milieu' (le reste). Le nom d'un élément s'affiche au survol, seulement hors quiz (bulles).
@@ -688,7 +884,7 @@
     const exclus = new Set(def.fond.exclure || []);
     dessinerDecor(c, 'fond', bulles);
     const gDessous = creerSVG('g');
-    c.elements.filter((e) => e.dessous).forEach((e) => gDessous.appendChild(creerZone(e, bulles)));
+    c.elements.filter((e) => e.dessous).forEach((e) => gDessous.appendChild(creerZone(e, bulles, def)));
     svg.appendChild(gDessous);
 
     dessinerDecor(c, 'milieu', bulles);
@@ -714,7 +910,7 @@
     svg.appendChild(ge);
 
     const gDessus = creerSVG('g');
-    c.elements.filter((e) => !e.dessous).forEach((e) => gDessus.appendChild(creerZone(e, bulles)));
+    c.elements.filter((e) => !e.dessous).forEach((e) => gDessus.appendChild(creerZone(e, bulles, def)));
     svg.appendChild(gDessus);
     dessinerDecor(c, 'dessus', bulles);
   }
@@ -731,8 +927,11 @@
     vue = { ...base };
     vueDepart = null;
     zoomMax = c.zoomMax || ZOOM_MAX;
-    // La légende « point » n'apparaît que si la carte a des petites zones signalées par un point
+    // La légende « point » n'apparaît que si la carte a des petites zones signalées par un point ; celle des points
+    // des zones (def.points, ex. les préfectures), que si la catégorie en a
     document.body.dataset.points = c.elements.some((e) => e.point) ? '1' : '0';
+    document.body.dataset.reperes = def.points ? '1' : '0';
+    if (def.points) $('#legende-reperes').textContent = def.nomPoints || 'point';
 
     const fond = def.fond && GeoCarte.obtenir(def.fond.carte);
     if (fond) {
@@ -765,7 +964,7 @@
     dessinerDecor(c, 'milieu', bulles);                   // ex. territoires non cliquables (Palestine)
 
     const g = document.createElementNS(SVG_NS, 'g');
-    for (const el of c.elements) g.appendChild(creerZone(el, bulles));
+    for (const el of c.elements) g.appendChild(creerZone(el, bulles, def));
     svg.appendChild(g);
 
     if (def.groupes) {                     // limites des groupes (régions) : trait un peu plus épais
@@ -776,6 +975,7 @@
     }
 
     dessinerDecor(c, 'dessus', bulles);                   // ex. limite en pointillés (Sahara occidental)
+    if (def.points) dessinerPoints(def.points);           // ex. les préfectures
 
     const repere = document.createElementNS(SVG_NS, 'circle');
     repere.setAttribute('id', 'marker');
@@ -919,7 +1119,7 @@
   function etat(code, valeur) {
     const z = zones.get(code);
     if (!z) return;
-    z.el.dataset.state = valeur;
+    formes(z).forEach((f) => { f.dataset.state = valeur; });
     // Un cours d'eau joué (trouvé, raté, demandé…) passe au-dessus des autres : son trait reste entier
     if (valeur !== 'idle' && z.el.classList.contains('ligne')) z.el.parentNode.appendChild(z.el);
   }
@@ -1068,16 +1268,26 @@
   const comparerCodes = (a, b) => cleCode(a).localeCompare(cleCode(b), 'fr', { numeric: true });
 
   /* config :
+       cat          la catégorie jouée (obligatoire)
        jeu          'ciblage' ou 'nommage'
        record       true : mode record (toutes les zones de codes, dans le désordre, sans indice ni rattrapage)
        perimetre    { id, nom } du record
        codes        zones tirables (défaut : toute la carte)
        nombre       nombre de questions (défaut : toutes les zones tirables)
        ordonne      true : zones présentées dans l'ordre des codes
+       indice       true : indice affiché (si la catégorie en a un)
+       rattrapage   false : pas de rattrapage des erreurs à la fin (défaut : avec)
        estompe      true : zones hors sélection estompées (groupes, record), false : masquées (zones optionnelles)
        description  résumé de la sélection, pour l'historique (« 20 départements au hasard »…) */
   function demarrer(config) {
-    if (!carte) return;
+    const c = config.cat && GeoCarte.obtenir(config.cat.carte);
+    if (!c) return;
+    arreterPartie();
+    categorie = config.cat;
+    carte = c;
+    apprendre = null;
+    activite = null;
+    construireSVG(carte, categorie, false);          // la carte de la catégorie, et ses points (ex. les préfectures)
     derniereConfig = config;
     const record = !!config.record;
     const nommage = config.jeu === 'nommage';
@@ -1091,8 +1301,10 @@
     const dansQuiz = new Set(candidats);
     zones.forEach((z, code) => {
       const dehors = !dansQuiz.has(code);
-      z.el.classList.toggle('hors-quiz', dehors && estompe);
-      z.el.classList.toggle('masque', dehors && !estompe);
+      formes(z).forEach((f) => {
+        f.classList.toggle('hors-quiz', dehors && estompe);
+        f.classList.toggle('masque', dehors && !estompe);
+      });
     });
     const cadres = svg.querySelector('#cadres');
     if (cadres) {                                   // les encadrés suivent les zones optionnelles
@@ -1102,14 +1314,12 @@
       cadres.classList.toggle('masque', dehors && !estompe);
     }
 
-    zones.forEach((z) => { z.el.dataset.state = 'idle'; });
     masquerRepere();
     $('#screen-game').appendChild($('#map-wrap'));   // la carte est partagée avec le mode « Apprendre »
     // Par groupes (régions, continents…) ou en record : la carte se cadre sur les zones choisies ; ⤢ y revient
     vueDepart = estompe ? vueSur(candidats) : null;
     reinitialiserVue();
 
-    arreterPartie();
     jeu = {
       pool,
       jeuType: nommage ? 'nommage' : 'ciblage',
@@ -1120,11 +1330,11 @@
       verrou: false, minuteur: null, finaliser: null,
       resultats: [],
       resultatsPrincipaux: null,  // résultats de la partie, mémorisés au début du rattrapage
-      rattrapageActif: !record && $('#opt-rattrapage').checked,   // option « rattrapage des erreurs »
+      rattrapageActif: !record && config.rattrapage !== false,   // option « rattrapage des erreurs »
       rattrapage: false,      // true pendant la mini-session finale
       principal: null,        // score de la partie, mémorisé au début du rattrapage
       tempsPrincipal: 0,      // temps de la partie (sans le rattrapage)
-      indice: !record && typeof categorie.indice === 'function' && $('#opt-indice').checked,
+      indice: !record && typeof categorie.indice === 'function' && !!config.indice,
       serie: 0,               // bonnes réponses d'affilée
       debut: Date.now(),
       chrono: null,
@@ -1148,7 +1358,8 @@
   }
 
   function questionLabel() {
-    const q = jeu.jeuType === 'nommage' ? 'Quel est le nom de la zone en surbrillance ?' : (categorie.question || 'Où se trouve…');
+    const q = jeu.jeuType === 'nommage' ? (categorie.questionNommage || 'Quel est le nom de la zone en surbrillance ?')
+                                        : (categorie.question || 'Où se trouve…');
     return jeu.rattrapage ? 'Rattrapage · ' + q.charAt(0).toLowerCase() + q.slice(1) : q;
   }
 
@@ -1181,7 +1392,7 @@
     jeu.serie = 0;
     majSerie(false);
 
-    zones.forEach((z) => { z.el.dataset.state = 'idle'; });
+    zones.forEach((z, code) => etat(code, 'idle'));
     masquerRepere();
     reinitialiserVue();
     $('#question-label').textContent = questionLabel();
@@ -1195,15 +1406,18 @@
     const code = jeu.pool[jeu.idx];
     const z = zones.get(code);
     jeu.verrou = false;
-    const indice = jeu.indice ? ' (' + categorie.indice(z.brut) + ')' : '';
-    $('#target-hint').textContent = '';
+    // Indice : entre parenthèses à côté du nom (« Nom (XX) »), ou sur sa ligne, sous le nom (indiceDessous) ; il reste
+    // affiché jusqu'à la question suivante
+    const texteIndice = jeu.indice ? categorie.indice(z.brut) : '';
+    const indice = texteIndice && !categorie.indiceDessous ? ' (' + texteIndice + ')' : '';
+    $('#target-hint').textContent = texteIndice && categorie.indiceDessous ? '💡 ' + texteIndice : '';
     boutonAction('Passer', false);
     if (jeu.jeuType === 'nommage') {
       // La zone à nommer s'allume ; l'anneau pulsant aide à repérer les très petites
       etat(code, 'question');
       afficherRepere(code);
       $('#target-name').textContent = '?' + indice;
-      retour('idle', 'Tapez le nom de la zone en surbrillance, puis Entrée.');
+      retour('idle', categorie.consigneNommage || 'Tapez le nom de la zone en surbrillance, puis Entrée.');
       const champ = $('#nommage-saisie');
       champ.value = '';
       champ.disabled = false;
@@ -1230,25 +1444,88 @@
     return t === reduire(base) || t === reduire(base.replace(GENERIQUE, ''));
   }
 
+  /* ---------- Nommage tolérant (catégorie avec tolerance : les préfectures) ---------- */
+  // Les mêmes règles que Anotehomy Quizz : une faute de frappe légère est acceptée si le nom tapé n'est pas plus
+  // proche du nom d'une autre zone (« Rennes » n'est pas une faute pour « Vannes »). L'article du début peut être
+  // omis (« Rochelle ») et « St » vaut « Saint », comme dans La Liste ; les autres noms (def.alias) sont acceptés.
+  const plier = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+  // Fautes tolérées selon la longueur du nom : aucune jusqu'à 4 lettres, 1 jusqu'à 7, 2 jusqu'à 12, 3 au-delà
+  const fautesTolerees = (n) => (n <= 4 ? 0 : n <= 7 ? 1 : n <= 12 ? 2 : 3);
+
+  // Distance de Damerau-Levenshtein : lettres en trop, en moins, remplacées, ou deux lettres inversées (une faute)
+  function distance(a, b) {
+    const d = [];
+    for (let i = 0; i <= a.length; i++) d[i] = [i];
+    for (let j = 0; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+    return d[a.length][b.length];
+  }
+
+  // Formes acceptées pour une zone (réduites) : son nom et ses autres noms, avec et sans l'article du début
+  function formesNom(code) {
+    const z = zones.get(code);
+    if (!z.formes) {
+      const res = new Set();
+      [z.nom].concat((categorie.alias || {})[code] || []).forEach((n) => {
+        const base = plier(n);
+        res.add(reduire(base));
+        res.add(reduire(base.replace(DEBUT_FACULTATIF, '')));
+      });
+      z.formes = [...res];
+    }
+    return z.formes;
+  }
+
+  // Réponse tapée pour la zone code : { ok, faute } (faute : acceptée malgré une faute de frappe)
+  function verifierNom(texte, code) {
+    if (nomCorrect(texte, zones.get(code))) return { ok: true, faute: false };
+    if (!categorie.tolerance) return { ok: false, faute: false };
+    const t = reduire(plier(texte).replace(/\bst(e?)\b/g, 'saint$1'));      // « St-Brieuc », « St Denis »
+    if (formesNom(code).includes(t)) return { ok: true, faute: false };
+    let proche = { d: Infinity, code: null, forme: '' };
+    const comparer = (c) => formesNom(c).forEach((f) => {
+      const d = distance(t, f);
+      if (d < proche.d) proche = { d, code: c, forme: f };
+    });
+    comparer(code);                                    // à égalité, la zone demandée l'emporte
+    zones.forEach((z, c) => { if (c !== code) comparer(c); });
+    const ok = proche.code === code && proche.d <= fautesTolerees(Math.max(t.length, proche.forme.length));
+    return { ok, faute: ok };
+  }
+
+  // Nom d'une zone dans les messages, en gras, avec la précision de la catégorie (def.detail : « Nancy (Meurthe-et-Moselle) »),
+  // sauf si elle répète le nom (Paris)
+  function nomMessage(code) {
+    const z = zones.get(code);
+    const detail = typeof categorie.detail === 'function' ? categorie.detail(z.brut) : '';
+    return '<strong>' + esc(z.nom) + '</strong>' + (detail && detail !== z.nom ? ' (' + esc(detail) + ')' : '');
+  }
+
   // texte === null : le joueur passe la question
   function repondreNom(texte) {
     if (!jeu || !jeu.actif || jeu.verrou || jeu.jeuType !== 'nommage') return;
     if (texte !== null && !reduire(texte)) return;          // champ vide : rien à valider
     jeu.verrou = true;
     const cible = jeu.pool[jeu.idx];
-    const nomCible = zones.get(cible).nom;
-    const bon = texte !== null && nomCorrect(texte, zones.get(cible));
+    const verdict = texte !== null ? verifierNom(texte, cible) : { ok: false, faute: false };
     $('#nommage-saisie').disabled = true;
     fermerSuggestionsNom();
     let delai;
 
     jeu.joues++;
-    if (bon) {
+    if (verdict.ok) {
       jeu.score++;
       jeu.resultats.push({ code: cible, ok: true });
       etat(cible, 'right');
       bonneReponse(cible);
-      retour('ok', '✅ Bravo ! C\'est bien <strong>' + esc(nomCible) + '</strong>.');
+      retour('ok', '✅ Bravo ! C\'est bien ' + nomMessage(cible) +
+        (verdict.faute ? ', malgré une faute de frappe (« ' + esc(texte.trim()) + ' »).' : '.'));
       jeu.finaliser = () => etat(cible, 'ok');
       delai = DELAI_BONNE;
     } else {
@@ -1256,8 +1533,8 @@
       etat(cible, 'reveal');
       mauvaiseReponse();
       retour('ko', texte === null
-        ? '⏭️ Question passée : c\'était <strong>' + esc(nomCible) + '</strong>.'
-        : '❌ Non : c\'était <strong>' + esc(nomCible) + '</strong> (vous avez tapé « ' + esc(texte.trim()) + ' »).');
+        ? '⏭️ Question passée : c\'était ' + nomMessage(cible) + '.'
+        : '❌ Non : c\'était ' + nomMessage(cible) + ' (vous avez tapé « ' + esc(texte.trim()) + ' »).');
       jeu.finaliser = () => etat(cible, 'ko');
       delai = DELAI_FAUSSE;
     }
@@ -1277,7 +1554,6 @@
     jeu.verrou = true;
 
     const cible = jeu.pool[jeu.idx];
-    const nomCible = zones.get(cible).nom;
     let delai;
 
     jeu.joues++;
@@ -1286,7 +1562,7 @@
       jeu.resultats.push({ code: cible, ok: true });
       etat(cible, 'right');
       bonneReponse(cible);
-      retour('ok', '✅ Bravo ! C\'est bien <strong>' + esc(nomCible) + '</strong>.');
+      retour('ok', '✅ Bravo ! C\'est bien ' + nomMessage(cible) + '.');
       jeu.finaliser = () => etat(cible, 'ok');
       delai = DELAI_BONNE;
     } else {
@@ -1297,7 +1573,7 @@
       afficherRepere(cible);
       mauvaiseReponse();
       retour('ko', code
-        ? '❌ Raté : vous avez cliqué sur <strong>' + esc(zones.get(code).nom) + '</strong>.'
+        ? '❌ Raté : vous avez cliqué sur ' + nomMessage(code) + '.'
         : '⏭️ Question passée.');
       jeu.finaliser = () => {
         if (code) etat(code, precedent);
@@ -1388,7 +1664,7 @@
     const cl = bilan.classement;
     if (cl.length > 1) {
       html += '<p>' + (bilan.rang === 1 ? '🥇 Meilleur de tous les joueurs (' + cl.length + ' classés)'
-        : 'Classement : ' + bilan.rang + '<sup>e</sup> sur ' + cl.length + ' joueurs · meilleur : ' + r(cl[0]) + ' (' + esc(cl[0].nom) + ')') + '</p>';
+        : 'Classement : ' + bilan.rang + '<sup>e</sup> sur ' + cl.length + ' joueurs · meilleur : ' + r(cl[0]) + ' (' + esc(nomJoueur(cl[0])) + ')') + '</p>';
     }
     boite.innerHTML = html;
   }
@@ -1401,12 +1677,13 @@
 
   // Révision (depuis les statistiques) : partie occasionnelle sur les zones données d'une catégorie
   function reviser(id, codes, type) {
-    ouvrirCategorie(id);
-    if (!carte) return;
-    const dispo = codes.filter((c) => zones.has(c));
+    const col = ouvrirCategorie(id);
+    if (!col || !col.carte) return;
+    const dispo = codes.filter((c) => col.codes.has(c));
     if (!dispo.length) return;
-    definirJeuType(type === 'nommage' ? 'nommage' : 'ciblage');
-    demarrer({ jeu: jeuType, codes: dispo, estompe: true, description: 'Révision : ' + dispo.length + ' zones souvent ratées' });
+    definirJeuType(col, type === 'nommage' ? 'nommage' : 'ciblage');
+    demarrer({ cat: col.cat, jeu: col.jeuType, codes: dispo, estompe: true,
+      description: 'Révision : ' + dispo.length + ' zones souvent ratées' });
   }
 
   /* ---------- Suggestions de noms (nommage, et jeux à part : api.suggestions) ---------- */
@@ -1801,103 +2078,7 @@
       else if (jeu.jeuType === 'nommage') repondreNom(null);
       else repondre(null);
     });
-
-    // Sélecteur de nombre : curseur et champ numérique restent synchronisés
-    const curseur = $('#count-range');
-    const champ = $('#count-input');
-    const nombreChoisi = () => {
-      const v = parseInt(champ.value, 10);
-      return Math.min(+curseur.max, Math.max(+curseur.min, isNaN(v) ? +curseur.value : v));
-    };
-    curseur.addEventListener('input', () => { champ.value = curseur.value; majRaccourcis(); });
-    champ.addEventListener('input', () => {
-      const v = parseInt(champ.value, 10);
-      if (!isNaN(v)) curseur.value = Math.min(+curseur.max, Math.max(+curseur.min, v));
-    });
-    champ.addEventListener('change', () => { champ.value = curseur.value = nombreChoisi(); majRaccourcis(); });
-    // − et +, raccourcis (10, 20, 30, 50, tous)
-    const choisirNombre = (n) => { champ.value = n; champ.dispatchEvent(new Event('change')); };
-    document.querySelectorAll('[data-pas]').forEach((b) => {
-      b.addEventListener('click', () => { if (!champ.disabled) choisirNombre(nombreChoisi() + Number(b.dataset.pas)); });
-    });
-    $('#nombre-raccourcis').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-nombre]');
-      if (b && !champ.disabled) choisirNombre(b.dataset.nombre === 'max' ? +curseur.max : Number(b.dataset.nombre));
-    });
-    const lancer = () => {
-      if (partieType === 'record') {
-        return demarrer({ jeu: jeuType, record: true, codes: codesPerimetre(), estompe: true,
-          perimetre: { id: perimetre, nom: nomPerimetre() } });
-      }
-      const ordonne = $('#opt-ordre').checked;
-      const unite = categorie.unite || 'zones';
-      if (mode === 'groupes') {
-        const codes = codesChoisis();
-        const groupes = [...document.querySelectorAll('#groupes-liste input:checked')].map((i) => i.value);
-        if (codes.length) {
-          demarrer({ jeu: jeuType, nombre: codes.length, ordonne, codes, estompe: true,
-            description: (categorie.nomGroupes || 'groupes') + ' : ' + groupes.join(', ') });
-        }
-      } else {
-        const n = nombreChoisi();
-        derniereTaille = n;
-        demarrer({ jeu: jeuType, nombre: n, ordonne, codes: codesNombre(), estompe: false, description: n + ' ' + unite + ' au hasard' });
-      }
-    };
-    $('#btn-start').addEventListener('click', lancer);
-    $('#opt-extras').addEventListener('change', majPlage);
-
-    // Façon de jouer, mode (occasionnel / record), périmètre du record
-    document.querySelectorAll('.mode-btn[data-jeu-type]').forEach((b) => {
-      b.addEventListener('click', () => definirJeuType(b.dataset.jeuType));
-    });
-    $('#opt-record').addEventListener('change', (e) => {
-      try { localStorage.setItem(CLE_RECORD, e.target.checked ? '1' : '0'); } catch (err) { /* valable pour la session */ }
-      definirPartieType(e.target.checked ? 'record' : 'occasionnel');
-    });
-    $('#record-perimetres').addEventListener('change', (e) => {
-      if (e.target.name !== 'perimetre') return;
-      perimetre = e.target.value;
-      majRecords();
-      majBoutonLancer();
-      majMiniCarte();
-    });
-
-    // Mini-carte : un clic coche ou décoche la région (record : la choisit, un second clic revient à « tout »)
-    document.querySelectorAll('[data-mini-carte]').forEach((place) => {
-      place.addEventListener('click', (e) => {
-        const z = e.target.closest('[data-groupe]');
-        if (!z) return;
-        const g = z.dataset.groupe;
-        if (partieType === 'record') {
-          const cible = perimetre === g ? 'tout' : g;
-          const r = [...document.querySelectorAll('#record-perimetres input')].find((i) => i.value === cible);
-          if (r) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
-        } else {
-          const c = [...document.querySelectorAll('#groupes-liste input')].find((i) => i.value === g);
-          if (c) { c.checked = !c.checked; c.dispatchEvent(new Event('change', { bubbles: true })); }
-        }
-      });
-      place.addEventListener('mouseover', (e) => {
-        const z = e.target.closest('[data-groupe]');
-        survolerGroupe(z ? z.dataset.groupe : null);
-      });
-      place.addEventListener('mouseleave', () => survolerGroupe(null));
-    });
-
-    // Mode de sélection (par nombre / par groupes) et cases des groupes
-    document.querySelectorAll('.mode-btn[data-mode]').forEach((b) => {
-      b.addEventListener('click', () => definirMode(b.dataset.mode));
-    });
-    $('#groupes-liste').addEventListener('change', () => { majBoutonLancer(); majMiniCarte(); });
-    document.querySelectorAll('[data-groupes]').forEach((b) => {
-      b.addEventListener('click', () => {
-        document.querySelectorAll('#groupes-liste input').forEach((i) => { i.checked = b.dataset.groupes === 'tout'; });
-        majBoutonLancer();
-        majMiniCarte();
-      });
-    });
-    champ.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !$('#btn-start').disabled) lancer(); });
+    // Les réglages de l'écran de choix sont branchés colonne par colonne, à leur création (brancherColonne)
 
     // data-action="menu" : retour au menu, sur la grande catégorie en cours
     // (ou sur celle de data-menu-categorie, que js/menu.js sélectionne)
@@ -1919,7 +2100,7 @@
     brancherApprentissage();
     brancherNommage();
     // Changement de profil (bouton de compte) : records de l'écran de choix remis à jour
-    if (window.GeoProfils) GeoProfils.surChangement(() => { if (categorie) majRecords(); });
+    if (window.GeoProfils) GeoProfils.surChangement(() => colonnes.forEach(majRecords));
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

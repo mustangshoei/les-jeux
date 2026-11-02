@@ -5,7 +5,7 @@ GéoNohyne Quizz fait partie du dossier des jeux (voir le [README à la racine](
 avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif (`../SERVEUR/serveur.py`,
 Python sans dépendance) qui permet de jouer à plusieurs sur un réseau, avec des classements communs.
 
-**Version 2.1.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 2.2.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
@@ -34,7 +34,8 @@ css/style.css                      toute l'apparence (« Atlas en relief », th�
 css/polices/                       polices Bricolage Grotesque et IBM Plex Mono (licence OFL, fichiers OFL-*.txt)
 img/topo.svg                       fond : courbes de niveau
 js/carte.js                        moteur de cartes (GeoJSON → SVG), sans donnée de pays
-js/core.js                         noyau : enregistrement des modules, quiz (ciblage, nommage, record), mode Apprendre, zoom
+js/core.js                         noyau : enregistrement des modules, écran de choix (une colonne par quiz), quiz (ciblage,
+                                   nommage, record), mode Apprendre, zoom
 js/menu.js                         LE MENU : chapitres (grandes catégories), leurs cartes, carte des régions en relief
 js/profils.js                      comptes (communs à tous les jeux, via ../COMMUN/comptes.js) et invité, statistiques
                                    (records, historique, zones ratées, exports)
@@ -42,7 +43,8 @@ js/compte.js                       bouton de compte (en haut à gauche), fenêtr
 js/ancien-nom.js                   reprend les réglages enregistrés dans le navigateur sous l'ancien nom (GéoQuiz)
 
 js/france/                         « La France et sa géographie »
-  quiz-departements.js             quiz « Les départements et leurs préfectures » (modèle des autres quiz)
+  quiz-departements.js             quiz des départements, carte « Les départements et leurs préfectures » (modèle des autres quiz)
+  quiz-prefectures.js              quiz des préfectures, sur la même carte du menu (colonne de droite de l'écran de choix)
   quiz-fleuves.js                  quiz « Fleuves & Océans »
   grand-chemin.js                  jeu « Le Grand Chemin » (relier deux départements, avec ou sans étapes)
   morpion.js                       jeu « Morpion des Départements » (tic-tac-toe à critères croisés)
@@ -61,6 +63,7 @@ js/apprendre/                      « Apprendre »
 data/france/
   carte-departements.js            la carte de France (un fichier par carte)
   infos-departements.js            fiches des départements (région, préfecture, superficie, population…)
+  points-prefectures.js            position de chaque préfecture sur la carte de France (généré)
   carte-hydrographie.js            mers, fleuves, rivières et pays voisins (généré)
   infos-hydrographie.js            fiches des mers et cours d'eau (généré)
 data/monde/
@@ -70,6 +73,7 @@ data/monde/
   infos-mers.js                    fiches des mers (superficie, profondeur, riverains…)
 
 outils/construire-hydrographie.py  (facultatif) régénère les deux fichiers « hydrographie »
+outils/placer-prefectures.py       (facultatif) régénère data/france/points-prefectures.js
 outils/construire-monde.html       (facultatif) régénère les deux cartes du monde, dans le navigateur
 outils/construire-monde.js         … son moteur et ses réglages (liste des pays, des mers, niveaux)
 outils/convertir-carte.html        outil pour fabriquer une nouvelle carte (autre pays…)
@@ -94,9 +98,9 @@ rouvrant le jeu.
 Les records et statistiques ne sont pas dans le menu : on les ouvre depuis le menu du compte (« Mes
 statistiques »), qui donne accès aux mêmes onglets.
 
-« Les départements et leurs préfectures » réunit les anciennes cartes « Les Départements » et « Les
-Préfectures » (à venir) : pour l'instant, seul le titre a changé, les questions portent toujours sur les
-départements. La carte « Les Régions » (à venir) a été retirée.
+« Les départements et leurs préfectures » (« Placer et deviner les départements français et leurs préfectures
+sur une carte. ») réunit deux quiz, côte à côte sur son écran de choix : les départements (à gauche) et les
+préfectures (à droite, voir « Les préfectures » plus bas). La carte « Les Régions » (à venir) a été retirée.
 
 Tout le menu est décrit au début de **`js/menu.js`** (constante `MENU`) : c'est là qu'on ajoute, déplace
 ou renomme une carte ou un chapitre, et qu'on choisit l'image d'un chapitre (`image`, une clé de
@@ -124,8 +128,8 @@ trouvée. Les animations sont discrètes et s'arrêtent si le système demande d
 
 ## Façons de jouer : ciblage et nommage
 
-Tous les quiz (Départements, Fleuves & Océans, Pays du monde, Océans et mers) se jouent de deux façons,
-choisies sur l'écran de choix de la partie (voir plus bas) :
+Tous les quiz (Départements, Préfectures, Fleuves & Océans, Pays du monde, Océans et mers) se jouent de deux
+façons, choisies sur l'écran de choix de la partie (voir plus bas) :
 
 - **🎯 Ciblage** : un nom s'affiche, on clique sur la bonne zone de la carte.
 - **⌨️ Nommage** : une zone s'allume en jaune sable (avec un anneau pulsant pour les plus petites), on tape son
@@ -139,7 +143,8 @@ choisies sur l'écran de choix de la partie (voir plus bas) :
   Loire-Atlantique, Loiret, puis Loir-et-Cher. En mode record, aucune suggestion. Les mêmes règles valent
   pour les suggestions du Morpion, de L'Entonnoir et du Grand Chemin (fonction `filtrerNoms` de
   `js/core.js`, donnée aux jeux par `api.suggestions`) ; le Grand Chemin propose en plus un département
-  dont on tape le code exact (« 29 »).
+  dont on tape le code exact (« 29 »). Pour les préfectures, le nommage tolère en plus les fautes de frappe
+  légères (voir « Les préfectures »).
 
 Chaque façon de jouer existe en **mode occasionnel** (par défaut : nombre de questions, groupes, indice,
 rattrapage) et en **mode record**.
@@ -151,9 +156,11 @@ une grille calée sur la hauteur de la fenêtre, dont la mini-carte est la parti
 haut environ, la liste des régions peut défiler dans son cadre ; la page, elle, ne défile jamais.
 
 - **En-tête** : « ← Menu » et le titre du quiz. En dessous, une colonne pour le quiz ; pour « Les
-  départements et leurs préfectures », une **seconde colonne, « Préfectures »**, en structure seulement
-  (grisée, « Bientôt », aucune logique) : propriété `colonneDroite` de la catégorie, qui désigne la
-  colonne `#setup-prefectures` de `index.html`. Sur téléphone, elle se réduit à son titre.
+  départements et leurs préfectures », **deux colonnes, « Départements » et « Préfectures »**, chacune
+  avec tous les réglages ci-dessous et son bouton « Lancer » (propriété `colonneDroite` de la catégorie des
+  départements, qui désigne la catégorie `prefectures`). Les colonnes sont faites par `js/core.js` à partir
+  d'un même modèle (`<template id="setup-modele">` de `index.html`). Sur téléphone, une seule colonne est
+  dépliée, l'autre se réduit à son titre et à un bouton « Afficher » qui la déplie (et replie la première).
 - **Mode record** : interrupteur en haut de la colonne, mémorisé.
 - **Façon de jouer** : deux cartes, 🎯 Ciblage et ⌨️ Nommage, chacune avec sa phrase d'explication.
 - **Questions** (occasionnel), deux onglets :
@@ -180,8 +187,9 @@ Interrupteur **🏆 Mode record** de l'écran de choix, dont le dernier état es
   bonne réponse et passe à la suite.
 - **Record** = le meilleur score ; à score égal, le temps le plus court (au dixième de seconde). Un record par
   catégorie, façon de jouer et périmètre (ex. Départements · Bretagne · Nommage).
-- L'écran de choix affiche votre record et le meilleur de tous les joueurs ; pendant la partie, votre record
-  remplace le bouton de compte ; l'écran de fin annonce un nouveau record et votre place parmi les joueurs.
+- L'écran de choix affiche votre record et le meilleur de tous les joueurs (score et temps ; « Vous » au lieu
+  du nom quand ce meilleur, c'est vous) ; pendant la partie, votre record remplace le bouton de compte ;
+  l'écran de fin annonce un nouveau record et votre place parmi les joueurs.
 
 ## Comptes et statistiques
 
@@ -241,6 +249,43 @@ visite : la nouvelle version est vue tout de suite.
 - **Petites zones signalées par un point** : un élément de carte marqué `point: true` (micro-État, détroit
   étroit, mer Morte…) porte un point bien visible, de taille fixe à l'écran quel que soit le zoom, entouré
   d'une surface cliquable plus large : il est facile à cliquer. La légende l'indique.
+
+## Les préfectures
+
+Quiz de la carte « Les départements et leurs préfectures » : colonne **« Préfectures »**, à droite de celle
+des départements sur l'écran de choix, avec **les mêmes réglages** (ciblage ou nommage, mode record, au
+hasard ou par régions, Outre-Mer, ordre INSEE, indice, rattrapage). Code : `js/france/quiz-prefectures.js`
+(il reprend les régions et l'Outre-Mer de `js/france/quiz-departements.js`).
+
+- **La carte** : celle des départements, avec un **point sur chaque préfecture** (un rond clair, de taille
+  fixe à l'écran ; « préfecture » dans la légende). Le point prend la couleur de son département : sombre
+  dès que celui-ci est demandé, trouvé ou raté. À Paris, les points de la petite couronne sont serrés :
+  zoomez, celui de la plus petite zone passe devant.
+- **🎯 Ciblage** : le nom d'une préfecture s'affiche (« Où se trouve… Nancy ») ; on clique sur son point,
+  ou n'importe où dans son département. Une erreur fait clignoter le bon département, avec l'anneau sur sa
+  préfecture.
+- **⌨️ Nommage** : un département s'allume, l'anneau pulse sur sa préfecture ; on tape le nom de la
+  préfecture. En plus des règles communes (majuscules, accents, espaces, tirets, apostrophes), l'article du
+  début peut être omis (« Rochelle », « Mans »), « St » vaut « Saint » et, pour le Val-d'Oise, « Cergy » et
+  « Cergy-Pontoise » valent Pontoise. **Fautes de frappe légères tolérées**, comme dans Anotehomy Quizz :
+  aucune pour un nom de 4 lettres au plus (Pau, Foix, Laon), une jusqu'à 7 lettres, deux jusqu'à 12, trois
+  au-delà ; deux lettres inversées comptent pour une faute (« Motnauban », « Vanes », « clermont feran »). La
+  réponse doit rester plus proche de la bonne préfecture que de toute autre : « Rennes » n'est pas une faute
+  pour Vannes. Une réponse acceptée malgré une faute compte comme juste ; le message le signale.
+- **Indice** (option « Indice : département ») : le département et son numéro, **sous la question**
+  (« 💡 Meurthe-et-Moselle (54) »), en ciblage comme en nommage, et affiché pendant toute la question.
+- Les messages donnent le département entre parenthèses (« ✅ C'est bien Nancy (Meurthe-et-Moselle) »).
+- **Records et statistiques** à part, sous « Les préfectures » (records, classements, historique, zones à
+  revoir avec le nom de la préfecture).
+- **Positions** : la mairie de chaque préfecture (geo.api.gouv.fr, Licence Ouverte), projetée exactement comme
+  la carte (`data/france/points-prefectures.js`). Le tracé simplifié des côtes et des limites laissait
+  quelques préfectures sur le bord ou juste dehors (Ajaccio, Cayenne, Mâcon, Avignon…) : elles sont
+  décalées d'un cheveu vers l'intérieur (1,3 unité de carte au plus, environ 1 km). La préfecture du
+  Val-d'Oise est placée à Pontoise. Pour régénérer le fichier (autre préfecture, autre carte) :
+  `python outils/placer-prefectures.py <dossier-cache>` (il faut une connexion Internet ; les noms viennent
+  de `data/france/infos-departements.js`).
+- Dans `js/core.js`, ces points sont l'option `points` d'une catégorie (avec `nomZone`, `detail`,
+  `indiceDessous`, `tolerance` et `alias` : voir le contrat d'une catégorie en tête du fichier).
 
 ## Le monde et ses pays
 
@@ -410,6 +455,8 @@ Jeu de la catégorie « La France et sa géographie », après le Morpion. Code 
   préfectures n'est pas affichée) ou **préfectures** seules (les noms des départements sont écrits
   d'avance, en gris ; indices et compteur seulement pour les préfectures). Taper un nom de ce qui n'est
   pas à deviner donne un message, sans pénalité.
+- **Sur téléphone**, l'écran des options défile : le périmètre d'abord, puis les options et « Lancer la
+  partie » ; pendant la partie, la légende de la carte passe en haut à gauche.
 - **Périmètre** : **toute la France** (101 départements) **ou une seule région** ; les cinq
   départements d'Outre-Mer forment ensemble le choix « Outre-Mer ». Tous les choix sont mémorisés.
 - **La liste** : une ligne par département, en trois colonnes **Code (Région) | Département |
@@ -563,6 +610,10 @@ Si la carte est déjà dans le menu, grisée (`capitales`), il suffit d'utiliser
 le même `id` : elle s'active toute seule. Le nouveau quiz a automatiquement le nommage, le mode record et
 les statistiques ; ses périmètres de record sont « tout » (nommé par `nomTout`) et chacun de ses `groupes`.
 
+Pour montrer un quiz **à côté d'un autre**, sur le même écran de choix (comme les préfectures à côté des
+départements) : pas de carte dans le menu pour lui, et `colonneDroite: '<id du quiz>'` dans la catégorie de
+gauche. Chargez son fichier après celui de la catégorie de gauche s'il en reprend des réglages.
+
 ## Apprendre les fleuves et océans de France
 
 France métropolitaine uniquement. La carte montre les départements en fond, les pays voisins et :
@@ -643,7 +694,8 @@ Pour régénérer les encadrés (par exemple pour changer leur position) : modif
 Carte de France : contours IGN Admin Express (édition 2018) et INSEE, via
 [gregoiredavid/france-geojson](https://github.com/gregoiredavid/france-geojson),
 sous Licence Ouverte (Etalab). Ce crédit est aussi indiqué dans le fichier de la carte
-et affiché dans le jeu.
+et affiché dans le jeu. Position des préfectures : mairies, d'après [geo.api.gouv.fr](https://geo.api.gouv.fr)
+(Licence Ouverte, Etalab), crédit affiché sur l'écran de choix.
 
 Cartes du monde : [Natural Earth](https://www.naturalearthdata.com) (domaine public). Population des pays :
 Banque mondiale (CC BY 4.0). Superficies : [mledoze/countries](https://github.com/mledoze/countries) (ODbL).
@@ -657,6 +709,7 @@ page d'accueil.
 
 | Version | Date | Changements |
 |---|---|---|
+| 2.2.0 | 02/11/2026 | **Les préfectures** : la colonne « Préfectures » de « Les départements et leurs préfectures » devient un quiz, avec les mêmes réglages que les départements (ciblage ou nommage, record, au hasard ou par régions, Outre-Mer, ordre INSEE, rattrapage). Un point sur chaque préfecture (mairie, d'après geo.api.gouv.fr) ; en nommage, fautes de frappe légères tolérées (comme Anotehomy Quizz), article facultatif, « St » = « Saint », « Cergy » pour Pontoise ; indice « département (numéro) » sous la question. Records et statistiques à part. Sur l'écran de choix, chaque colonne a ses propres réglages ; sur téléphone, l'une est dépliée, l'autre réduite à son titre (« Afficher »). Carte du menu : « Placer et deviner les départements français et leurs préfectures sur une carte. » Mode record : « Vous » au lieu de votre nom quand vous êtes le meilleur de tous les joueurs. La Liste des Départements sur téléphone : l'écran des options (où « Lancer la partie » était caché) défile, et la légende de la carte ne cache plus l'Outre-Mer. |
 | 2.1.0 | 29/10/2026 | Le Écran de choix des quiz refait, sans défilement : interrupteur « Mode record » mémorisé, cartes Ciblage / Nommage, nombre de questions avec − / + et raccourcis, mini-carte cliquable des régions (et du périmètre du record), options en interrupteurs ; pour les départements, colonne « Préfectures » en structure seulement. Le Grand Chemin : bouton « Paramètres » (panneau qui s'ouvre vers le haut) avec la longueur du chemin (de 3 à 12 sauts, jusqu'à 15 avec des détours), les détours (1 à 5 étapes imposées, dans l'ordre, sans repasser par un même département ; 2 à 5 sauts entre deux arrêts, tirés au hasard) et les indications (Libre, Aide, Pas à pas : dans l'ordre, sans détour, sinon le département est en rouge) ; textes justifiés. Menu : « Les Départements » devient « Les départements et leurs préfectures » (fusion avec « Les Préfectures », titre seulement), « Les Régions » retirée, chapitre « Records et statistiques » retiré (les statistiques restent dans le menu du compte). |
 | 2.0.0 | 28/10/2026 | Refonte « Atlas en relief » : thème sombre, polices locales, menu en chapitres avec une carte en relief par chapitre (régions, monde, fleuves, votre réussite), menu du compte déroulant sur le modèle du menu « Jeux », partie avec parcours, compteurs, série et étiquette « +1 ». |
 | 1.x | avant le 28/10/2026 | Versions non numérotées : GéoQuiz, puis GéoNohyne Quizz (menu en carrousel, thème clair / sombre). |

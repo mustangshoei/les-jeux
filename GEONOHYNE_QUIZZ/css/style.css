@@ -556,12 +556,11 @@ button.carte:hover .carte-go svg { transform: translateX(3px); }
 }
 .checkbox-row input { width: 1.25rem; height: 1.25rem; accent-color: var(--coral); }
 .checkbox-row + .checkbox-row { margin-top: 1rem; }
-#opt-extras-wrap + .count-picker { margin-top: 1.25rem; }
 
 /* Choix du nombre de questions (curseur + champ numérique) */
 .count-picker { margin-top: 2rem; }
 .count-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-weight: 700; }
-#count-input, #codage-nombre {
+.nombre__champ, #codage-nombre {
   width: 5.5rem;
   padding: .4rem .6rem;
   border: 1px solid var(--line-2);
@@ -572,8 +571,8 @@ button.carte:hover .carte-go svg { transform: translateX(3px); }
   text-align: center;
   color: var(--coral-txt);
 }
-#count-input:focus, #codage-nombre:focus { outline: 0; border-color: var(--coral); box-shadow: var(--anneau); }
-#count-range, .codage-curseur { display: block; width: 100%; margin: 1rem 0 .25rem; accent-color: var(--coral); }
+.nombre__champ:focus, #codage-nombre:focus { outline: 0; border-color: var(--coral); box-shadow: var(--anneau); }
+.nombre__glissiere, .codage-curseur { display: block; width: 100%; margin: 1rem 0 .25rem; accent-color: var(--coral); }
 .count-scale { display: flex; justify-content: space-between; font: 500 .72rem var(--mono); color: var(--muted); }
 .btn-start { display: block; width: 100%; margin-top: 2rem; padding: .9rem 1rem; font-size: 1.05rem; }
 
@@ -629,7 +628,6 @@ button.carte:hover .carte-go svg { transform: translateX(3px); }
 .setup-choix { display: flex; flex-direction: column; gap: .6rem; margin-top: 1.75rem; }
 .setup-choix .mode-switch { margin-top: 0; }
 .setup-aide { font-size: .88rem; color: var(--ink-2); }
-#partie-record .groupes { margin-top: 1.5rem; }
 .record-scores { display: grid; gap: .5rem; margin-top: 1.25rem; }
 .record-ligne {
   display: flex;
@@ -1319,6 +1317,18 @@ button.carte:hover .carte-go svg { transform: translateX(3px); }
 .legende-points { display: none !important; }
 body[data-points="1"] .legende-points { display: inline-flex !important; }
 
+/* Points des zones (def.points : la préfecture de chaque département), au-dessus des zones : un rond clair cerclé
+   de sombre, de taille fixe à l'écran (core.js). Dès que sa zone n'est plus au repos (demandée, trouvée, ratée…),
+   il passe en sombre cerclé de clair : il reste visible sur le sable, la menthe et le corail. */
+.zone--repere .repere-clic { fill: transparent; stroke: none; }
+.zone--repere .repere-rond { fill: var(--ink); stroke: var(--bg); stroke-width: 1.5; vector-effect: non-scaling-stroke; transition: fill .15s ease; }
+.zone--repere[data-state="idle"]:hover .repere-rond { fill: var(--coral); }
+.zone--repere.hors-quiz[data-state="idle"]:hover .repere-rond { fill: var(--ink); }
+.zone--repere:not([data-state="idle"]) .repere-rond { fill: var(--bg); stroke: var(--ink); }
+.dot--repere { border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--bg) inset; }
+.legende-reperes { display: none !important; }
+body[data-reperes="1"] .legende-reperes { display: inline-flex !important; }
+
 /* Décor : fond d'océan (contour de la projection), territoires non cliquables, limite disputée */
 .decor-ocean { fill: #0e3a4a; stroke: none; pointer-events: none; }
 .decor-territoire {
@@ -1863,6 +1873,8 @@ body[data-points="1"] .legende-points { display: inline-flex !important; }
   .liste-zone > .liste-tableau { flex: 0 1 auto; }
   .liste-zone.avec-carte > .liste-tableau { flex: 1 1 0; }
   .liste-zone.avec-carte .liste-carte { flex: 0 0 34vh; flex-basis: 34dvh; }
+  /* la légende en haut à gauche, sur l'Atlantique, en colonne : en bas, elle cachait les encadrés de l'Outre-Mer */
+  .liste-legende { top: 8px; bottom: auto; left: 8px; flex-direction: column; }
 }
 
 /* ==========================================================================
@@ -2463,7 +2475,7 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 }
 .nombre__pas:hover { border-color: var(--coral); background: var(--coral-doux); }
 .nombre__valeur { display: flex; align-items: baseline; gap: .3rem; }
-.nombre__valeur #count-input {
+.nombre__valeur .nombre__champ {
   width: 3.4ch;
   padding: 0;
   border: 0;
@@ -2476,9 +2488,9 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
   -moz-appearance: textfield;
   appearance: textfield;
 }
-.nombre__valeur #count-input::-webkit-inner-spin-button,
-.nombre__valeur #count-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-.nombre__valeur #count-input:focus { box-shadow: none; border-bottom-color: var(--coral); }
+.nombre__valeur .nombre__champ::-webkit-inner-spin-button,
+.nombre__valeur .nombre__champ::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.nombre__valeur .nombre__champ:focus { box-shadow: none; border-bottom-color: var(--coral); }
 .nombre__valeur span { font-weight: 600; color: var(--ink-2); }
 .nombre__raccourcis { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; }
 .nombre__raccourcis button {
@@ -2495,7 +2507,7 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .nombre__raccourcis button.is-active { border-color: var(--coral); background: var(--coral); color: #0b2530; }
 .nombre__raccourcis button[hidden] { display: none; }
 .nombre__curseur { display: flex; align-items: center; gap: .7rem; padding: 0 clamp(0rem, 2vw, 1.5rem); font: 500 .72rem var(--mono); color: var(--muted); }
-.nombre__curseur #count-range { flex: 1; width: auto; margin: 0; }
+.nombre__curseur .nombre__glissiere { flex: 1; width: auto; margin: 0; }
 .nombre .interrupteur { justify-content: center; margin-top: clamp(0rem, 1vh, .6rem); }
 
 /* Par groupes et périmètre du record : la mini-carte (cliquable) à gauche, la liste à droite */
@@ -2563,38 +2575,25 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
 .mini-zone--dessous.is-survol { fill: #3a9cbf; }
 .mini-zone--ligne { stroke: #3f7f93; stroke-width: 1.1; }
 .mini-zone--ligne.is-choisi { stroke: var(--coral); stroke-width: 1.5; }
-#partie-record .record-scores { flex: none; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0; gap: .4rem; }
-#partie-record .record-ligne { padding: .35rem .65rem; }
-#partie-record .record-ligne span { flex-basis: 100%; font-size: .78rem; }
+.setup-record .record-scores { flex: none; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0; gap: .4rem; }
+.setup-record .record-ligne { padding: .35rem .65rem; }
+.setup-record .record-ligne span { flex-basis: 100%; font-size: .78rem; }
 
-/* Colonne « Bientôt » (préfectures) : la structure, grisée */
-.setup-badge {
-  padding: 4px 10px;
-  border: 1px solid rgba(242, 197, 107, .5);
-  border-radius: 999px;
-  font: 500 .66rem/1.2 var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--sand);
-}
-.setup-col--bientot { border-style: dashed; background: rgba(8, 28, 36, .4); box-shadow: none; }
-.setup-col--bientot > :not(.setup-col__tete) { opacity: .55; }
-.setup-col--bientot button:disabled { cursor: not-allowed; }
-.setup-vide {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+/* Téléphone (voir plus bas) : une colonne réduite à son titre se déplie avec ce bouton ; caché sinon */
+.setup-col__deplier {
+  display: none;
   align-items: center;
-  justify-content: center;
-  gap: .4rem;
-  border: 1px dashed var(--line-2);
-  border-radius: 12px;
-  font-size: .85rem;
+  gap: .3rem;
+  padding: .3rem .55rem .3rem .75rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--champ);
   color: var(--ink-2);
-  text-align: center;
+  font-size: .82rem;
+  font-weight: 600;
 }
-.setup-vide span { font-size: 1.8rem; }
+.setup-col__deplier svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.setup-col__deplier:hover { border-color: var(--coral); color: var(--ink); }
 
 /* Fenêtre basse : les cartes de choix perdent leur phrase, l'en-tête se resserre */
 @media (max-height: 700px) {
@@ -2603,20 +2602,34 @@ details.stats-bloc summary { padding: .3rem 0; font-size: 1.05rem; font-weight: 
   .choix-carte__icone { grid-row: auto; }
 }
 
-/* Écran étroit (téléphone) : une seule colonne ; la colonne des préfectures se réduit à son titre */
+/* Écran étroit (téléphone) : une seule colonne ; avec deux colonnes (départements et préfectures), l'une est
+   dépliée, l'autre réduite à son titre et à son bouton « Afficher » (js/core.js : deplier) */
 @media (max-width: 820px) {
   .setup { padding-top: 68px; }
   .setup-colonnes--deux { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
-  .setup-col--droite > :not(.setup-col__tete) { display: none; }
-  .setup-col--droite { padding-block: .55rem; }
+  .setup-colonnes--deux:has(> .setup-col:first-child.is-repliee) { grid-template-rows: auto minmax(0, 1fr); }
+  .setup-col.is-repliee { padding-block: .55rem; cursor: pointer; }
+  .setup-col.is-repliee > :not(.setup-col__tete), .setup-col.is-repliee .interrupteur--record { display: none; }
+  .setup-col.is-repliee .setup-col__deplier { display: inline-flex; }
   .groupes-choix { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
   .groupes-choix .groupes-liste { grid-template-columns: minmax(0, 1fr); }
-  #partie-record .record-scores { grid-template-columns: minmax(0, 1fr); }
+  .setup-record .record-scores { grid-template-columns: minmax(0, 1fr); }
   .choix-carte { padding: .45rem .6rem; }
   .choix-carte__desc { font-size: .72rem; }
   .setup-bloc__tete .setup-etiquette { display: none; }
   .setup-bloc__tete .onglets { flex: 1; }
   .setup-bloc__tete .onglet-btn { flex: 1; }
+
+  /* La Liste des Départements : ses deux colonnes ne tiennent pas dans la hauteur d'un téléphone (la seconde
+     écrasait la première, bouton « Lancer » compris). Ici, l'écran défile : le périmètre d'abord (mini-carte
+     au-dessus, régions sur deux colonnes), puis les options et « Lancer la partie », en bas. */
+  .setup.liste-options { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; }
+  .liste-options .setup-colonnes--deux { grid-template-rows: none; }
+  .liste-options .setup-col { overflow: visible; }
+  .liste-options .setup-col + .setup-col { order: -1; }
+  .liste-options .groupes-choix { grid-template-columns: minmax(0, 1fr); }
+  .liste-options .groupes-choix__carte { height: clamp(150px, 26vh, 220px); }
+  .liste-options .groupes-choix .groupes-liste { grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) {
   .interrupteur__piste, .interrupteur__piste::after, .mini-zone, .choix-carte { transition: none; }
