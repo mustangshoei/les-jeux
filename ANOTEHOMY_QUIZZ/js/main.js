@@ -9,8 +9,8 @@
   const { $ } = AQ.util;
   const EN = AQ.engine, G = AQ.game;
 
-  /* un écran sans 3D (menu, configuration, résultats, statistiques) est-il ouvert ? */
-  const overlayOpen = () => !$('home').hidden || !$('setup').hidden || !$('results').hidden;
+  /* un écran sans 3D (menu, configuration, résultats, statistiques, jeu des termes médicaux) est-il ouvert ? */
+  const overlayOpen = () => !$('home').hidden || !$('setup').hidden || !$('results').hidden || G.termsOpen();
 
   function initKeyboard() {
     const views = { 1: 'A', 2: 'P', 3: 'LD', 4: 'LG' };
@@ -63,6 +63,7 @@
     /* compte et statistiques (js/account/) : une panne ici ne doit jamais empêcher de jouer */
     try { if (AQ.account.init) AQ.account.init(); } catch (err) { console.error(err); }
     G.initSetup();
+    G.initTerms();                     /* jeu des termes médicaux (sans 3D, ses propres écrans) */
     G.initAutocomplete();
     G.initPlay();
     G.initResults();

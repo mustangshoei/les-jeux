@@ -1,0 +1,107 @@
+/* ==========================================================================
+   Anotehomy Quizz - terms.css
+   Jeu « Les termes médicaux » (sans 3D) : la configuration reprend celle des autres jeux (css/setup.css) ;
+   ici, la partie (barre du haut, définition au centre de l'écran, saisie, retour immédiat) et l'écran des
+   résultats (contenu : css/results.css).
+   ========================================================================== */
+
+/* ---------- Configuration ---------- */
+.termes-zex { display: block; margin-top: 2px; font: 500 .7rem/1.2 var(--mono); color: var(--muted); }
+/* mode annoncé (QCM) : carte grisée, non cliquable */
+.choix-carte.is-soon { opacity: .5; cursor: not-allowed; }
+.choix-carte.is-soon:hover { border-color: var(--line-2); }
+.termes-bientot { margin-left: .4rem; padding: 1px 7px; vertical-align: 1px; font-size: .56rem; }
+
+/* ---------- Partie : écran plein, la définition au centre ---------- */
+.ecran-termes {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.termes-barre {
+  flex: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(10px, 2vw, 28px);
+  padding: 12px clamp(12px, 2.5vw, 32px);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(36, 17, 30, .94), rgba(19, 10, 17, .88));
+}
+.termes-progres { justify-self: center; width: 100%; max-width: 560px; }
+.termes-progres .bar { margin: 8px 0 0; }
+.termes-scores { display: flex; align-items: center; gap: 8px; }
+.termes-scores .stat { min-width: 4.4rem; padding: 4px 8px; }
+.termes-scores .stat b { font-size: 1.1rem; }
+.termes-scores .timer { margin-left: 4px; }
+
+.termes-centre {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vh, 48px) 16px;
+}
+.termes-carte {
+  padding: clamp(20px, 4vh, 36px) clamp(18px, 3vw, 36px);
+  border: 1px solid rgba(255, 196, 214, .2);
+  border-radius: 22px;
+  background: var(--verre), rgba(15, 8, 14, .6);
+  box-shadow: var(--verre-ombre), var(--shadow);
+  text-align: center;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.termes-qlabel { margin-bottom: 10px; }
+.termes-sens {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.4vw + 2.2vh, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.termes-indices { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 16px 0 22px; }
+.termes-indices .chip { letter-spacing: .08em; }
+.termes-form { text-align: left; }
+.termes-answer { padding: 14px 16px; font-size: 1.15rem; }
+.termes-form .btn-row { margin-top: 12px; }
+.termes-aide { margin: 12px 0 0; font-size: .78rem; color: var(--muted); text-align: center; }
+
+/* ---------- Retour immédiat : la fiche du morphème et ses exemples ---------- */
+.termes-feedback { padding: 16px 18px; }
+.termes-donne { margin: 0 0 2px; }
+.termes-fiche { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 4px; }
+.termes-forme { font-size: 1.4rem; font-weight: 800; color: var(--ink); }
+.termes-meta { font-size: .86rem; color: var(--muted); }
+.termes-ex { margin: 8px 0 0; padding-left: 1.15rem; font-size: .9rem; color: var(--ink-2); }
+.termes-ex li + li { margin-top: 2px; }
+
+/* ---------- Résultats ---------- */
+.ecran-termes-res { overflow-y: auto; }
+.termes-res { display: flex; min-height: 100%; padding: max(5vh, 70px) 16px 5vh; }
+
+/* ---------- Écrans étroits : la progression passe sous le bouton et les compteurs ---------- */
+@media (max-width: 720px) {
+  .termes-barre { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 10px; padding: 10px 12px; }
+  .termes-progres { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  .termes-scores { justify-self: end; }
+}
+/* téléphone : compteurs sans leur nom (leur couleur suffit : justes en menthe, fausses en rouge) */
+@media (max-width: 520px) {
+  #tQuit { padding: .5rem .75rem; font-size: .85rem; white-space: normal; text-align: left; }
+  .termes-scores { gap: 5px; }
+  .termes-scores .stat { min-width: 2.6rem; padding: 3px 6px; }
+  .termes-scores .stat span { display: none; }
+  .termes-scores .timer { margin-left: 2px; font-size: .82rem; }
+  .termes-carte { padding: 18px 14px; }
+}

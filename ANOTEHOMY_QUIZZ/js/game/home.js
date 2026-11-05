@@ -210,6 +210,7 @@
     EN.clearMarks(); EN.setHoverEnabled(false); EN.closeBone(); EN.deactivateMuscles(); EN.deactivateSystems(); EN.showAll();
     NS.hideNotice(); NS.hideTip(); NS.setPrompt(null); NS.updateDock();
     ['qA', 'qB', 'feedback', 'reviewBox', 'setup', 'results'].forEach(id => { $(id).hidden = true; });
+    Object.keys(NS.SCREENS).forEach(id => NS.SCREENS[id].close());   /* jeux sans 3D (js/game/state.js) */
     $('app').className = 'mode-a';
     EN.pause();                        /* aucune 3D ne tourne derrière le menu */
     $('home').hidden = false;
@@ -227,11 +228,14 @@
     $('setupTitle').textContent = g.name;
     $('setupSub').textContent = g.tagline;
     const t = TINTS[g.tint] || TINTS.rose;
+    $('home').hidden = true;
+    /* jeu sans 3D : il ouvre ses propres écrans */
+    const ecran = NS.SCREENS[g.id];
+    if (ecran) { ecran.open(g, { html: picto(g.icon), tint: t }); return; }
     const logo = $('setupLogo');
     logo.innerHTML = picto(g.icon);
     logo.style.setProperty('--teinte', t[0]);
     logo.style.setProperty('--teinte-ombre', t[1]);
-    $('home').hidden = true;
     NS.showSetup();
   }
 

@@ -28,5 +28,17 @@
     return a;
   }
 
-  Object.assign(NS, { $, f, lerp, clamp, ease, esc, fmt, pickOne, shuffle });
+  /* ---------- Normalisation du texte (comparaisons, recherche) ----------
+     Plages Unicode construites en ASCII : diacritiques combinants, ligatures œ et æ (que la
+     décomposition NFD ne sépare pas : « œil » doit valoir « oeil »). */
+  const RE_DIACRITICS = new RegExp('[' + String.fromCharCode(0x300) + '-' + String.fromCharCode(0x36f) + ']', 'g');
+  const RE_OE = new RegExp(String.fromCharCode(0x153), 'g'), RE_AE = new RegExp(String.fromCharCode(0xe6), 'g');
+
+  /* minuscules, sans accents ni ligatures : « Œil » -> « oeil », « Hépat(o)- » -> « hepat(o)- » */
+  const plier = s => String(s).toLowerCase().normalize('NFD').replace(RE_DIACRITICS, '').replace(RE_OE, 'oe').replace(RE_AE, 'ae');
+  /* clé de recherche : pliée, puis réduite aux lettres et aux chiffres (tirets, parenthèses, espaces et
+     apostrophes disparaissent) : « hépat(o)- » -> « hepato », « -ite » -> « ite » */
+  const cle = s => plier(s).replace(/[^a-z0-9]/g, '');
+
+  Object.assign(NS, { $, f, lerp, clamp, ease, esc, fmt, pickOne, shuffle, plier, cle });
 })(AQ.util);

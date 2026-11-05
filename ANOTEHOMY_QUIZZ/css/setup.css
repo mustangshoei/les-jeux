@@ -135,7 +135,7 @@
   line-height: 1;
 }
 .nombre__pas:hover { border-color: var(--rose); background: var(--rose-doux); }
-#countNum {
+#countNum, #tCountNum {
   width: 3.2ch;
   padding: 0;
   border: 0;
@@ -150,8 +150,9 @@
   appearance: textfield;
   outline: none;
 }
-#countNum::-webkit-inner-spin-button, #countNum::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-#countNum:focus { border-bottom-color: var(--rose); }
+#countNum::-webkit-inner-spin-button, #countNum::-webkit-outer-spin-button,
+#tCountNum::-webkit-inner-spin-button, #tCountNum::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+#countNum:focus, #tCountNum:focus { border-bottom-color: var(--rose); }
 .nombre__ligne .of { flex: 1; color: var(--ink-2); font-weight: 600; font-size: .92rem; }
 .nombre__curseur input { display: block; width: 100%; margin: 0; accent-color: var(--rose); }
 .nombre__raccourcis { display: flex; flex-wrap: wrap; gap: .4rem; }

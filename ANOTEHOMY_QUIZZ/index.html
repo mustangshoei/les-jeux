@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="css/setup.css">
 <link rel="stylesheet" href="css/results.css">
 <link rel="stylesheet" href="css/account.css">
+<link rel="stylesheet" href="css/terms.css">
 <link rel="stylesheet" href="css/responsive.css">
 <!-- Police des titres, commune à tout le site : à changer dans ../COMMUN/police.css (en dernier) -->
 <link rel="stylesheet" href="../COMMUN/police.css">
@@ -46,6 +47,8 @@
 <script defer src="js/data/organs.js"></script>
 <!-- organes découpés en parties (jeu « Splanchnologie descriptive ») -->
 <script defer src="js/data/splanchnology.js"></script>
+<!-- morphèmes médicaux : préfixes, radicaux, suffixes (jeu « Les termes médicaux ») -->
+<script defer src="js/data/morphemes.js"></script>
 <!-- catalogue du menu : chapitres et cartes -->
 <script defer src="js/data/games.js"></script>
 <!-- modèle 3D généré par tools/build-model.ps1 (BodyParts3D, CC BY 4.0) : simples données, décodées seulement
@@ -88,6 +91,10 @@
 <script defer src="js/game/play.js"></script>
 <script defer src="js/game/results.js"></script>
 <script defer src="js/game/autocomplete.js"></script>
+<!-- jeu « Les termes médicaux » (sans 3D) : suggestions de saisie, écrans communs aux modes, mode Devinette -->
+<script defer src="js/game/terms-suggest.js"></script>
+<script defer src="js/game/terms-game.js"></script>
+<script defer src="js/game/terms-devinette.js"></script>
 <script defer src="js/game/home.js"></script>
 <!-- compte du joueur (comptes communs à tous les jeux) et statistiques -->
 <script defer src="js/account/profile.js"></script>
@@ -497,6 +504,103 @@
 <!-- contenu généré par js/game/results.js -->
 <div class="overlay" id="results" hidden>
   <div class="card" id="resultsCard"></div>
+</div>
+
+<!-- ===================== JEU « LES TERMES MÉDICAUX » (sans 3D) =====================
+     Trois écrans propres au jeu : configuration, partie, résultats (js/game/terms-game.js, css/terms.css).
+     La question elle-même est construite par le mode choisi (Devinette : js/game/terms-devinette.js). -->
+<div class="overlay ecran ecran-setup" id="termsSetup" hidden>
+  <div class="setup">
+    <header class="setup-tete">
+      <button type="button" class="btn-retour" data-nav="cat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
+      <span class="setup-logo" id="tSetupLogo" aria-hidden="true"></span>
+      <div class="setup-titres">
+        <h2 id="tSetupTitle" class="setup-titre">Les termes médicaux</h2>
+        <p id="tSetupSub" class="setup-sous-titre"></p>
+      </div>
+    </header>
+
+    <div class="setup-colonnes">
+      <!-- ===== Colonne gauche : ce qu'il faut trouver ===== -->
+      <section class="setup-col" aria-labelledby="tSetupQuoi">
+        <div class="setup-col__tete"><h3 id="tSetupQuoi" class="setup-col__nom">À trouver</h3></div>
+        <div class="setup-bloc setup-bloc--souple">
+          <div class="setup-bloc__tete">
+            <span class="setup-etiquette">Types de morphèmes</span>
+            <span><button type="button" class="link" id="tAllTypes">Tout</button><button type="button" class="link" id="tNoTypes">Aucun</button></span>
+          </div>
+          <!-- cases générées par js/game/terms-game.js à partir de js/data/morphemes.js -->
+          <div class="zones termes-types" id="tTypes"></div>
+        </div>
+        <div class="setup-bloc nombre">
+          <span class="setup-etiquette">Nombre de morphèmes à trouver</span>
+          <div class="nombre__ligne">
+            <button type="button" class="nombre__pas" data-tpas="-1" aria-label="Une question de moins">−</button>
+            <input type="number" id="tCountNum" min="1" value="15" inputmode="numeric" aria-label="Nombre de questions">
+            <span class="of" id="tCountOf">sur 0 morphèmes</span>
+            <button type="button" class="nombre__pas" data-tpas="1" aria-label="Une question de plus">+</button>
+          </div>
+          <div class="nombre__curseur"><input type="range" id="tCountRange" min="1" value="15" aria-label="Nombre de questions (curseur)"></div>
+          <div class="nombre__raccourcis" id="tCountPresets" role="group" aria-label="Nombres rapides">
+            <button type="button" data-nombre="5">5</button>
+            <button type="button" data-nombre="10">10</button>
+            <button type="button" data-nombre="20">20</button>
+            <button type="button" data-nombre="30">30</button>
+            <button type="button" data-nombre="max">Tous · <span id="tCountAll">0</span></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Colonne droite : mode de jeu, options, lancement ===== -->
+      <section class="setup-col" aria-labelledby="tSetupComment">
+        <div class="setup-col__tete"><h3 id="tSetupComment" class="setup-col__nom">Comment jouer</h3></div>
+        <!-- cartes générées par js/game/terms-game.js (TERM_MODES) : Devinette, QCM (bientôt) -->
+        <div class="choix-cartes" id="tModes" role="radiogroup" aria-label="Mode de jeu"></div>
+        <div class="setup-bloc">
+          <span class="setup-etiquette">Options</span>
+          <div class="options">
+            <label class="interrupteur"><input type="checkbox" id="tOptAuto" role="switch" checked><span class="interrupteur__piste" aria-hidden="true"></span><span class="interrupteur__texte">Suggestions de saisie (dès 2 lettres)</span></label>
+            <label class="interrupteur"><input type="checkbox" id="tOptTol" role="switch" checked><span class="interrupteur__piste" aria-hidden="true"></span><span class="interrupteur__texte">Tolérance aux fautes de frappe mineures</span></label>
+          </div>
+        </div>
+        <p class="ta2"><b>Les briques des mots médicaux.</b> Chaque définition correspond à un préfixe, un radical ou
+          un suffixe (« hépat(o)- » pour « Foie »). Accents, majuscules, tirets et parenthèses ne comptent pas :
+          « hepato » vaut « hépat(o)- ». Après chaque réponse, des exemples de mots réels.</p>
+        <div class="setup-depart">
+          <span class="warn-txt" id="tWarn" aria-live="polite"></span>
+          <button type="button" class="btn primary btn-start" id="tStart">Lancer la partie</button>
+        </div>
+      </section>
+    </div>
+    <p class="credits setup-pied">Base de morphèmes (préfixes, radicaux, suffixes, origines et exemples) rédigée pour Anotehomy Quizz.</p>
+  </div>
+</div>
+
+<!-- partie : la définition au centre de l'écran ; pas un « overlay » : les boutons Compte et Jeux restent cachés -->
+<div class="ecran ecran-termes" id="termsPlay" hidden>
+  <header class="termes-barre">
+    <button type="button" class="btn ghost" id="tQuit">Terminer la partie</button>
+    <div class="termes-progres">
+      <div class="prog-row"><span id="tCounter">Question 1 / 1</span><span class="chip" id="tModeChip">Devinette</span></div>
+      <div class="bar"><div id="tBar"></div></div>
+    </div>
+    <div class="termes-scores">
+      <div class="stat"><b id="tScore">0</b><span>Points</span></div>
+      <div class="stat ok"><b id="tOk">0</b><span>Justes</span></div>
+      <div class="stat ko"><b id="tKo">0</b><span>Fausses</span></div>
+      <div class="timer" aria-label="Temps"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span id="tTimer">00:00</span></div>
+    </div>
+  </header>
+  <main class="termes-centre">
+    <!-- interface de question construite par le mode de jeu -->
+    <section class="termes-carte" id="tQuestion" aria-live="polite"></section>
+    <section id="tFeedback" class="feedback termes-feedback" hidden aria-live="polite"></section>
+  </main>
+</div>
+
+<!-- résultats : contenu généré par js/game/terms-game.js -->
+<div class="overlay ecran ecran-termes-res" id="termsResults" hidden>
+  <div class="termes-res"><div class="card" id="tResultsCard"></div></div>
 </div>
 
 <!-- ===================== STATISTIQUES DU JOUEUR ===================== -->

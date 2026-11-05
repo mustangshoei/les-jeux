@@ -13,6 +13,8 @@
      meta     repères en bas de la carte (ex. « 194 muscles · Nommage · Ciblage »)
      group    regroupement (GROUPS) : les jeux d'un même groupe n'ont qu'une carte dans le menu ; un clic
               ouvre une fenêtre coupée en deux, une moitié par jeu (js/game/home.js)
+   Un jeu sans 3D (« Les termes médicaux ») déclare ses propres écrans dans AQ.game.SCREENS
+   (js/game/state.js) : le menu les ouvre à la place de la configuration commune.
    ========================================================================== */
 (function (NS) {
   'use strict';
@@ -82,9 +84,12 @@
     { id: 'pathologies', chapter: 'langue', kind: 'jeu', status: 'soon', icon: 'pathologie',
       name: 'Les pathologies',
       tagline: 'Reconnaître les maladies et leurs termes.' },
-    { id: 'termes-medicaux', chapter: 'langue', kind: 'jeu', status: 'soon', icon: 'termes',
+    /* jeu sans 3D, avec ses propres écrans (js/game/terms-game.js) */
+    { id: 'termes-medicaux', chapter: 'langue', kind: 'jeu', status: 'ready', icon: 'termes', tint: 'lavande',
       name: 'Les termes médicaux',
-      tagline: 'Le vocabulaire du milieu médical : racines, examens, actes, spécialités et traitements.' },
+      tagline: 'Les briques du vocabulaire médical : préfixes, radicaux et suffixes.',
+      desc: 'Une définition s\'affiche : écrivez le morphème qui lui correspond (hépat(o)- pour « Foie », -ite pour « Inflammation »).',
+      meta: (NS.MORPHEMES || []).length + ' morphèmes · Devinette' },
 
     /* ---------- 3. Apprendre la Vie ---------- */
     { id: 'corps-humain', chapter: 'vie', kind: 'module', status: 'soon', icon: 'corps',

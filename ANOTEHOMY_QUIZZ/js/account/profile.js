@@ -112,13 +112,15 @@
     return names(st.regions, D.REGION) + (st.precise ? ' - numéro et côté exigés' : '');
   }
 
-  /* enregistre la partie qui vient de se terminer (appele par js/game/results.js) */
-  function saveGame(aborted) {
-    const G = AQ.game, s = G.session, st = G.settings, n = s.log.length;
+  /* enregistre la partie qui vient de se terminer (appele par js/game/results.js).
+     Un jeu sans 3D, qui a sa propre session (js/game/terms-game.js), la passe dans src :
+     { game, mode, log, ok, points, elapsed, total, detail } (log : [{ item: { name }, ok }]) */
+  function saveGame(aborted, src) {
+    const G = AQ.game, s = src || G.session, st = G.settings, n = s.log.length;
     if (!n || !s.game) return;
-    const p = current(), time = Math.round(s.elapsed);
-    const e = { date: new Date().toISOString(), game: s.game.id, name: s.game.name, mode: st.mode, ok: s.ok, n,
-      total: s.queue.length, points: s.points, time, aborted: !!aborted && n < s.queue.length, detail: detailOf(s.game.id, s, st) };
+    const p = current(), time = Math.round(s.elapsed), total = src ? src.total : s.queue.length;
+    const e = { date: new Date().toISOString(), game: s.game.id, name: s.game.name, mode: src ? src.mode : st.mode, ok: s.ok, n,
+      total, points: s.points, time, aborted: !!aborted && n < total, detail: src ? src.detail || '' : detailOf(s.game.id, s, st) };
     p.history.unshift(e);
     if (p.history.length > MAX_HISTORY) p.history.length = MAX_HISTORY;
 

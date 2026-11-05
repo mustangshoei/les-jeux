@@ -42,7 +42,14 @@
   /* adaptateurs des jeux (js/game/skeleton-game.js, osteo-game.js, muscle-game.js, vessel-game.js,
      organ-game.js, splanchno-game.js), par identifiant de jeu */
   const ADAPTERS = {};
-  const adapter = () => ADAPTERS[session.game ? session.game.id : 'os-squelette'];
+  /* un jeu sans adaptateur (jeu sans 3D, SCREENS ci-dessous) : celui des os du squelette, par défaut, pour
+     les commandes communes appelées en revenant au menu (barre du bas, os étudié) */
+  const adapter = () => ADAPTERS[session.game && ADAPTERS[session.game.id] ? session.game.id : 'os-squelette'];
+
+  /* jeux SANS 3D, qui ont leurs propres écrans (configuration, partie, résultats), par identifiant de jeu :
+     { open(jeu, logo), close() }. Le menu les ouvre à la place de la configuration commune et les ferme en
+     revenant au menu (js/game/home.js). Ex. : « Les termes médicaux » (js/game/terms-game.js). */
+  const SCREENS = {};
 
   /* os jouables pour les zones cochées (présents dans le modèle 3D). Avant la première partie, la 3D
      n'est pas démarrée : la liste des os du modèle est lue dans l'en-tête de js/data/skeleton-model.js,
@@ -75,5 +82,5 @@
     p.hidden = false;
   }
 
-  Object.assign(NS, { settings, session, ADAPTERS, adapter, available, pool, inGame, curQ, instDesc, showNotice, hideNotice, setPrompt });
+  Object.assign(NS, { settings, session, ADAPTERS, adapter, SCREENS, available, pool, inGame, curQ, instDesc, showNotice, hideNotice, setPrompt });
 })(AQ.game);

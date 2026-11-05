@@ -67,9 +67,9 @@
         { id: 'morpion-monde', nom: 'Le morpion du monde', groupe: 'Monde', variantes: DUEL, bientot: true },
         { id: 'grand-chemin-monde', nom: 'Le Grand Chemin du monde', groupe: 'Monde', bientot: true }
       ] },
-    { id: 'anotehomy', dossier: 'ANOTEHOMY_QUIZZ', nom: 'Anotehomy Quizz', icone: '🦴', version: '2.3.0',
+    { id: 'anotehomy', dossier: 'ANOTEHOMY_QUIZZ', nom: 'Anotehomy Quizz', icone: '🦴', version: '2.4.0',
       couleur: '#3a1529', accent: '#ff5c8a',
-      description: 'Anatomie humaine en 3D : os, ostéologie descriptive, muscles, vaisseaux sanguins, organes, splanchnologie descriptive.',
+      description: 'Anatomie humaine en 3D : os, ostéologie descriptive, muscles, vaisseaux sanguins, organes, splanchnologie descriptive ; termes médicaux.',
       totaux: { cle: 'totals', parties: 'played', bonnes: 'ok', questions: 'questions', temps: 'time', ms: false },
       modes: [
         { id: 'os-squelette', nom: 'Les os du squelette', groupe: 'Ostéologie des humains', variantes: NOMMAGE },
@@ -80,7 +80,7 @@
         { id: 'nerfs', nom: 'Les nerfs', groupe: 'Le corps humain', bientot: true },
         { id: 'vaisseaux', nom: 'Les vaisseaux sanguins', groupe: 'Le corps humain', variantes: NOMMAGE },
         { id: 'pathologies', nom: 'Les pathologies', groupe: 'La langue médicale', bientot: true },
-        { id: 'termes-medicaux', nom: 'Les termes médicaux', groupe: 'La langue médicale', bientot: true }
+        { id: 'termes-medicaux', nom: 'Les termes médicaux', groupe: 'La langue médicale', variantes: ['Devinette'] }
       ] },
     /* bloque : la tuile reste visible, partout, mais elle n'est plus cliquable */
     { id: 'histehory', dossier: 'HISTEHORY_QUIZZ', nom: 'Histehory Quizz', icone: '📜', version: '0.1.0', bloque: true,

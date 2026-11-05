@@ -123,6 +123,13 @@ modèles ci-dessus (fond transparent, recadrage) :
 
 La trame du fond (`img/trame.svg` : tracés cardiaques et globules) a été dessinée pour ce projet.
 
+## Morphèmes médicaux
+
+La base du jeu « Les termes médicaux » (`js/data/morphemes.js` : 751 préfixes, radicaux et suffixes, avec
+leur sens, leur origine et des exemples) a été rédigée pour ce projet. Les suffixes des médicaments
+(`-pril`, `-sartan`, `-mab`…) suivent les segments-clés des dénominations communes internationales (DCI)
+de l'Organisation mondiale de la santé.
+
 ## Polices
 
 Dans `css/polices/` (fichiers WOFF2, sous-ensembles latin et latin étendu) :

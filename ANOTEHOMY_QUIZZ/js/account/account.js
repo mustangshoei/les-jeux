@@ -20,7 +20,7 @@
   const { $, esc, fmt } = AQ.util;
   const P = NS;
 
-  const MODES = { A: 'Nommage', B: 'Ciblage' };
+  const MODES = { A: 'Nommage', B: 'Ciblage', devinette: 'Devinette', qcm: 'QCM' };
   const HISTORY_STEP = 30;               /* parties affichees par "Afficher plus" */
 
   /* vues du menu : 'login' ou 'register' (non connecte) ; connecte : formulaire ouvert
