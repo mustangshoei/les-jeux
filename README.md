@@ -159,7 +159,7 @@ du fichier) : un jeu n'appelle jamais ces routes lui-même.
 | `POST /api/moi/renommer` · `/api/moi/mdp` · `/api/moi/supprimer` · `/api/deconnexion` | gestion du compte |
 
 ## Ajouter un jeu
-
+  x²
 1. Créez son dossier à la racine, en **MAJUSCULES** (`MONJEU/`), avec son `index.html` et un `README.md`
    qui le décrit en détail. Tout ce qui lui est propre reste dans ce dossier.
 2. Ajoutez sa ligne dans `JEUX`, au début de `COMMUN/jeux.js` (identifiant, dossier, nom, icône,
