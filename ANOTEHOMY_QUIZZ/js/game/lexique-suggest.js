@@ -1,19 +1,21 @@
 /* ==========================================================================
-   Anotehomy Quizz - game/terms-suggest.js
-   SUGGESTIONS DE SAISIE (autocomplétion) du jeu « Les termes médicaux » : un composant réutilisable,
-   branché sur un champ de saisie et une liste (<ul>).
+   Anotehomy Quizz - game/lexique-suggest.js
+   SUGGESTIONS DE SAISIE (autocomplétion) des jeux de vocabulaire (mode Devinette, js/game/lexique-*.js) :
+   un composant réutilisable, branché sur un champ de saisie et une liste (<ul>).
    --------------------------------------------------------------------------
    Règles :
      - rien avant MIN caractères (2), une fois la saisie normalisée ;
      - au plus MAX suggestions (5), dans l'ordre alphabétique ;
-     - seulement les termes qui COMMENCENT par la saisie ;
+     - seulement les termes qui COMMENCENT par la saisie (keys) ; un lexique peut aussi accepter le début
+       d'un mot intérieur (motKeys : « myoc » trouve « infarctus du myocarde »), rangé après ;
      - comparaison sur les clés normalisées (AQ.util.cle) : sans accents, majuscules, tirets, parenthèses
        ni espaces. « hepa » trouve « hépat(o)- », « ite » trouve « -ite », « con » trouve « co-, con-, com- ».
    Clavier : flèches pour choisir, Tab ou Entrée pour insérer, Échap pour fermer ; ou clic.
 
    creerSuggestions({ input, list, entries, enabled, onChoose }) -> { update, hide, destroy }
-     entries   () => [{ label, keys, hint }] : label affiché et inséré (« hépat(o)- »), keys : ses clés
-               normalisées (une par forme : « a-, an- » -> ['a', 'an']), hint : petit texte à droite
+     entries   () => [{ label, keys, motKeys, hint }] : label affiché et inséré (« hépat(o)- »), keys : ses
+               clés normalisées (une par forme : « a-, an- » -> ['a', 'an']), motKeys (facultatif) : clés
+               commençant à un mot intérieur, hint : petit texte à droite
      enabled   () => booléen : suggestions actives (option de la configuration, question ouverte)
      onChoose  (entry) => appelé après l'insertion
    ========================================================================== */
@@ -24,38 +26,36 @@
   const MIN = 2, MAX = 5;
   let nId = 0;
 
-  /* Les suggestions pour la saisie q (déjà normalisée) : celles dont une clé commence par q,
-     triées par ordre alphabétique (sur la clé : « -ite » se range à « ite »), sans doublon d'affichage. */
+  /* Les suggestions pour la saisie q (déjà normalisée) : celles dont une clé commence par q, par ordre
+     alphabétique (sur la clé : « -ite » se range à « ite »), puis celles dont un mot intérieur commence par q,
+     sans doublon d'affichage. */
   function filtrer(entries, q) {
     if (q.length < MIN) return [];
-    const vus = new Set();
-    return entries.filter(e => e.keys.some(k => k.startsWith(q)))
-      .sort((a, b) => a.tri < b.tri ? -1 : a.tri > b.tri ? 1 : 0)
+    const vus = new Set(), debut = e => e.keys.some(k => k.startsWith(q));
+    return entries.filter(e => debut(e) || (e.motKeys || []).some(k => k.startsWith(q)))
+      .sort((a, b) => (debut(b) - debut(a)) || (a.tri < b.tri ? -1 : a.tri > b.tri ? 1 : 0))
       .filter(e => !vus.has(e.label) && vus.add(e.label))
       .slice(0, MAX);
   }
 
-  /* Surligne, dans le libellé, la partie qui correspond à la saisie : dans la première forme qui commence
-     par q (« co-, con-, com- » avec « com » : la 3e), en sautant ce que la normalisation retire
-     (accents gardés à l'affichage, tirets et parenthèses ignorés). */
+  /* Surligne, dans le libellé, la partie qui correspond à la saisie : à partir du premier début de mot où le
+     texte normalisé commence par q (« co-, con-, com- » avec « com » : la 3e forme ; « infarctus du
+     myocarde » avec « myoc » : le 3e mot), en sautant ce que la normalisation retire (accents gardés à
+     l'affichage, tirets, parenthèses et espaces ignorés). */
   function surligner(label, q) {
-    let debut = 0;
-    for (const forme of label.split(',')) {
-      if (cle(forme).startsWith(q)) {
-        let a = -1, b = -1, n = 0;
-        for (let k = 0; k < forme.length && n < q.length; k++) {
-          const c = cle(forme[k]);
-          if (!c) continue;
-          if (a < 0) a = k;
-          n += c.length;
-          b = k + 1;
-        }
-        a += debut; b += debut;
-        return esc(label.slice(0, a)) + '<mark>' + esc(label.slice(a, b)) + '</mark>' + esc(label.slice(b));
-      }
-      debut += forme.length + 1;
+    let plie = '';
+    const pos = [], debuts = [];
+    for (let k = 0; k < label.length; k++) {
+      const c = cle(label[k]);
+      if (!c) continue;
+      if (!k || !cle(label[k - 1])) debuts.push(plie.length);
+      for (let r = 0; r < c.length; r++) pos.push(k);
+      plie += c;
     }
-    return esc(label);
+    const i = debuts.find(d => plie.startsWith(q, d));
+    if (i === undefined) return esc(label);
+    const a = pos[i], b = pos[i + q.length - 1] + 1;
+    return esc(label.slice(0, a)) + '<mark>' + esc(label.slice(a, b)) + '</mark>' + esc(label.slice(b));
   }
 
   function creerSuggestions(opt) {

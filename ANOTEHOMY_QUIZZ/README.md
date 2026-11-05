@@ -8,7 +8,7 @@ Anotehomy Quizz fait partie du dossier des jeux (voir le [README à la racine](.
 avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif qui permet de jouer à
 plusieurs sur un réseau.
 
-**Version 2.4.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 2.5.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
@@ -47,14 +47,16 @@ js/core/                    espace de noms AQ, utilitaires
 js/data/                    données : zones du corps, catalogue des os, découpage des os, catalogues des muscles,
                             des vaisseaux et des organes, organes découpés en parties (splanchnology.js),
                             catalogue du menu (games.js), modèles 3D compressés (*-model.js, générés),
-                            morphèmes médicaux (morphemes.js, jeu des termes médicaux)
+                            pathologies (pathologies.js) et morphèmes médicaux (morphemes.js) des jeux de
+                            vocabulaire
 js/data/splanchno/          un modèle 3D par organe détaillé (splanchnologie descriptive, généré)
 js/engine/                  moteur 3D : modèle, scène, caméra, surbrillance, interactions, os isolé, muscles,
                             vaisseaux et organes (fabrique commune systems.js), organe isolé (splanchno.js)
 js/game/                    logique de jeu : menu, correction des réponses, configuration, partie, résultats,
                             révision, et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js,
                             vessel-game.js, organ-game.js, splanchno-game.js) ; jeu des termes médicaux, sans 3D
-                            (terms-game.js, terms-devinette.js, terms-suggest.js)
+                            vocabulaire, sans 3D (lexique-*.js : moteur commun, modes Devinette et QCM,
+                            suggestions, un fichier par jeu)
 js/account/profile.js       statistiques du joueur (invité ou compte commun)
 js/account/account.js       bouton de compte, menu du compte, écran des statistiques
 js/vendor/three.min.js      Three.js r158 (licence MIT)
@@ -69,8 +71,9 @@ Même construction que le menu de GéoNohyne Quizz (`js/game/home.js`, catalogue
   1. **Le corps humain** : **Ostéologie des humains** (les os du squelette, l'ostéologie descriptive),
      les muscles, les vaisseaux sanguins, **Splanchnologie des humains** (les organes, la splanchnologie
      descriptive : les parties de chaque organe, comme l'ostéologie pour les os) ; annoncés : les nerfs ;
-  2. **La langue médicale** : **les termes médicaux** (les briques du vocabulaire médical : préfixes,
-     radicaux, suffixes) ; annoncé : les pathologies ;
+  2. **La langue médicale** : **les pathologies** (reconnaître une maladie à sa description), **les termes
+     médicaux** (les briques du vocabulaire médical : préfixes,
+     radicaux, suffixes) ;
   3. **Apprendre la Vie** : annoncé : le module « Le corps humain » (explorer librement le corps et
      consulter la fiche de chaque élément).
 - À droite, la **planche du chapitre** : une image figée tirée du modèle 3D (squelette, crâne, écorché),
@@ -138,11 +141,13 @@ Code : `js/game/matcher.js`.
   modèle 3D. La vue se tourne d'elle-même vers une face où l'élément est visible. « Je ne sais pas »
   montre la réponse.
 - **Retour immédiat** : correct ou non, la bonne réponse et son nom latin, une note éventuelle (faute de
-  frappe, ancien terme, numéro ou côté faux). Question suivante après 1,3 s (bonne réponse), 2,2 s (avec
-  une note) ou 3,4 s (erreur) ; **Entrée** ou « Suivant » passent tout de suite.
+  frappe, ancien terme, numéro ou côté faux). Question suivante après 2,2 s (bonne réponse), 3,5 s (avec
+  une note) ou 6,5 s (erreur) ; **Entrée** ou « Suivant » passent tout de suite.
 - **« Terminer la partie »** (panneau de gauche) arrête la partie et affiche les résultats.
 - **Résultats** : pourcentage de réussite (anneau), score en points, bonnes réponses, temps ; liste des
-  erreurs et des réponses acceptées avec une faute, chacune avec « Voir » (révision de cet élément).
+  erreurs et des réponses acceptées avec une faute, chacune avec « Voir » (révision de cet élément) :
+  seules les **3 dernières** de chaque liste s'affichent, les autres derrière un bouton « Voir les N
+  autres erreurs ».
   Boutons : Menu principal, Nouvelle configuration, Rejouer.
 - **Révision** : après « Voir », cliquer sur d'autres éléments pour les identifier (nom au survol) ; le
   panneau donne le nom latin, la zone, les anciens termes à ne plus utiliser et les parties connues.
@@ -285,16 +290,77 @@ moteur `js/engine/splanchno.js`, catalogue `js/data/splanchnology.js`, un modèl
   communs aux deux sexes compris), Z-Anatomy pour le foie, le larynx, les bronches, l'encéphale,
   l'oreille et les organes génitaux masculins.
 
-## Jeu 7 : Les termes médicaux
+## Jeux de vocabulaire (sans 3D) : moteur commun
 
-Les briques du vocabulaire médical (chapitre « La langue médicale ») : retrouver le **morphème** (préfixe,
-radical ou suffixe) qui correspond à une définition, « hépat(o)- » pour « Foie », « -ite » pour
-« Inflammation ». **Jeu sans 3D** : il a ses propres écrans (configuration, partie, résultats) et rien
-ne se charge derrière. Code : `js/game/terms-game.js` (écrans et déroulement communs à ses modes),
-`js/game/terms-devinette.js` (mode Devinette), `js/game/terms-qcm.js` (mode QCM),
-`js/game/terms-suggest.js` (suggestions de saisie),
-`css/terms.css` ; données `js/data/morphemes.js`.
+« Les pathologies » (jeu 7) et « Les termes médicaux » (jeu 8), chapitre « La langue médicale », n'ont
+pas de 3D : ils ont leurs propres écrans (configuration, partie, résultats), communs aux deux, et rien ne
+se charge derrière. Code : `js/game/lexique-game.js` (moteur : écrans, filtres, déroulement, résultats,
+statistiques ; interface d'un jeu et d'un mode décrite en tête), `js/game/lexique-devinette.js` et
+`js/game/lexique-qcm.js` (les deux modes), `js/game/lexique-suggest.js` (suggestions de saisie),
+`css/lexique.css` ; un fichier par jeu : `js/game/lexique-pathologies.js`, `js/game/lexique-morphemes.js`
+(données, filtres, indices, correction, choix des mauvaises propositions).
 
+- **Configuration** : les **filtres** du jeu (cases à cocher, « Tout » / « Aucun »), **croisés** : un
+  élément est proposé s'il remplit tous les filtres, et le nombre à côté de chaque case tient compte des
+  autres (une case sans élément est estompée) ; nombre de questions, **mode de jeu** et ses options.
+  Chaque jeu garde ses propres réglages pendant la session.
+- **Mode Devinette** : la question (définition, description) au centre de l'écran, avec trois indices ;
+  on écrit la réponse, puis Valider (ou Entrée). « Passer » compte la question comme ratée.
+  **Suggestions de saisie** (option) : dès 2 caractères, au plus 5, par ordre alphabétique, sans tenir
+  compte des accents, majuscules, tirets ni parenthèses ; flèches pour choisir, Tab ou Entrée pour
+  insérer, Échap pour fermer. Tolérance aux fautes de frappe (option) : mêmes règles que les autres
+  jeux (7 points au lieu de 10).
+- **Mode QCM** : la question et ses indices, puis **2 à 6 propositions** (réglage de la configuration,
+  4 par défaut) ; clic, ou touches **1** à **6**. Après la réponse, la bonne proposition est en menthe,
+  celle choisie à tort en rouge, avec son sens ; « Passer » montre la bonne réponse. Les mauvaises
+  propositions sont **proches de la réponse** (critères propres à chaque jeu, du plus proche au plus
+  lointain), jamais deux propositions interchangeables, et la bonne réponse d'une question n'est proposée
+  dans aucune des **3 questions suivantes** (`RECENT` dans `js/game/lexique-qcm.js`).
+- **Retour immédiat** : la fiche de l'élément. Question suivante après 3,5 s (bonne réponse), 5 s (avec
+  une remarque) ou 9 s (erreur) ; **Entrée** ou « Suivant » passent tout de suite.
+- **Résultats** : comme les autres jeux (anneau, score, temps, erreurs et réponses acceptées avec une
+  remarque, les 3 dernières affichées et les autres derrière un bouton) ; Menu principal, Nouvelle configuration, Rejouer. Statistiques par mode (« Devinette »,
+  « QCM »), éléments les plus ratés dans « à revoir ».
+- **Ajouter un jeu de vocabulaire** : un fichier `js/game/lexique-<jeu>.js` qui appelle `registerLexique`
+  (interface en tête de `js/game/lexique-game.js`), son `<script defer>` après `lexique-qcm.js`, et sa
+  carte dans `js/data/games.js`. **Ajouter un mode** : un fichier qui appelle `registerLexMode`.
+
+## Jeu 7 : Les pathologies
+
+Reconnaître une maladie à sa **description** (« Nécrose d'une partie du muscle cardiaque, une artère
+coronaire s'étant bouchée » : infarctus du myocarde). Données : `js/data/pathologies.js` ; code :
+`js/game/lexique-pathologies.js`.
+
+- **494 pathologies**, chacune avec sa spécialité (19), son mécanisme (infectieux, tumoral,
+  auto-immun… : 16), sa **difficulté** (1 : très connue du grand public, 2 : connue avec quelques
+  notions, 3 : réservée aux soignants et aux études avancées), une description, ses autres noms (sigles,
+  noms courants) et ses anciens termes. Le nom (`nom`) sert de clé aux statistiques : ne plus le changer.
+- **Filtres croisés : difficulté ET spécialités** : « Cardiologie » parmi les difficiles, ou toutes les
+  spécialités parmi les très connues… Par défaut : très connues et un peu connues, toutes les
+  spécialités (348 pathologies).
+- **Indices** : spécialité, mécanisme, difficulté.
+- **Devinette** : majuscules, accents, ponctuation et petits mots (de, du, la, des…) ne comptent pas
+  (« infarctus myocarde » = « Infarctus du myocarde ») ; les **autres noms** sont acceptés (« HTA »,
+  « crise cardiaque ») ; les **anciens termes** et éponymes (« apoplexie », « mongolisme ») sont reconnus
+  mais **comptés faux**, avec le nom à employer, comme les anciens termes anatomiques des autres jeux ; une
+  autre pathologie est signalée avec sa description. Suggestions : toutes les pathologies et leurs autres
+  noms (pas seulement celles de la configuration : aucun indice), celles qui commencent par la saisie
+  d'abord, puis celles dont un mot commence par la saisie (« myoc » : « Myocardite », « Infarctus du
+  myocarde ») ; jamais les anciens termes.
+- **QCM** : mauvaises propositions de **même spécialité et même difficulté**, puis même spécialité, puis
+  même mécanisme et même difficulté, puis même difficulté. En pratique, toutes de la même spécialité
+  (sauf si la spécialité choisie en compte trop peu : nutrition, 8 pathologies).
+- **Fiche** : nom, spécialité, mécanisme, difficulté, autres noms acceptés, anciens termes à ne plus
+  employer.
+
+## Jeu 8 : Les termes médicaux
+
+Les briques du vocabulaire médical : retrouver le **morphème** (préfixe, radical ou suffixe) qui correspond
+à une définition, « hépat(o)- » pour « Foie », « -ite » pour « Inflammation ». Données :
+`js/data/morphemes.js` ; code : `js/game/lexique-morphemes.js`.
+
+- **Filtre** : types de morphèmes (préfixes, radicaux, suffixes). **Indices** : type, langue d'origine,
+  thème. **Fiche** : forme, type, origine et 2 ou 3 exemples de mots réels.
 - **751 morphèmes** : 125 préfixes, 410 radicaux, 216 suffixes, chacun avec son sens, son origine
   (grecque, latine…), son thème et 2 ou 3 exemples de mots réels. **26 thèmes** (appareil digestif, œil
   et vision, médicaments, position et direction…), groupés en 4 familles (anatomie, biologie, médecine,
@@ -302,8 +368,6 @@ ne se charge derrière. Code : `js/game/terms-game.js` (écrans et déroulement 
   dans un fichier `.js` : un navigateur refuse de lire un fichier `.json` local, et le jeu doit marcher
   en ouvrant directement `index.html`. La forme (`morpheme`) sert de clé aux statistiques : ne plus la
   changer.
-- **Configuration** : types de morphèmes à trouver (préfixes, radicaux, suffixes), nombre de questions,
-  **mode de jeu** et options.
 - **Mode Devinette** : la définition s'affiche au centre de l'écran, avec trois indices (type, langue
   d'origine, thème) ; on écrit le morphème, puis Valider (ou Entrée). « Passer » compte la question comme
   ratée.
@@ -318,9 +382,8 @@ ne se charge derrière. Code : `js/game/terms-game.js` (écrans et déroulement 
     compté faux, avec l'explication (« -cyte » est un suffixe, on attendait le radical « cyt(o)- ») ; un
     autre morphème est signalé avec son sens. Tolérance aux fautes de frappe (option) : mêmes règles que
     les autres jeux (7 points au lieu de 10).
-  - **Retour immédiat** : la fiche du morphème (forme, type, origine) et ses exemples. Question suivante
-    après 2,6 s (bonne réponse), 3,6 s (avec une remarque) ou 5,2 s (erreur) ; **Entrée** ou « Suivant »
-    passent tout de suite.
+  - **Retour immédiat** : la fiche du morphème (forme, type, origine) et ses exemples (délais : voir le
+    moteur commun ci-dessus).
 - **Mode QCM** : la définition et ses indices, puis **2 à 6 propositions** (réglage de la configuration,
   4 par défaut) ; clic, ou touches **1** à **6**. Après la réponse, la bonne proposition est en menthe,
   celle choisie à tort en rouge, avec son sens ; « Passer » montre la bonne réponse.
@@ -329,14 +392,7 @@ ne se charge derrière. Code : `js/game/terms-game.js` (écrans et déroulement 
     puis du même thème, puis du même type. En pratique, 95 à 99 % sont du même thème, toutes du même
     type. Jamais deux propositions de même sens (pas de seconde bonne réponse).
   - **Pas de réponse récente** : la bonne réponse d'une question n'est proposée dans aucune des
-    **3 questions suivantes** (`RECENT` dans `js/game/terms-qcm.js`).
-- **Ajouter un mode** : un fichier qui appelle `registerTermMode` (interface décrite en tête de
-  `js/game/terms-game.js` : `mount`, `ask`, `lock`, `unmount`, `options`), son `<script defer>` et sa
-  variante dans `../COMMUN/jeux.js`. Configuration, compteur, retour immédiat, résultats et statistiques
-  sont communs.
-- **Résultats** : comme les autres jeux (anneau, score, temps, erreurs et réponses acceptées avec une
-  remarque) ; Menu principal, Nouvelle configuration, Rejouer. Statistiques par mode (« Devinette », « QCM »),
-  morphèmes les plus ratés dans « à revoir ».
+    **3 questions suivantes** (`RECENT` dans `js/game/lexique-qcm.js`).
 
 ## Commandes de la vue 3D
 
@@ -402,7 +458,7 @@ voisins (**V**) et atlas des parties (**C**, en révision).
 Le déroulement, la correction, les résultats et les statistiques sont communs : rien d'autre à écrire.
 Un **jeu sans 3D** n'a pas d'adaptateur : il déclare ses écrans dans `AQ.game.SCREENS`
 (`js/game/state.js` : `{ open, close }`), que le menu ouvre à la place de la configuration commune, et
-passe sa propre session à `AQ.account.saveGame` (modèle : `js/game/terms-game.js`).
+passe sa propre session à `AQ.account.saveGame` (modèle : `js/game/lexique-game.js`).
 Un nouveau chapitre se déclare dans `CHAPTERS` (`js/data/games.js`) et sa planche dans `PLANCHES`
 (`js/game/home.js` : image de `img/`, repères en pourcentage de l'image, légende).
 
@@ -428,6 +484,7 @@ Numérotation **MAJEUR.MINEUR.CORRECTIF** commune à tous les jeux (règles : «
 
 | Version | Date | Changements |
 |---|---|---|
+| 2.5.0 | 05/11/2026 | Nouveau jeu **Les pathologies** (chapitre « La langue médicale », sans 3D) : 494 pathologies, filtres croisés **difficulté et spécialités** (19), modes Devinette (autres noms et sigles acceptés, anciens termes comptés faux, petits mots ignorés, suggestions par début de mot) et QCM (propositions de même spécialité et même difficulté). Les deux jeux de vocabulaire partagent désormais un même moteur (`js/game/lexique-*.js`). Tous les jeux : plus de temps pour lire la réponse (surtout après une erreur) ; en fin de partie, seules les 3 dernières erreurs sont affichées, les autres derrière un bouton. |
 | 2.4.0 | 05/11/2026 | Nouveau jeu **Les termes médicaux** (chapitre « La langue médicale », sans 3D) : 751 morphèmes (préfixes, radicaux, suffixes) avec sens, origine et exemples ; 26 thèmes ; mode **Devinette** (la définition au centre de l'écran, le joueur écrit le morphème ; suggestions dès 2 caractères, 5 au plus, par ordre alphabétique, sans tenir compte des accents, tirets ni parenthèses) ; mode **QCM** (2 à 6 propositions du même thème, aucune bonne réponse des 3 questions précédentes parmi les propositions). |
 | 2.3.0 | 31/10/2026 | Menu du compte (en haut à gauche) au même style que GéoNohyne Quizz : menu déroulant sous le bouton (titre, joueur, lignes d'action avec pictogramme, note), au lieu d'une fenêtre au centre de l'écran ; l'invité reprend son accent (« Invité »). Les organes : **sexe du corps** au choix (masculin ou féminin) ; 16 organes féminins (ovaires, trompes, utérus, vagin, ligaments, clitoris, bulbes du vestibule, glandes vestibulaires majeures, glandes mammaires, vessie, urètre et uretères féminins), tirés du Human Reference Atlas (HuBMAP, CC BY 4.0) recalé dans le bassin, ou générés. Nouveau jeu **Splanchnologie descriptive** : 20 organes découpés en 335 parties (foie, rein, cœur, poumons, encéphale, œil, utérus et annexes…), un organe affiché seul, au hasard ou choisi ; résultats avec exploration de l'organe. |
 | 2.2.0 | 30/10/2026 | Nouveau jeu **Les organes** (192 organes dans 9 appareils, dont 97 principaux, modèle 3D Z-Anatomy) : la carte « Splanchnologie des humains » s'ouvre ; choix des appareils (les organes des autres appareils sont cachés et absents de l'autocomplétion), squelette en transparence, cible cyan. |

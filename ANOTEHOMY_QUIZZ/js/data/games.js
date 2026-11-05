@@ -81,10 +81,12 @@
       meta: NS.VESSELS.length + ' vaisseaux · ' + NS.VESSELS.filter(v => v.principal).length + ' principaux' },
 
     /* ---------- 2. La langue médicale (nom temporaire) ---------- */
-    { id: 'pathologies', chapter: 'langue', kind: 'jeu', status: 'soon', icon: 'pathologie',
+    /* jeux sans 3D, avec leurs propres écrans (js/game/lexique-game.js) */
+    { id: 'pathologies', chapter: 'langue', kind: 'jeu', status: 'ready', icon: 'pathologie', tint: 'framboise',
       name: 'Les pathologies',
-      tagline: 'Reconnaître les maladies et leurs termes.' },
-    /* jeu sans 3D, avec ses propres écrans (js/game/terms-game.js) */
+      tagline: 'Reconnaître les maladies à leur description, spécialité par spécialité.',
+      desc: 'Une description s\'affiche : écrivez le nom de la pathologie (Devinette), ou choisissez-la parmi 2 à 6 propositions (QCM).',
+      meta: (NS.PATHOLOGIES || []).length + ' pathologies · ' + Object.keys(NS.SPECIALITES || {}).length + ' spécialités' },
     { id: 'termes-medicaux', chapter: 'langue', kind: 'jeu', status: 'ready', icon: 'termes', tint: 'lavande',
       name: 'Les termes médicaux',
       tagline: 'Les briques du vocabulaire médical : préfixes, radicaux et suffixes.',

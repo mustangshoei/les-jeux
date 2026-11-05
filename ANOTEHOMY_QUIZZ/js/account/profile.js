@@ -113,7 +113,7 @@
   }
 
   /* enregistre la partie qui vient de se terminer (appele par js/game/results.js).
-     Un jeu sans 3D, qui a sa propre session (js/game/terms-game.js), la passe dans src :
+     Un jeu sans 3D, qui a sa propre session (js/game/lexique-game.js), la passe dans src :
      { game, mode, log, ok, points, elapsed, total, detail } (log : [{ item: { name }, ok }]) */
   function saveGame(aborted, src) {
     const G = AQ.game, s = src || G.session, st = G.settings, n = s.log.length;

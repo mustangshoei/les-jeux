@@ -40,5 +40,21 @@
      apostrophes disparaissent) : « hépat(o)- » -> « hepato », « -ite » -> « ite » */
   const cle = s => plier(s).replace(/[^a-z0-9]/g, '');
 
-  Object.assign(NS, { $, f, lerp, clamp, ease, esc, fmt, pickOne, shuffle, plier, cle });
+  /* ---------- Liste repliable (résultats : erreurs, réponses acceptées avec une remarque) ----------
+     lis : les <li> (html), dans l'ordre de la partie ; seuls les max derniers sont affichés, les autres
+     derrière un bouton « Voir les N autres … » (nom : « erreurs », « réponses »). Brancher le bouton
+     avec deplierListes(conteneur) une fois le html inséré. */
+  function listeRepliable(lis, max, nom) {
+    const caches = Math.max(0, lis.length - max);
+    return `<ul class="errs">${lis.map((li, i) => i < caches ? li.replace(/^<li/, '<li hidden') : li).join('')}</ul>` +
+      (caches ? `<button type="button" class="btn ghost errs-plus" data-deplier>Voir ${caches === 1 ? 'l\'autre ' + nom.replace(/s$/, '') : 'les ' + caches + ' autres ' + nom}</button>` : '');
+  }
+  function deplierListes(racine) {
+    racine.querySelectorAll('[data-deplier]').forEach(b => b.addEventListener('click', () => {
+      b.previousElementSibling.querySelectorAll('li[hidden]').forEach(li => { li.hidden = false; });
+      b.remove();
+    }));
+  }
+
+  Object.assign(NS, { $, f, lerp, clamp, ease, esc, fmt, pickOne, shuffle, plier, cle, listeRepliable, deplierListes });
 })(AQ.util);

@@ -48,7 +48,7 @@
 
   /* jeux SANS 3D, qui ont leurs propres écrans (configuration, partie, résultats), par identifiant de jeu :
      { open(jeu, logo), close() }. Le menu les ouvre à la place de la configuration commune et les ferme en
-     revenant au menu (js/game/home.js). Ex. : « Les termes médicaux » (js/game/terms-game.js). */
+     revenant au menu (js/game/home.js). Ex. : « Les pathologies », « Les termes médicaux » (js/game/lexique-game.js). */
   const SCREENS = {};
 
   /* os jouables pour les zones cochées (présents dans le modèle 3D). Avant la première partie, la 3D

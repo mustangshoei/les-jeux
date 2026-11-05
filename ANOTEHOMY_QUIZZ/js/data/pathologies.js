@@ -1,7 +1,8 @@
 /* ==========================================================================
    Anotehomy Quizz - data/pathologies.js
-   RECENSEMENT DES PATHOLOGIES (donnees seules : aucun mode de jeu ne les utilise encore).
-   Prevu pour le jeu « Les pathologies » (chapitre « La langue medicale »).
+   RECENSEMENT DES PATHOLOGIES du jeu « Les pathologies » (chapitre « La langue medicale »,
+   js/game/lexique-pathologies.js). Le nom (nom) sert de cle aux statistiques des joueurs : ne plus le
+   changer une fois le jeu publie (corriger plutot resume, alt ou old).
    --------------------------------------------------------------------------
    Une ligne par pathologie :
      P(id, nom, specialite, mecanisme, difficulte, resume, options)

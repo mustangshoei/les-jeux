@@ -123,6 +123,12 @@ modèles ci-dessus (fond transparent, recadrage) :
 
 La trame du fond (`img/trame.svg` : tracés cardiaques et globules) a été dessinée pour ce projet.
 
+## Pathologies
+
+Le recensement du jeu « Les pathologies » (`js/data/pathologies.js` : 494 pathologies, avec leur
+description, leur spécialité, leur mécanisme, leur difficulté, leurs autres noms et anciens termes) a été
+rédigé pour ce projet.
+
 ## Morphèmes médicaux
 
 La base du jeu « Les termes médicaux » (`js/data/morphemes.js` : 751 préfixes, radicaux et suffixes, avec

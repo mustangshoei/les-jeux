@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Anotehomy Quizz - lexique.css
+   Jeux de vocabulaire, sans 3D (« Les pathologies », « Les termes médicaux » : js/game/lexique-game.js) : la
+   configuration reprend celle des autres jeux (css/setup.css), avec des filtres générés par le jeu ;
+   ici, la partie (barre du haut, définition au centre de l'écran, saisie, retour immédiat) et l'écran des
+   résultats (contenu : css/results.css).
+   ========================================================================== */
+
+/* ---------- Configuration ----------
+   Les filtres (difficulté, spécialités ; types de morphèmes) : un bloc par filtre. Le bloc « souple »
+   (spécialités) rétrécit et défile si la fenêtre est trop basse. */
+.lex-filtres { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; gap: clamp(8px, 1.4vh, 14px); }
+.lex-filtre { flex: none; }
+.lex-zones--peu { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.zone.is-vide { opacity: .45; }
+.lex-zex { display: block; margin-top: 2px; font: 500 .7rem/1.2 var(--mono); color: var(--muted); }
+/* mode annoncé (QCM) : carte grisée, non cliquable */
+.choix-carte.is-soon { opacity: .5; cursor: not-allowed; }
+.choix-carte.is-soon:hover { border-color: var(--line-2); }
+.lex-bientot { margin-left: .4rem; padding: 1px 7px; vertical-align: 1px; font-size: .56rem; }
+
+/* ---------- Partie : écran plein, la définition au centre ---------- */
+.ecran-lex {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.lex-barre {
+  flex: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(10px, 2vw, 28px);
+  padding: 12px clamp(12px, 2.5vw, 32px);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(36, 17, 30, .94), rgba(19, 10, 17, .88));
+}
+.lex-progres { justify-self: center; width: 100%; max-width: 560px; }
+.lex-progres .bar { margin: 8px 0 0; }
+.lex-scores { display: flex; align-items: center; gap: 8px; }
+.lex-scores .stat { min-width: 4.4rem; padding: 4px 8px; }
+.lex-scores .stat b { font-size: 1.1rem; }
+.lex-scores .timer { margin-left: 4px; }
+
+.lex-centre {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vh, 48px) 16px;
+}
+.lex-carte {
+  padding: clamp(20px, 4vh, 36px) clamp(18px, 3vw, 36px);
+  border: 1px solid rgba(255, 196, 214, .2);
+  border-radius: 22px;
+  background: var(--verre), rgba(15, 8, 14, .6);
+  box-shadow: var(--verre-ombre), var(--shadow);
+  text-align: center;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.lex-qlabel { margin-bottom: 10px; }
+.lex-sens {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.4vw + 2.2vh, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.lex-indices { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 16px 0 22px; }
+.lex-indices .chip { letter-spacing: .08em; }
+.lex-form { text-align: left; }
+.lex-answer { padding: 14px 16px; font-size: 1.15rem; }
+.lex-form .btn-row { margin-top: 12px; }
+.lex-aide { margin: 12px 0 0; font-size: .78rem; color: var(--muted); text-align: center; }
+
+/* ---------- QCM : nombre de propositions (configuration), puis les propositions ---------- */
+.lex-nbchoix { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .4rem .8rem; color: var(--ink-2); font-size: .9rem; }
+.lex-nbchoix .onglet > span { min-width: 2.1rem; }
+
+.lex-choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; text-align: left; }
+.lex-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 3.4rem;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 14px;
+  background: var(--champ);
+  color: var(--ink);
+  text-align: left;
+  transition: border-color .15s ease, background-color .15s ease, opacity .2s ease, transform .1s ease;
+}
+.lex-option:hover:not(:disabled) { border-color: var(--rose); background: var(--rose-doux); }
+.lex-option:active:not(:disabled) { transform: translateY(1px); }
+.lex-option:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+.lex-option .kbd { flex: none; margin: 0; }
+.lex-option__forme { font-size: 1.15rem; font-weight: 700; overflow-wrap: anywhere; }
+.lex-option:disabled { cursor: default; opacity: .45; }
+.lex-option.is-ok { opacity: 1; border-color: var(--ok); background: var(--ok-doux); color: var(--ok-txt); }
+.lex-option.is-ko { opacity: 1; border-color: var(--ko); background: rgba(255, 74, 95, .12); color: #ff9eaa; }
+.lex-qcm-actions { justify-content: center; margin-top: 14px; }
+
+/* ---------- Retour immédiat : la fiche du morphème et ses exemples ---------- */
+.lex-feedback { padding: 16px 18px; }
+.lex-donne { margin: 0 0 2px; }
+.lex-fiche { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 4px; }
+.lex-forme { font-size: 1.4rem; font-weight: 800; color: var(--ink); }
+.lex-meta { font-size: .86rem; color: var(--muted); }
+.lex-ex { margin: 8px 0 0; padding-left: 1.15rem; font-size: .9rem; color: var(--ink-2); }
+.lex-ex li + li { margin-top: 2px; }
+
+/* ---------- Résultats ---------- */
+.ecran-lex-res { overflow-y: auto; }
+.lex-res { display: flex; min-height: 100%; padding: max(5vh, 70px) 16px 5vh; }
+
+/* ---------- Écrans étroits : la progression passe sous le bouton et les compteurs ---------- */
+@media (max-width: 720px) {
+  .lex-barre { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 10px; padding: 10px 12px; }
+  .lex-progres { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  .lex-scores { justify-self: end; }
+}
+/* téléphone : compteurs sans leur nom (leur couleur suffit : justes en menthe, fausses en rouge) */
+@media (max-width: 520px) {
+  #tQuit { padding: .5rem .75rem; font-size: .85rem; white-space: normal; text-align: left; }
+  .lex-scores { gap: 5px; }
+  .lex-scores .stat { min-width: 2.6rem; padding: 3px 6px; }
+  .lex-scores .stat span { display: none; }
+  .lex-scores .timer { margin-left: 2px; font-size: .82rem; }
+  .lex-carte { padding: 18px 14px; }
+  .lex-choix { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .lex-option { min-height: 2.9rem; }
+}

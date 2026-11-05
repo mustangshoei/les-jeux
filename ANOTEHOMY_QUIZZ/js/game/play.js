@@ -147,7 +147,7 @@
 
   /* ---------------- Retour immediat ---------------- */
   function showFeedback(q, ok, given, r) {
-    const A = NS.adapter(), d = describe(A, q), fb = $('feedback'), wait = ok ? (r.note ? 2200 : 1300) : 3400;
+    const A = NS.adapter(), d = describe(A, q), fb = $('feedback'), wait = ok ? (r.note ? 3500 : 2200) : 6500;
     const nameHtml = `<b>${esc(d.name)}</b>${d.where && settings.mode === 'A' ? ' <span class="fb-where">(' + esc(d.where) + ')</span>' : ''}<div class="latin">${esc(d.latin)}</div>`;
     let title, body = '', note = '';
     if (ok) {

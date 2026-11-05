@@ -8,7 +8,7 @@
    ========================================================================== */
 (function (NS) {
   'use strict';
-  const { $, esc, fmt } = AQ.util;
+  const { $, esc, fmt, listeRepliable, deplierListes } = AQ.util;
   const EN = AQ.engine;
   const { settings, session } = NS;
 
@@ -43,6 +43,8 @@
   /* nom affiche d'une reponse (precis : "12e cote gauche") */
   const shownName = l => (l.disp && l.disp.name) || l.item.name;
 
+  /* seules les 3 dernières erreurs (et réponses avec une faute) sont affichées, les autres derrière un bouton */
+  const MAX_LISTE = 3;
   function renderResults(aborted) {
     const A = NS.adapter(), R = A.results || null, other = R ? R.other() : '';
     const n = session.log.length, pct = n ? Math.round(session.ok / n * 100) : 0, C = 2 * Math.PI * 58;
@@ -65,13 +67,14 @@
       </div>
       ${aborted && n < session.queue.length ? `<p class="fb-note">Partie interrompue : ${n} question(s) traitée(s) sur ${session.queue.length}.</p>` : ''}
       <h3 class="res-sec">Récapitulatif des erreurs (${errs.length})</h3>
-      ${errs.length ? `<ul class="errs">${errs.map(e => item(e, '', answerText(e[0]))).join('')}</ul>` : `<div class="perfect">Aucune erreur, toutes les réponses sont correctes en nomenclature TA2.</div>`}
-      ${typos.length ? `<h3 class="res-sec">Acceptées avec une faute de frappe (${typos.length})</h3><ul class="errs">${typos.map(t => item(t, 'typo', `Saisi : <b>« ${esc(t[0].given)} »</b>`)).join('')}</ul>` : ''}
+      ${errs.length ? listeRepliable(errs.map(e => item(e, '', answerText(e[0]))), MAX_LISTE, 'erreurs') : `<div class="perfect">Aucune erreur, toutes les réponses sont correctes en nomenclature TA2.</div>`}
+      ${typos.length ? `<h3 class="res-sec">Acceptées avec une faute de frappe (${typos.length})</h3>${listeRepliable(typos.map(t => item(t, 'typo', `Saisi : <b>« ${esc(t[0].given)} »</b>`)), MAX_LISTE, 'réponses')}` : ''}
       <div class="res-actions"><button type="button" class="btn ghost" id="btnHome">Menu principal</button><button type="button" class="btn" id="btnNewCfg">Nouvelle configuration</button>` +
       (R ? `<button type="button" class="btn" id="btnExplore">${esc(R.explore)}</button>` : '') +
       (other ? `<button type="button" class="btn" id="btnOther">${esc(other)}</button>` : '') +
       `<button type="button" class="btn primary" id="btnReplay">${R ? esc(R.replay) : 'Rejouer'}</button></div>`;
     /* animation de l'anneau apres insertion dans la page */
+    deplierListes($('resultsCard'));
     requestAnimationFrame(() => requestAnimationFrame(() => { const r = $('ringFg'); if (r) r.style.strokeDashoffset = (C * (1 - pct / 100)).toFixed(1); }));
     $('resultsCard').querySelectorAll('[data-review]').forEach(btn => btn.addEventListener('click', () => {
       const l = session.log[+btn.dataset.review];
