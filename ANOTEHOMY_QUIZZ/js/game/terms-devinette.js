@@ -17,7 +17,7 @@
    ========================================================================== */
 (function (NS) {
   'use strict';
-  const { $, esc, cle } = AQ.util;
+  const { $, cle } = AQ.util;
 
   /* « un préfixe », « un radical », « un suffixe » */
   const typeMin = m => m.type.toLowerCase();
@@ -56,10 +56,7 @@
 
   function mount(el, c) {
     ctx = c; root = el;
-    el.innerHTML = `
-      <p class="qlabel termes-qlabel">Définition</p>
-      <p class="termes-sens" id="tSens"></p>
-      <div class="termes-indices" id="tIndices" aria-label="Indices"></div>
+    el.innerHTML = NS.termDefinitionHtml() + `
       <form class="termes-form" id="tForm" autocomplete="off" novalidate>
         <div class="input-wrap">
           <input class="answer termes-answer" id="tAnswer" type="text" spellcheck="false" autocapitalize="off" autocomplete="off"
@@ -90,8 +87,7 @@
 
   function ask(m) {
     cur = m;
-    $('tSens').textContent = m.sens;
-    $('tIndices').innerHTML = [m.type, m._langue, m.domaine].map(t => `<span class="chip">${esc(t)}</span>`).join('');
+    NS.showTermDefinition(m);
     const inp = $('tAnswer');
     inp.value = ''; inp.disabled = false;
     $('tSubmit').disabled = false; $('tSkip').disabled = false;

@@ -291,11 +291,14 @@ Les briques du vocabulaire médical (chapitre « La langue médicale ») : retro
 radical ou suffixe) qui correspond à une définition, « hépat(o)- » pour « Foie », « -ite » pour
 « Inflammation ». **Jeu sans 3D** : il a ses propres écrans (configuration, partie, résultats) et rien
 ne se charge derrière. Code : `js/game/terms-game.js` (écrans et déroulement communs à ses modes),
-`js/game/terms-devinette.js` (mode Devinette), `js/game/terms-suggest.js` (suggestions de saisie),
+`js/game/terms-devinette.js` (mode Devinette), `js/game/terms-qcm.js` (mode QCM),
+`js/game/terms-suggest.js` (suggestions de saisie),
 `css/terms.css` ; données `js/data/morphemes.js`.
 
 - **751 morphèmes** : 125 préfixes, 410 radicaux, 216 suffixes, chacun avec son sens, son origine
-  (grecque, latine…), son thème et 2 ou 3 exemples de mots réels. Les données sont un tableau JSON rangé
+  (grecque, latine…), son thème et 2 ou 3 exemples de mots réels. **26 thèmes** (appareil digestif, œil
+  et vision, médicaments, position et direction…), groupés en 4 familles (anatomie, biologie, médecine,
+  description) : `MORPHEME_THEMES`, en bas du fichier. Les données sont un tableau JSON rangé
   dans un fichier `.js` : un navigateur refuse de lire un fichier `.json` local, et le jeu doit marcher
   en ouvrant directement `index.html`. La forme (`morpheme`) sert de clé aux statistiques : ne plus la
   changer.
@@ -318,13 +321,21 @@ ne se charge derrière. Code : `js/game/terms-game.js` (écrans et déroulement 
   - **Retour immédiat** : la fiche du morphème (forme, type, origine) et ses exemples. Question suivante
     après 2,6 s (bonne réponse), 3,6 s (avec une remarque) ou 5,2 s (erreur) ; **Entrée** ou « Suivant »
     passent tout de suite.
-- **Mode QCM** : annoncé (carte grisée, « Bientôt »). Pour l'ajouter : un fichier `js/game/terms-qcm.js`
-  qui appelle `registerTermMode` avec `status: 'ready'` et les fonctions `mount`, `ask`, `lock`,
-  `unmount` (interface décrite en tête de `js/game/terms-game.js`), son `<script defer>` après
-  `terms-devinette.js`, et `'QCM'` dans les `variantes` de `../COMMUN/jeux.js`. Configuration, compteur,
-  retour immédiat, résultats et statistiques sont déjà communs.
+- **Mode QCM** : la définition et ses indices, puis **2 à 6 propositions** (réglage de la configuration,
+  4 par défaut) ; clic, ou touches **1** à **6**. Après la réponse, la bonne proposition est en menthe,
+  celle choisie à tort en rouge, avec son sens ; « Passer » montre la bonne réponse.
+  - **Mauvaises propositions** : du **même thème et du même type** que la réponse d'abord (pour « Cœur » :
+    « thromb(o)- », « artér(io)- », « phléb(o)- »…), puis de la même famille de thèmes et du même type,
+    puis du même thème, puis du même type. En pratique, 95 à 99 % sont du même thème, toutes du même
+    type. Jamais deux propositions de même sens (pas de seconde bonne réponse).
+  - **Pas de réponse récente** : la bonne réponse d'une question n'est proposée dans aucune des
+    **3 questions suivantes** (`RECENT` dans `js/game/terms-qcm.js`).
+- **Ajouter un mode** : un fichier qui appelle `registerTermMode` (interface décrite en tête de
+  `js/game/terms-game.js` : `mount`, `ask`, `lock`, `unmount`, `options`), son `<script defer>` et sa
+  variante dans `../COMMUN/jeux.js`. Configuration, compteur, retour immédiat, résultats et statistiques
+  sont communs.
 - **Résultats** : comme les autres jeux (anneau, score, temps, erreurs et réponses acceptées avec une
-  remarque) ; Menu principal, Nouvelle configuration, Rejouer. Statistiques par mode (« Devinette »),
+  remarque) ; Menu principal, Nouvelle configuration, Rejouer. Statistiques par mode (« Devinette », « QCM »),
   morphèmes les plus ratés dans « à revoir ».
 
 ## Commandes de la vue 3D
@@ -417,7 +428,7 @@ Numérotation **MAJEUR.MINEUR.CORRECTIF** commune à tous les jeux (règles : «
 
 | Version | Date | Changements |
 |---|---|---|
-| 2.4.0 | 05/11/2026 | Nouveau jeu **Les termes médicaux** (chapitre « La langue médicale », sans 3D) : 751 morphèmes (préfixes, radicaux, suffixes) avec sens, origine et exemples ; mode **Devinette** (la définition au centre de l'écran, le joueur écrit le morphème ; suggestions dès 2 caractères, 5 au plus, par ordre alphabétique, sans tenir compte des accents, tirets ni parenthèses) ; mode QCM annoncé. |
+| 2.4.0 | 05/11/2026 | Nouveau jeu **Les termes médicaux** (chapitre « La langue médicale », sans 3D) : 751 morphèmes (préfixes, radicaux, suffixes) avec sens, origine et exemples ; 26 thèmes ; mode **Devinette** (la définition au centre de l'écran, le joueur écrit le morphème ; suggestions dès 2 caractères, 5 au plus, par ordre alphabétique, sans tenir compte des accents, tirets ni parenthèses) ; mode **QCM** (2 à 6 propositions du même thème, aucune bonne réponse des 3 questions précédentes parmi les propositions). |
 | 2.3.0 | 31/10/2026 | Menu du compte (en haut à gauche) au même style que GéoNohyne Quizz : menu déroulant sous le bouton (titre, joueur, lignes d'action avec pictogramme, note), au lieu d'une fenêtre au centre de l'écran ; l'invité reprend son accent (« Invité »). Les organes : **sexe du corps** au choix (masculin ou féminin) ; 16 organes féminins (ovaires, trompes, utérus, vagin, ligaments, clitoris, bulbes du vestibule, glandes vestibulaires majeures, glandes mammaires, vessie, urètre et uretères féminins), tirés du Human Reference Atlas (HuBMAP, CC BY 4.0) recalé dans le bassin, ou générés. Nouveau jeu **Splanchnologie descriptive** : 20 organes découpés en 335 parties (foie, rein, cœur, poumons, encéphale, œil, utérus et annexes…), un organe affiché seul, au hasard ou choisi ; résultats avec exploration de l'organe. |
 | 2.2.0 | 30/10/2026 | Nouveau jeu **Les organes** (192 organes dans 9 appareils, dont 97 principaux, modèle 3D Z-Anatomy) : la carte « Splanchnologie des humains » s'ouvre ; choix des appareils (les organes des autres appareils sont cachés et absents de l'autocomplétion), squelette en transparence, cible cyan. |
 | 2.1.0 | 30/10/2026 | Groupes de jeux : « Ostéologie des humains » (les os du squelette, ostéologie descriptive) et « Splanchnologie des humains » (organes, splanchnologie descriptive) n'ont plus qu'une carte, qui ouvre une fenêtre coupée en deux pour choisir le jeu ; « Les termes médicamenteux » deviennent « Les termes médicaux » (tout le vocabulaire du milieu médical) ; nouveau jeu **Les vaisseaux sanguins** (279 artères et veines, dont 101 principales, modèle 3D Z-Anatomy, choix des zones et des artères et/ou veines, squelette et cœur en transparence) ; os ou partie d'os survolé bien plus visible (rose franc et contour lumineux, au lieu d'un blanc à peine plus clair). |

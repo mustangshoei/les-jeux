@@ -91,10 +91,11 @@
 <script defer src="js/game/play.js"></script>
 <script defer src="js/game/results.js"></script>
 <script defer src="js/game/autocomplete.js"></script>
-<!-- jeu « Les termes médicaux » (sans 3D) : suggestions de saisie, écrans communs aux modes, mode Devinette -->
+<!-- jeu « Les termes médicaux » (sans 3D) : suggestions de saisie, écrans communs aux modes, modes Devinette et QCM -->
 <script defer src="js/game/terms-suggest.js"></script>
 <script defer src="js/game/terms-game.js"></script>
 <script defer src="js/game/terms-devinette.js"></script>
+<script defer src="js/game/terms-qcm.js"></script>
 <script defer src="js/game/home.js"></script>
 <!-- compte du joueur (comptes communs à tous les jeux) et statistiques -->
 <script defer src="js/account/profile.js"></script>
@@ -554,18 +555,29 @@
       <!-- ===== Colonne droite : mode de jeu, options, lancement ===== -->
       <section class="setup-col" aria-labelledby="tSetupComment">
         <div class="setup-col__tete"><h3 id="tSetupComment" class="setup-col__nom">Comment jouer</h3></div>
-        <!-- cartes générées par js/game/terms-game.js (TERM_MODES) : Devinette, QCM (bientôt) -->
+        <!-- cartes générées par js/game/terms-game.js (TERM_MODES) : Devinette, QCM -->
         <div class="choix-cartes" id="tModes" role="radiogroup" aria-label="Mode de jeu"></div>
         <div class="setup-bloc">
           <span class="setup-etiquette">Options</span>
           <div class="options">
             <label class="interrupteur"><input type="checkbox" id="tOptAuto" role="switch" checked><span class="interrupteur__piste" aria-hidden="true"></span><span class="interrupteur__texte">Suggestions de saisie (dès 2 lettres)</span></label>
             <label class="interrupteur"><input type="checkbox" id="tOptTol" role="switch" checked><span class="interrupteur__piste" aria-hidden="true"></span><span class="interrupteur__texte">Tolérance aux fautes de frappe mineures</span></label>
+            <!-- QCM : nombre de propositions par question -->
+            <div class="termes-nbchoix" id="tChoicesWrap" hidden>
+              <span class="interrupteur__texte">Propositions par question</span>
+              <div class="onglets" id="tChoices" role="radiogroup" aria-label="Nombre de propositions">
+                <label class="onglet"><input type="radio" name="tchoix" value="2"><span>2</span></label>
+                <label class="onglet"><input type="radio" name="tchoix" value="3"><span>3</span></label>
+                <label class="onglet"><input type="radio" name="tchoix" value="4" checked><span>4</span></label>
+                <label class="onglet"><input type="radio" name="tchoix" value="5"><span>5</span></label>
+                <label class="onglet"><input type="radio" name="tchoix" value="6"><span>6</span></label>
+              </div>
+            </div>
           </div>
         </div>
         <p class="ta2"><b>Les briques des mots médicaux.</b> Chaque définition correspond à un préfixe, un radical ou
-          un suffixe (« hépat(o)- » pour « Foie »). Accents, majuscules, tirets et parenthèses ne comptent pas :
-          « hepato » vaut « hépat(o)- ». Après chaque réponse, des exemples de mots réels.</p>
+          un suffixe (« hépat(o)- » pour « Foie »). En Devinette, accents, majuscules, tirets et parenthèses ne
+          comptent pas : « hepato » vaut « hépat(o)- ». Après chaque réponse, des exemples de mots réels.</p>
         <div class="setup-depart">
           <span class="warn-txt" id="tWarn" aria-live="polite"></span>
           <button type="button" class="btn primary btn-start" id="tStart">Lancer la partie</button>

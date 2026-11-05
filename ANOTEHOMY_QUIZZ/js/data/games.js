@@ -88,8 +88,8 @@
     { id: 'termes-medicaux', chapter: 'langue', kind: 'jeu', status: 'ready', icon: 'termes', tint: 'lavande',
       name: 'Les termes médicaux',
       tagline: 'Les briques du vocabulaire médical : préfixes, radicaux et suffixes.',
-      desc: 'Une définition s\'affiche : écrivez le morphème qui lui correspond (hépat(o)- pour « Foie », -ite pour « Inflammation »).',
-      meta: (NS.MORPHEMES || []).length + ' morphèmes · Devinette' },
+      desc: 'Une définition s\'affiche : écrivez le morphème qui lui correspond (Devinette), ou choisissez-le parmi 2 à 6 propositions (QCM).',
+      meta: (NS.MORPHEMES || []).length + ' morphèmes · Devinette · QCM' },
 
     /* ---------- 3. Apprendre la Vie ---------- */
     { id: 'corps-humain', chapter: 'vie', kind: 'module', status: 'soon', icon: 'corps',

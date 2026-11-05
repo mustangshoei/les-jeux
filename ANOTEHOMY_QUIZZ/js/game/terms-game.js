@@ -10,7 +10,8 @@
    Chaque MODE DE JEU s'enregistre dans TERM_MODES (registerTermMode) :
      id, name, icon, desc   carte du mode dans la configuration
      status                 'ready' (jouable) ou 'soon' (carte grisée, « Bientôt »)
-     options                options de la configuration qui le concernent : ['auto', 'tol']
+     options                options de la configuration qui le concernent (les autres sont cachées) :
+                            'auto' (suggestions), 'tol' (fautes de frappe), 'choices' (nombre de propositions)
      mount(el, ctx)         construit l'interface de question dans el, au début de la partie.
                             ctx.answer(given, r) : réponse donnée (given : texte affiché, r : { ok, typo,
                             note }), ctx.skip() : question passée, ctx.settings, ctx.items (tous les
@@ -18,8 +19,8 @@
      ask(m)                 affiche la question du morphème m
      lock()                 fige l'interface pendant le retour immédiat
      unmount()              fin de partie
-   Mode « Devinette » : js/game/terms-devinette.js. Mode « QCM » : annoncé (à écrire dans
-   js/game/terms-qcm.js, sur le même modèle).
+   Modes : « Devinette » (js/game/terms-devinette.js), « QCM » (js/game/terms-qcm.js). Tous deux affichent
+   la définition avec termDefinitionHtml / showTermDefinition (ci-dessous).
    ========================================================================== */
 (function (NS) {
   'use strict';
@@ -40,9 +41,6 @@
     if (!MODE_ORDER.includes(m.id)) MODE_ORDER.push(m.id);
     TERM_MODES[m.id] = Object.assign(TERM_MODES[m.id] || {}, m);
   }
-  /* annoncé : la carte est grisée tant que js/game/terms-qcm.js ne le déclare pas 'ready' */
-  registerTermMode({ id: 'qcm', name: 'QCM', icon: '📋', status: 'soon', options: [],
-    desc: 'Quatre morphèmes proposés : choisissez le bon.' });
 
   /* ---------------- Données ----------------
      Chaque morphème reçoit (une fois) :
@@ -77,7 +75,8 @@
   const byKey = k => BY_KEY.get(k) || [];
 
   /* ---------------- Réglages et session ---------------- */
-  const settings = { mode: 'devinette', types: new Set(TYPES.map(t => t.id)), count: 15, auto: true, tol: true };
+  /* choices : nombre de propositions du QCM (2 à 6) */
+  const settings = { mode: 'devinette', types: new Set(TYPES.map(t => t.id)), count: 15, auto: true, tol: true, choices: 4 };
   /* phase : 'off' (écrans fermés) | 'setup' | 'play' (question ouverte) | 'feedback' (réponse affichée) | 'end' */
   const session = { phase: 'off', game: null, queue: [], idx: 0, log: [], ok: 0, ko: 0, points: 0, t0: 0, elapsed: 0, timer: 0, nextT: 0 };
   const pool = () => prepare().filter(m => settings.types.has(m.type));
@@ -110,11 +109,13 @@
     updateOpts();
     updatePool();
   }
-  /* les options qui ne concernent pas le mode choisi sont estompées */
+  /* seules les options du mode choisi sont affichées */
   function updateOpts() {
     const opts = (mode() && mode().options) || [];
-    $('tOptAuto').closest('label').classList.toggle('is-disabled', !opts.includes('auto'));
-    $('tOptTol').closest('label').classList.toggle('is-disabled', !opts.includes('tol'));
+    $('tOptAuto').closest('label').hidden = !opts.includes('auto');
+    $('tOptTol').closest('label').hidden = !opts.includes('tol');
+    $('tChoicesWrap').hidden = !opts.includes('choices');
+    $('tChoices').querySelectorAll('input').forEach(i => { i.checked = Number(i.value) === settings.choices; });
   }
   const countMax = () => Math.max(1, pool().length);
   function updatePool() {
@@ -223,6 +224,16 @@
     showFeedback(m, ok, given, r);
   }
 
+  /* ---------------- Définition (commune aux modes) ----------------
+     La définition au centre, et trois indices : type, langue d'origine (sans le mot d'origine, qui donnerait
+     la réponse), thème. */
+  const termDefinitionHtml = () => '<p class="qlabel termes-qlabel">Définition</p><p class="termes-sens" id="tSens"></p>' +
+    '<div class="termes-indices" id="tIndices" aria-label="Indices"></div>';
+  function showTermDefinition(m) {
+    $('tSens').textContent = m.sens;
+    $('tIndices').innerHTML = [m.type, m._langue, m.domaine].map(t => `<span class="chip">${esc(t)}</span>`).join('');
+  }
+
   /* ---------------- Retour immédiat ---------------- */
   const ICON_OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const ICON_KO = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -264,7 +275,7 @@
 
   /* ---------------- Fin de partie ---------------- */
   const detail = () => TYPES.filter(t => settings.types.has(t.id)).map(t => t.name.toLowerCase()).join(', ')
-    .replace(/^./, c => c.toUpperCase());
+    .replace(/^./, c => c.toUpperCase()) + (settings.mode === 'qcm' ? ' - ' + settings.choices + ' propositions' : '');
 
   function end(aborted) {
     stopTimers();
@@ -341,6 +352,7 @@
     });
     $('tOptAuto').addEventListener('change', e => { settings.auto = e.target.checked; });
     $('tOptTol').addEventListener('change', e => { settings.tol = e.target.checked; });
+    $('tChoices').addEventListener('change', e => { if (e.target.matches('input')) settings.choices = Number(e.target.value); });
     $('tStart').addEventListener('click', start);
     $('tQuit').addEventListener('click', () => { if (inGame()) end(true); });
     /* Entrée pendant le retour immédiat : question suivante */
@@ -350,5 +362,5 @@
     NS.SCREENS[GAME_ID] = { open, close };
   }
 
-  Object.assign(NS, { initTerms, registerTermMode, TERM_MODES, termsOpen: isOpen, termsSession: session, termsSettings: settings, prepareTerms: prepare });
+  Object.assign(NS, { initTerms, registerTermMode, TERM_MODES, termsOpen: isOpen, termsSession: session, termDefinitionHtml, showTermDefinition, termsSettings: settings, prepareTerms: prepare });
 })(AQ.game);

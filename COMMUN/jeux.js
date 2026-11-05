@@ -80,7 +80,7 @@
         { id: 'nerfs', nom: 'Les nerfs', groupe: 'Le corps humain', bientot: true },
         { id: 'vaisseaux', nom: 'Les vaisseaux sanguins', groupe: 'Le corps humain', variantes: NOMMAGE },
         { id: 'pathologies', nom: 'Les pathologies', groupe: 'La langue médicale', bientot: true },
-        { id: 'termes-medicaux', nom: 'Les termes médicaux', groupe: 'La langue médicale', variantes: ['Devinette'] }
+        { id: 'termes-medicaux', nom: 'Les termes médicaux', groupe: 'La langue médicale', variantes: ['Devinette', 'QCM'] }
       ] },
     /* bloque : la tuile reste visible, partout, mais elle n'est plus cliquable */
     { id: 'histehory', dossier: 'HISTEHORY_QUIZZ', nom: 'Histehory Quizz', icone: '📜', version: '0.1.0', bloque: true,

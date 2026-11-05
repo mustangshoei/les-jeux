@@ -77,6 +77,34 @@
 .termes-form .btn-row { margin-top: 12px; }
 .termes-aide { margin: 12px 0 0; font-size: .78rem; color: var(--muted); text-align: center; }
 
+/* ---------- QCM : nombre de propositions (configuration), puis les propositions ---------- */
+.termes-nbchoix { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .4rem .8rem; color: var(--ink-2); font-size: .9rem; }
+.termes-nbchoix .onglet > span { min-width: 2.1rem; }
+
+.termes-choix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; text-align: left; }
+.termes-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 3.4rem;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 14px;
+  background: var(--champ);
+  color: var(--ink);
+  text-align: left;
+  transition: border-color .15s ease, background-color .15s ease, opacity .2s ease, transform .1s ease;
+}
+.termes-option:hover:not(:disabled) { border-color: var(--rose); background: var(--rose-doux); }
+.termes-option:active:not(:disabled) { transform: translateY(1px); }
+.termes-option:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
+.termes-option .kbd { flex: none; margin: 0; }
+.termes-option__forme { font-size: 1.15rem; font-weight: 700; overflow-wrap: anywhere; }
+.termes-option:disabled { cursor: default; opacity: .45; }
+.termes-option.is-ok { opacity: 1; border-color: var(--ok); background: var(--ok-doux); color: var(--ok-txt); }
+.termes-option.is-ko { opacity: 1; border-color: var(--ko); background: rgba(255, 74, 95, .12); color: #ff9eaa; }
+.termes-qcm-actions { justify-content: center; margin-top: 14px; }
+
 /* ---------- Retour immédiat : la fiche du morphème et ses exemples ---------- */
 .termes-feedback { padding: 16px 18px; }
 .termes-donne { margin: 0 0 2px; }
@@ -104,4 +132,6 @@
   .termes-scores .stat span { display: none; }
   .termes-scores .timer { margin-left: 2px; font-size: .82rem; }
   .termes-carte { padding: 18px 14px; }
+  .termes-choix { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .termes-option { min-height: 2.9rem; }
 }
