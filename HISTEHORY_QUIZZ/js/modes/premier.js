@@ -3,7 +3,7 @@
 
    Deux personnages s'affichent dans des cadres (même principe que les rectangles de la page
    d'accueil : portrait-médaille en traits blancs, nom sur un cartouche). La question change à chaque
-   manche : « Qui est né ⟵ AVANT ? » ou « Qui est né APRÈS ⟶ ? ». On clique sur le bon cadre
+   manche : « Qui est né ⟵ EN PREMIER ? » ou « Qui est né EN DERNIER ⟶ ? ». On clique sur le bon cadre
    (ou ← / →) ; les deux années s'inscrivent alors sur les cartouches, et une mini-frise montre l'écart.
    Bonne réponse : la manche suivante arrive seule (DELAI_AUTO) ; erreur : on prend le temps de lire,
    « Suivant » (ou Entrée) pour continuer.
@@ -134,7 +134,7 @@
     $('premier-barre').style.width = (100 * partie.i / partie.paires.length) + '%';
     // La consigne : mot, couleur et flèche opposés, et une petite animation quand elle change
     const mot = $('premier-sens');
-    mot.textContent = m.sens === 'avant' ? '⟵ avant' : 'après ⟶';
+    mot.textContent = m.sens === 'avant' ? '⟵ en premier' : 'en dernier ⟶';
     mot.dataset.sens = m.sens;
     mot.classList.remove('question__sens--anime');
     void mot.offsetWidth;
@@ -240,7 +240,7 @@
     id: 'premier',
     icone: '🥇',
     titre: 'Qui est venu en premier ?',
-    description: 'Deux personnages : lequel est né avant, ou après, l\'autre ?',
+    description: 'Deux personnages : lequel est né en premier, ou en dernier ?',
     ouvrir
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

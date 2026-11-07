@@ -386,7 +386,7 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
   transition: width .35s ease;
 }
 
-/* La consigne : AVANT (vert d'eau, flèche vers la gauche = plus tôt sur la frise) et APRÈS (orange,
+/* La consigne : EN PREMIER (vert d'eau, flèche vers la gauche = plus tôt sur la frise) et EN DERNIER (orange,
    flèche vers la droite) n'ont ni la même couleur ni la même flèche ; elle « saute » à chaque manche. */
 .question-bloc { text-align: center; }
 .question { font-family: var(--serif); font-size: clamp(1.4rem, 4.2vw, 2.2rem); }

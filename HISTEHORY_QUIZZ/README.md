@@ -3,7 +3,7 @@
 Jeu consacré à l'histoire (nom provisoire). Il fait partie du dossier des jeux : lancement, comptes
 communs et serveur sont décrits dans le [README à la racine](../README.md).
 
-**Version 1.1.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 1.1.1** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions)).
 
 **Modes de jeu** : un seul est jouable, **Qui est venu en premier ?** ; les six autres restent grisés
@@ -14,7 +14,7 @@ Les paires, Chronologie (événements, dynasties, successions), Vrai ou Faux.
 
 Deux personnages s'affichent dans des cadres (même principe que les rectangles de la page d'accueil) :
 le portrait-médaille au centre, le nom sur un cartouche (pays · domaine · époque). La consigne change à
-chaque manche : « Qui est né **⟵ AVANT** ? » (vert d'eau) ou « Qui est né **APRÈS ⟶** ? » (orange). On
+chaque manche : « Qui est né **⟵ EN PREMIER** ? » (vert d'eau) ou « Qui est né **EN DERNIER ⟶** ? » (orange). On
 clique sur le bon cadre (ou flèche gauche / droite) ; les années s'inscrivent sur les cartouches, un
 badge ✓ / ✗ marque les cadres et une mini-frise montre l'écart. Bonne réponse : la manche suivante
 arrive seule au bout de 1,8 s (le bouton « Suivant » se remplit) ; erreur : on lit, puis « Suivant ».
@@ -44,6 +44,7 @@ d'où il s'affiche dans le menu « Jeux » et sur la page d'accueil.
 
 | Version | Date | Changements |
 |---|---|---|
+| 1.1.1 | 08/11/2026 | Consigne « en premier / en dernier » au lieu de « avant / après ». |
 | 1.1.0 | 08/11/2026 | Écran de jeu revu : portrait-héros et cartouche, consigne avant / après en couleurs et flèches opposées, badges ✓ / ✗, mini-frise, enchaînement automatique, série, survol réservé à la souris. |
 | 1.0.0 | 08/11/2026 | Mode « Qui est venu en premier ? » (avant / après), portraits des personnes, sept modes annoncés. |
 | 0.1.0 | 28/10/2026 | Page d'accueil (quatre modes grisés) et comptes communs. |
