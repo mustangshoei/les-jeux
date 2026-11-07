@@ -365,27 +365,50 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
   padding: .8rem 1rem 1rem;
 }
 .jeu-barre { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.jeu-barre__info { color: var(--ink-2); font-weight: 600; font-variant-numeric: tabular-nums; }
-.jeu-barre__score { font-weight: 800; color: var(--accent-clair); font-variant-numeric: tabular-nums; }
-.jeu-progres { height: 6px; border-radius: 999px; background: var(--card-2); overflow: hidden; }
-.jeu-progres > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-clair), var(--accent-2)); transition: width .35s ease; }
+.jeu-barre__info { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.jeu-barre__droite { display: flex; align-items: center; gap: .7rem; }
+.jeu-barre__score { color: var(--ink-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.jeu-barre__serie {
+  padding: .1rem .55rem;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, .16);
+  color: var(--accent-clair);
+  font-size: .85rem;
+  font-weight: 800;
+  animation: pop .35s ease;
+}
+.jeu-progres { height: 8px; border-radius: 999px; background: #2e2416; overflow: hidden; }
+.jeu-progres > div {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent-clair), var(--accent-2));
+  box-shadow: 0 0 12px rgba(251, 191, 36, .55);
+  transition: width .35s ease;
+}
 
-.question { font-family: var(--serif); font-size: clamp(1.4rem, 4.2vw, 2.2rem); text-align: center; }
+/* La consigne : AVANT (vert d'eau, flèche vers la gauche = plus tôt sur la frise) et APRÈS (orange,
+   flèche vers la droite) n'ont ni la même couleur ni la même flèche ; elle « saute » à chaque manche. */
+.question-bloc { text-align: center; }
+.question { font-family: var(--serif); font-size: clamp(1.4rem, 4.2vw, 2.2rem); }
 .question__sens {
   display: inline-block;
-  padding: 0 .45rem;
+  padding: 0 .5rem;
   border-radius: 10px;
-  background: var(--accent);
-  color: var(--accent-texte);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .03em;
+  white-space: nowrap;
 }
+.question__sens[data-sens="avant"] { background: #2dd4bf; color: #04201c; }
 .question__sens[data-sens="apres"] { background: var(--accent-2); color: #fff; }
+.question__sens--anime { animation: pop .4s ease; }
+@keyframes pop { 0% { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.aide-jeu { margin-top: .2rem; font-size: .85rem; color: var(--muted); }
 
 /* Les deux cadres : même principe que les rectangles de la page d'accueil (ACCUEIL/accueil.css) —
-   couleur du jeu dégradée, lueur d'accent dans le coin, portrait en traits blancs fondu dans la
-   couleur (« soft-light ») et effacé vers le haut, sous les libellés. */
+   couleur du jeu dégradée, lueur d'accent dans un coin (en miroir d'un cadre à l'autre). Le portrait
+   est le héros, centré, en traits clairs bien présents ; le nom est posé dessous sur un cartouche,
+   comme la plaque d'une vitrine de musée, où la date vient s'inscrire après la réponse. */
 .duel { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.6rem, 2.5vw, 1.4rem); }
 .cadre {
   --jeu-couleur: #33230d;
@@ -395,8 +418,9 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: .7rem;
   min-height: 0;
-  padding: clamp(.8rem, 2.4vw, 1.4rem);
+  padding: clamp(.7rem, 2vw, 1.1rem);
   border: 2px solid rgba(255, 255, 255, .14);
   border-radius: 22px;
   background: linear-gradient(165deg, rgba(255, 255, 255, .13), rgba(0, 0, 0, .22)), var(--jeu-couleur);
@@ -419,39 +443,65 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
   pointer-events: none;
   z-index: -1;
 }
-.cadre::before {
-  content: '';
-  position: absolute;
-  inset: 22% 6% 4%;
-  background: var(--portrait, none) center bottom / contain no-repeat;
-  mix-blend-mode: soft-light;
-  opacity: .95;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 34%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 34%);
-  pointer-events: none;
-  z-index: -1;
-  transition: opacity .3s ease;
+#premier-a::after { right: auto; left: -28%; }
+.cadre__portrait {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: var(--portrait, none) center / contain no-repeat;
+  /* « screen » : le trait blanc éclaire la couleur du fond au lieu de s'y fondre ; teinte ivoire */
+  mix-blend-mode: screen;
+  filter: sepia(.45) brightness(.92);
+  opacity: .9;
+  transition: opacity .3s ease, transform .3s ease;
 }
-.cadre:not(:disabled):hover, .cadre:not(:disabled):focus-visible {
-  transform: scale(1.025);
-  border-color: var(--jeu-accent);
-  box-shadow: 0 22px 46px rgba(0, 0, 0, .42);
-  outline: none;
+.cadre__cartouche {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .15rem;
+  width: min(100%, 26rem);
+  padding: .5rem .9rem .55rem;
+  border: 1px solid rgba(245, 158, 11, .38);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .28), rgba(0, 0, 0, .46));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
 }
-.cadre:not(:disabled):hover::before { opacity: 1; }
-.cadre:disabled { cursor: default; }
-.cadre__nom { font-family: var(--serif); font-size: clamp(1.05rem, 3vw, 1.6rem); font-weight: 800; line-height: 1.15; }
-.cadre__info { margin-top: .3rem; font-size: clamp(.75rem, 1.8vw, .92rem); color: rgba(255, 255, 255, .72); }
+.cadre__nom { font-family: var(--serif); font-size: clamp(1.05rem, 2.6vw, 1.5rem); font-weight: 800; line-height: 1.15; }
+.cadre__info { font-size: clamp(.74rem, 1.6vw, .88rem); color: rgba(255, 255, 255, .86); }
 .cadre__date {
-  margin-top: auto;
-  padding: .3rem .9rem;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, .55);
+  margin-top: .2rem;
   font-family: var(--serif);
-  font-size: clamp(1.05rem, 3vw, 1.5rem);
+  font-size: clamp(1.05rem, 2.6vw, 1.4rem);
   font-weight: 700;
+  color: var(--accent-clair);
   font-variant-numeric: tabular-nums;
 }
+.cadre__badge {
+  position: absolute;
+  top: .7rem;
+  left: .7rem;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #fff;
+}
+.cadre__badge:empty { display: none; }
+.cadre--bon .cadre__badge { background: #16a34a; animation: pop .35s ease; }
+.cadre--faux .cadre__badge { background: #dc2626; animation: pop .35s ease; }
+
+/* Survol : souris seulement. Sur écran tactile, l'état resterait accroché au cadre de la manche suivante. */
+@media (hover: hover) {
+  .cadre:not(:disabled):hover { transform: scale(1.02); border-color: var(--jeu-accent); box-shadow: 0 22px 46px rgba(0, 0, 0, .42); }
+  .cadre:not(:disabled):hover .cadre__portrait { opacity: 1; transform: scale(1.03); }
+}
+.cadre:not(:disabled):focus-visible { border-color: var(--jeu-accent); outline: 2px solid var(--jeu-accent); outline-offset: 3px; }
+.cadre:not(:disabled):active { transform: scale(.99); }
+.cadre:disabled { cursor: default; }
 .cadre--bon { border-color: var(--green); box-shadow: 0 0 0 3px rgba(74, 222, 128, .35), var(--shadow); }
 .cadre--bon .cadre__date { color: #bbf7d0; }
 .cadre--faux { border-color: #f87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .35), var(--shadow); }
@@ -459,24 +509,57 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 .cadre--autre { filter: brightness(.75) saturate(.8); }
 
 /* Écran plus haut que large (téléphone, tablette debout) : côte à côte, les cadres seraient de hautes
-   colonnes presque vides. Ils s'empilent, et le portrait se range à droite, à pleine hauteur, effacé
-   vers la gauche (les libellés) — comme les rectangles de l'accueil sur petit écran. */
+   colonnes. Ils s'empilent : cartouche à gauche, portrait à droite, à pleine hauteur. */
 @media (max-aspect-ratio: 1/1) {
   .duel { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-  .cadre { align-items: flex-start; text-align: left; }
-  .cadre__nom, .cadre__info { max-width: 58%; }
-  .cadre::before {
-    inset: 5% 3% 5% 34%;
-    background-position: right center;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 38%);
-    mask-image: linear-gradient(to right, transparent 0%, #000 38%);
-  }
+  .cadre { flex-direction: row-reverse; align-items: stretch; }
+  .cadre__portrait { flex: 0 0 48%; }
+  .cadre__cartouche { flex: 1; align-self: center; align-items: flex-start; width: auto; text-align: left; }
+  #premier-a::after { left: auto; right: -28%; }
+  .cadre__badge { top: .6rem; left: auto; right: .6rem; }
 }
 
-.jeu-pied { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: .4rem 1rem; min-height: 2.9rem; }
-.verdict { font-weight: 700; }
+/* Pied : verdict, mini-frise de l'écart, « Suivant » (qui se remplit quand la suite arrive seule) */
+.jeu-pied { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: .45rem 1.1rem; min-height: 3rem; }
+.verdict { font-weight: 800; }
 .verdict--bon { color: var(--green); }
 .verdict--faux { color: var(--red); }
+.frise { display: flex; align-items: center; isolation: isolate; font-family: var(--serif); font-weight: 700; font-variant-numeric: tabular-nums; }
+.frise__debut, .frise__fin { color: var(--ink); white-space: nowrap; }
+.frise__debut::after, .frise__fin::before {
+  content: '';
+  display: inline-block;
+  width: .55rem;
+  height: .55rem;
+  margin: 0 .35rem;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: middle;
+}
+.frise__trait {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-width: 7rem;
+  font-family: system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--accent-clair);
+}
+.frise__trait::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px solid var(--accent); z-index: -1; }
+.frise__ecart { padding: 0 .4rem; background: var(--bg); white-space: nowrap; }
+#premier-suite { position: relative; overflow: hidden; isolation: isolate; }
+#premier-suite.btn-auto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, .35);
+  transform-origin: left;
+  animation: remplir var(--delai, 1.8s) linear forwards;
+  z-index: -1;
+}
+@keyframes remplir { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (max-width: 640px) { .jeu-pied { gap: .35rem .8rem; } .frise__trait { min-width: 4.5rem; } }
 
 /* ---------- Petits écrans ---------- */
 @media (max-width: 640px) {
@@ -485,7 +568,8 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cat-card, .btn, .cadre, .jeu-progres > div { transition: none; }
-  .cadre:not(:disabled):hover { transform: none; }
+  .cat-card, .btn, .cadre, .cadre__portrait, .jeu-progres > div { transition: none; }
+  .cadre:not(:disabled):hover, .cadre:not(:disabled):hover .cadre__portrait { transform: none; }
+  .question__sens--anime, .cadre__badge, .jeu-barre__serie, #premier-suite.btn-auto::after { animation: none !important; }
   .cat-card:hover { transform: none; }
 }

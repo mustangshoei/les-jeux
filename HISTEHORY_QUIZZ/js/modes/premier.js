@@ -2,9 +2,11 @@
    modes/premier.js — « Qui est venu en premier ? »
 
    Deux personnages s'affichent dans des cadres (même principe que les rectangles de la page
-   d'accueil : portrait en traits blancs fondu dans la couleur du jeu). La question change à chaque
-   manche : « Qui est né AVANT ? » ou « Qui est né APRÈS ? ». On clique sur le bon cadre ; les deux
-   années de naissance s'affichent alors.
+   d'accueil : portrait-médaille en traits blancs, nom sur un cartouche). La question change à chaque
+   manche : « Qui est né ⟵ AVANT ? » ou « Qui est né APRÈS ⟶ ? ». On clique sur le bon cadre
+   (ou ← / →) ; les deux années s'inscrivent alors sur les cartouches, et une mini-frise montre l'écart.
+   Bonne réponse : la manche suivante arrive seule (DELAI_AUTO) ; erreur : on prend le temps de lire,
+   « Suivant » (ou Entrée) pour continuer.
 
    Tirage d'une paire : jamais la même année de naissance ; si l'une des deux dates est
    approximative (« vers »), au moins ECART_APPROX ans d'écart, pour que la réponse reste sûre.
@@ -15,6 +17,7 @@
 
   const H = window.HISTEHORY || {};
   const ECART_APPROX = 15;
+  const DELAI_AUTO = 1800;
   const NIVEAUX = {
     facile: { titre: 'Facile', aide: 'Les plus connus', max: 2 },
     moyen: { titre: 'Moyen', aide: 'Connus et moins connus', max: 3 },
@@ -23,9 +26,12 @@
   const LONGUEURS = [10, 20, 30];
   const reglages = { niveau: 'facile', longueur: 10 };
   let partie = null;
+  let minuterie = null;
 
   const $ = (id) => document.getElementById(id);
   const hasard = (n) => Math.floor(Math.random() * n);
+  const nombre = (n) => n.toLocaleString('fr-FR');
+  const pluriel = (n, mot) => nombre(n) + ' ' + mot + (n > 1 ? 's' : '');
 
   /* ---------- Textes ---------- */
   function annee(p) {
@@ -80,15 +86,30 @@
     choix($('premier-longueurs'), LONGUEURS.map((n) => [n, n + ' questions']), reglages.longueur, (v) => { reglages.longueur = v; });
   }
   function ouvrir() {
+    arreterMinuterie();
     configurer();
     Histehory.afficher('screen-premier-config');
   }
 
   /* ---------- Partie ---------- */
+  function arreterMinuterie() {
+    clearTimeout(minuterie);
+    minuterie = null;
+    $('premier-suite').classList.remove('btn-auto');
+  }
+
   function demarrer() {
-    partie = { paires: tirerPaires(reglages.longueur), i: 0, score: 0, debut: Date.now(), repondu: false };
+    partie = { paires: tirerPaires(reglages.longueur), i: 0, score: 0, serie: 0, debut: Date.now(), repondu: false };
     Histehory.afficher('screen-premier-jeu');
     manche();
+  }
+
+  function afficherEtat() {
+    $('premier-progression').textContent = 'Question ' + (partie.i + 1) + ' / ' + partie.paires.length;
+    $('premier-score').textContent = pluriel(partie.score, 'point');
+    const serie = $('premier-serie');
+    serie.textContent = partie.serie >= 2 ? '🔥 ' + partie.serie + ' d\'affilée' : '';
+    serie.classList.toggle('hidden', partie.serie < 2);
   }
 
   function remplirCadre(cadre, p) {
@@ -97,26 +118,47 @@
     const img = portrait(p);
     cadre.style.setProperty('--portrait', img ? 'url("' + img + '")' : 'none');
     cadre.querySelector('.cadre__nom').textContent = p.nom;
-    cadre.querySelector('.cadre__info').textContent = [p.pays, (H.DOMAINES || {})[p.domaine]].filter(Boolean).join(' · ');
+    cadre.querySelector('.cadre__info').textContent =
+      [p.pays, (H.DOMAINES || {})[p.domaine], (H.EPOQUES || {})[p.epoque]].filter(Boolean).join(' · ');
     const date = cadre.querySelector('.cadre__date');
     date.textContent = ne(p);
     date.classList.add('invisible');
+    cadre.querySelector('.cadre__badge').textContent = '';
   }
 
   function manche() {
+    arreterMinuterie();
     const m = partie.paires[partie.i];
     partie.repondu = false;
-    $('premier-progression').textContent = 'Question ' + (partie.i + 1) + ' / ' + partie.paires.length;
-    $('premier-score').textContent = partie.score + ' point' + (partie.score > 1 ? 's' : '');
+    afficherEtat();
     $('premier-barre').style.width = (100 * partie.i / partie.paires.length) + '%';
+    // La consigne : mot, couleur et flèche opposés, et une petite animation quand elle change
     const mot = $('premier-sens');
-    mot.textContent = m.sens === 'avant' ? 'avant' : 'après';
+    mot.textContent = m.sens === 'avant' ? '⟵ avant' : 'après ⟶';
     mot.dataset.sens = m.sens;
+    mot.classList.remove('question__sens--anime');
+    void mot.offsetWidth;
+    mot.classList.add('question__sens--anime');
+    // Aide à la première question seulement (place réservée : rien ne bouge ensuite)
+    const souris = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches;
+    $('premier-aide').textContent = souris ? 'Cliquez sur le bon portrait (ou ← / →)' : 'Touchez le bon portrait';
+    $('premier-aide').classList.toggle('invisible', partie.i > 0);
     remplirCadre($('premier-a'), m.a);
     remplirCadre($('premier-b'), m.b);
     $('premier-suite').classList.add('invisible');
+    $('premier-frise').classList.add('invisible');
     $('premier-verdict').textContent = '';
     $('premier-verdict').className = 'verdict';
+  }
+
+  // Mini-frise : la plus ancienne naissance à gauche, l'écart au milieu
+  function frise(m) {
+    const [x, y] = m.a.naissance < m.b.naissance ? [m.a, m.b] : [m.b, m.a];
+    const f = $('premier-frise');
+    f.querySelector('.frise__debut').textContent = annee(x);
+    f.querySelector('.frise__fin').textContent = annee(y);
+    f.querySelector('.frise__ecart').textContent = pluriel(y.naissance - x.naissance, 'an');
+    f.classList.remove('invisible');
   }
 
   function repondre(cote) {
@@ -126,27 +168,38 @@
     const premier = m.a.naissance < m.b.naissance ? 'a' : 'b';
     const bon = m.sens === 'avant' ? premier : (premier === 'a' ? 'b' : 'a');
     const juste = cote === bon;
-    if (juste) partie.score++;
+    if (juste) { partie.score++; partie.serie++; } else partie.serie = 0;
     ['a', 'b'].forEach((c) => {
       const cadre = $('premier-' + c);
       cadre.disabled = true;
       cadre.classList.add(c === bon ? 'cadre--bon' : (c === cote ? 'cadre--faux' : 'cadre--autre'));
+      cadre.querySelector('.cadre__badge').textContent = c === bon ? '✓' : (c === cote ? '✗' : '');
       cadre.querySelector('.cadre__date').classList.remove('invisible');
     });
-    const ecart = Math.abs(m.a.naissance - m.b.naissance);
+    $('premier-aide').classList.add('invisible');
     const v = $('premier-verdict');
-    v.textContent = (juste ? 'Bonne réponse !' : 'Raté !') + ' ' + ecart + ' an' + (ecart > 1 ? 's' : '') + ' d\'écart.';
+    v.textContent = juste ? '✓ Bonne réponse !' : '✗ Raté !';
     v.className = 'verdict ' + (juste ? 'verdict--bon' : 'verdict--faux');
-    $('premier-score').textContent = partie.score + ' point' + (partie.score > 1 ? 's' : '');
+    frise(m);
+    afficherEtat();
+    $('premier-progression').textContent = 'Question ' + (partie.i + 1) + ' / ' + partie.paires.length;
     $('premier-barre').style.width = (100 * (partie.i + 1) / partie.paires.length) + '%';
     const suite = $('premier-suite');
     suite.textContent = partie.i + 1 < partie.paires.length ? 'Suivant →' : 'Voir le résultat';
     suite.classList.remove('invisible');
-    suite.focus();
+    suite.focus({ preventScroll: true });
+    // Bonne réponse : on enchaîne seul (le bouton se remplit pendant l'attente) ; erreur : on lit la frise
+    if (juste) {
+      suite.style.setProperty('--delai', DELAI_AUTO + 'ms');
+      void suite.offsetWidth;
+      suite.classList.add('btn-auto');
+      minuterie = setTimeout(suivant, DELAI_AUTO);
+    }
   }
 
   function suivant() {
     if (!partie || !partie.repondu) return;
+    arreterMinuterie();
     partie.i++;
     if (partie.i < partie.paires.length) manche();
     else terminer();

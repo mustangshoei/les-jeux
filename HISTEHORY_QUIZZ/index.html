@@ -68,20 +68,34 @@
   <div class="jeu-barre">
     <button type="button" id="premier-quitter" class="btn-link">✕ Quitter</button>
     <span id="premier-progression" class="jeu-barre__info"></span>
-    <span id="premier-score" class="jeu-barre__score"></span>
+    <span class="jeu-barre__droite">
+      <span id="premier-serie" class="jeu-barre__serie hidden"></span>
+      <span id="premier-score" class="jeu-barre__score"></span>
+    </span>
   </div>
   <div class="jeu-progres"><div id="premier-barre"></div></div>
-  <h1 class="question">Qui est né <span id="premier-sens" class="question__sens"></span>&nbsp;?</h1>
+  <div class="question-bloc">
+    <h1 class="question">Qui est né <span id="premier-sens" class="question__sens"></span>&nbsp;?</h1>
+    <p id="premier-aide" class="aide-jeu invisible"></p>
+  </div>
+  <!-- Un cadre : badge ✓ / ✗, portrait-médaille, cartouche (nom, pays · domaine · époque, date révélée) -->
   <div class="duel">
     <button type="button" id="premier-a" class="cadre">
-      <span class="cadre__nom"></span><span class="cadre__info"></span><span class="cadre__date"></span>
+      <span class="cadre__badge" aria-hidden="true"></span>
+      <span class="cadre__portrait" aria-hidden="true"></span>
+      <span class="cadre__cartouche"><span class="cadre__nom"></span><span class="cadre__info"></span><span class="cadre__date"></span></span>
     </button>
     <button type="button" id="premier-b" class="cadre">
-      <span class="cadre__nom"></span><span class="cadre__info"></span><span class="cadre__date"></span>
+      <span class="cadre__badge" aria-hidden="true"></span>
+      <span class="cadre__portrait" aria-hidden="true"></span>
+      <span class="cadre__cartouche"><span class="cadre__nom"></span><span class="cadre__info"></span><span class="cadre__date"></span></span>
     </button>
   </div>
   <div class="jeu-pied">
     <p id="premier-verdict" class="verdict" aria-live="polite"></p>
+    <div id="premier-frise" class="frise invisible" aria-hidden="true">
+      <span class="frise__debut"></span><span class="frise__trait"><span class="frise__ecart"></span></span><span class="frise__fin"></span>
+    </div>
     <button type="button" id="premier-suite" class="btn btn-primary invisible">Suivant →</button>
   </div>
 </section>
