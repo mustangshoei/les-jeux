@@ -685,6 +685,11 @@
     5: `hatchepsout-x mahavira-x`
   };
 
+  // Difficulté de chaque personne (champ « difficulte ») : celle de sa liste ci-dessus, 3 (« Moyen ») sinon
+  const niveauDe = {};
+  Object.entries(DIFFICULTE).forEach(([n, liste]) => liste.split(/\s+/).filter(Boolean).forEach((id) => { niveauDe[id] = +n; }));
+  PERSONNES.forEach((p) => { p.difficulte = niveauDe[p.id] || 3; });
+
   const H = window.HISTEHORY = window.HISTEHORY || {};
-  Object.assign(H, { PERSONNES, REGIONS, DOMAINES, EPOQUES });
+  Object.assign(H, { PERSONNES, REGIONS, DOMAINES, EPOQUES, DIFFICULTES });
 })();

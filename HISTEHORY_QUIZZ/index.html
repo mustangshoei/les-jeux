@@ -43,7 +43,63 @@
   <div id="menu-modes" class="cards" role="group" aria-label="Modes de jeu"></div>
 </section>
 
-<!-- Écrans des modes de jeu : un <section class="screen hidden"> par mode (aucun pour l'instant) -->
+<!-- Écrans des modes de jeu : des <section class="screen hidden"> par mode -->
+
+<!-- ===================== QUI EST VENU EN PREMIER ? (js/modes/premier.js) ===================== -->
+<section id="screen-premier-config" class="screen page page--centre hidden">
+  <div class="config">
+    <header class="config__tete">
+      <div class="config__icone" aria-hidden="true">🥇</div>
+      <h1>Qui est venu en premier ?</h1>
+      <p>Deux personnages, une question : lequel est né <strong>avant</strong>, ou <strong>après</strong>, l'autre ? Cliquez sur le bon cadre.</p>
+    </header>
+    <h2 class="config__titre">Niveau</h2>
+    <div id="premier-niveaux" class="choix-ligne" role="group" aria-label="Niveau"></div>
+    <h2 class="config__titre">Longueur</h2>
+    <div id="premier-longueurs" class="choix-ligne" role="group" aria-label="Longueur"></div>
+    <div class="config__actions">
+      <button type="button" class="btn btn-soft" data-action="menu">← Accueil</button>
+      <button type="button" id="premier-commencer" class="btn btn-primary">Commencer</button>
+    </div>
+  </div>
+</section>
+
+<section id="screen-premier-jeu" class="screen jeu-ecran hidden">
+  <div class="jeu-barre">
+    <button type="button" id="premier-quitter" class="btn-link">✕ Quitter</button>
+    <span id="premier-progression" class="jeu-barre__info"></span>
+    <span id="premier-score" class="jeu-barre__score"></span>
+  </div>
+  <div class="jeu-progres"><div id="premier-barre"></div></div>
+  <h1 class="question">Qui est né <span id="premier-sens" class="question__sens"></span>&nbsp;?</h1>
+  <div class="duel">
+    <button type="button" id="premier-a" class="cadre">
+      <span class="cadre__nom"></span><span class="cadre__info"></span><span class="cadre__date"></span>
+    </button>
+    <button type="button" id="premier-b" class="cadre">
+      <span class="cadre__nom"></span><span class="cadre__info"></span><span class="cadre__date"></span>
+    </button>
+  </div>
+  <div class="jeu-pied">
+    <p id="premier-verdict" class="verdict" aria-live="polite"></p>
+    <button type="button" id="premier-suite" class="btn btn-primary invisible">Suivant →</button>
+  </div>
+</section>
+
+<section id="screen-premier-fin" class="screen page page--centre hidden">
+  <div class="config fin">
+    <div class="config__icone" aria-hidden="true">🏆</div>
+    <h1>Partie terminée</h1>
+    <p id="premier-fin-score" class="fin__score"></p>
+    <p id="premier-fin-message" class="fin__message"></p>
+    <p id="premier-fin-detail" class="fin__detail"></p>
+    <div class="config__actions">
+      <button type="button" class="btn btn-soft" data-action="menu">← Accueil</button>
+      <button type="button" id="premier-reglages" class="btn btn-soft">Réglages</button>
+      <button type="button" id="premier-rejouer" class="btn btn-primary">Rejouer</button>
+    </div>
+  </div>
+</section>
 
 <!-- 0. Commun à tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et sélecteur.
         Facultatifs : s'ils manquent, Histehory Quizz se joue en invité, sans sélecteur. -->
@@ -55,7 +111,10 @@
 <script src="js/profils.js"></script>
 <script src="js/compte.js"></script>
 
-<!-- 2. Modes de jeu : un fichier par mode, dans js/modes/ (aucun pour l'instant) -->
+<!-- 2. Données (personnes, portraits), puis modes de jeu : un fichier par mode, dans js/modes/ -->
+<script src="js/donnees/personnes.js"></script>
+<script src="js/donnees/portraits.js"></script>
+<script src="js/modes/premier.js"></script>
 
 <!-- 3. Accueil (en dernier : il affiche les modes chargés ci-dessus) -->
 <script src="js/menu.js"></script>

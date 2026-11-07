@@ -1,0 +1,32 @@
+{
+ "savant": {
+  "titre": "File:An alchemist holding tongs at his furnace. Etching by J. Wag Wellcome L0004342.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:An_alchemist_holding_tongs_at_his_furnace._Etching_by_J._Wag_Wellcome_L0004342.jpg",
+  "licence": "CC BY 4.0",
+  "auteur": "Wellcome Collection (eau-forte de J. Wagner)"
+ },
+ "souverain": {
+  "titre": "File:Marcantonio - After - A Roman Emperor, wearing a crown, sitting in a niche holding a sceptre in his extended right hand and a sphere in his left, V,5.153.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Marcantonio_-_After_-_A_Roman_Emperor,_wearing_a_crown,_sitting_in_a_niche_holding_a_sceptre_in_his_extended_right_hand_and_a_sphere_in_his_left,_V,5.153.jpg",
+  "licence": "Public domain",
+  "auteur": "Marcantonio Raimondi"
+ },
+ "guerrier": {
+  "titre": "File:Portret van Floris I, graaf van Holland, RP-P-OB-62.155.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Portret_van_Floris_I,_graaf_van_Holland,_RP-P-OB-62.155.jpg",
+  "licence": "CC0",
+  "auteur": "Rijksmuseum"
+ },
+ "religieux": {
+  "titre": "File:H. Antonius met een boek, RP-P-OB-63.785.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:H._Antonius_met_een_boek,_RP-P-OB-63.785.jpg",
+  "licence": "CC0",
+  "auteur": "Rijksmuseum"
+ },
+ "dame": {
+  "titre": "File:Maria Anna of Austria as Queen of Portugal after and original by Gobert.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Maria_Anna_of_Austria_as_Queen_of_Portugal_after_and_original_by_Gobert.jpg",
+  "licence": "Public domain",
+  "auteur": "Unidentified engraver / After Jean Ranc"
+ }
+}

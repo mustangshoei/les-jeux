@@ -1,0 +1,195 @@
+/* ==========================================================================
+   modes/premier.js — « Qui est venu en premier ? »
+
+   Deux personnages s'affichent dans des cadres (même principe que les rectangles de la page
+   d'accueil : portrait en traits blancs fondu dans la couleur du jeu). La question change à chaque
+   manche : « Qui est né AVANT ? » ou « Qui est né APRÈS ? ». On clique sur le bon cadre ; les deux
+   années de naissance s'affichent alors.
+
+   Tirage d'une paire : jamais la même année de naissance ; si l'une des deux dates est
+   approximative (« vers »), au moins ECART_APPROX ans d'écart, pour que la réponse reste sûre.
+   Portraits : js/donnees/portraits.js (HISTEHORY.PORTRAITS) ; sans lui, les cadres restent sans image.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  const H = window.HISTEHORY || {};
+  const ECART_APPROX = 15;
+  const NIVEAUX = {
+    facile: { titre: 'Facile', aide: 'Les plus connus', max: 2 },
+    moyen: { titre: 'Moyen', aide: 'Connus et moins connus', max: 3 },
+    expert: { titre: 'Expert', aide: 'Tous les personnages', max: 5 }
+  };
+  const LONGUEURS = [10, 20, 30];
+  const reglages = { niveau: 'facile', longueur: 10 };
+  let partie = null;
+
+  const $ = (id) => document.getElementById(id);
+  const hasard = (n) => Math.floor(Math.random() * n);
+
+  /* ---------- Textes ---------- */
+  function annee(p) {
+    const a = p.naissance < 0 ? -p.naissance + ' av. J.-C.' : String(p.naissance);
+    return (p.approx ? 'vers ' : '') + a;
+  }
+  const ne = (p) => (p.sexe === 'F' ? 'Née ' : 'Né ') + annee(p);
+
+  /* ---------- Portrait : HISTEHORY.PORTRAITS[id] = fichier dans img/ (personne ou image générique) */
+  function portrait(p) {
+    const f = H.PORTRAITS && H.PORTRAITS[p.id];
+    // URL absolue : dans une variable CSS, une URL relative partirait du dossier css/
+    return f ? new URL('img/' + f, document.baseURI).href : '';
+  }
+
+  /* ---------- Tirage ---------- */
+  function compatibles(a, b) {
+    const d = Math.abs(a.naissance - b.naissance);
+    if (d === 0) return false;
+    return !(a.approx || b.approx) || d >= ECART_APPROX;
+  }
+  function tirerPaires(n) {
+    const max = NIVEAUX[reglages.niveau].max;
+    const vivier = (H.PERSONNES || []).filter((p) => p.difficulte <= max);
+    const vus = new Set();
+    const paires = [];
+    for (let essai = 0; paires.length < n && essai < 5000; essai++) {
+      const a = vivier[hasard(vivier.length)], b = vivier[hasard(vivier.length)];
+      if (a === b || vus.has(a.id) || vus.has(b.id) || !compatibles(a, b)) continue;
+      vus.add(a.id); vus.add(b.id);
+      paires.push({ a, b, sens: Math.random() < .5 ? 'avant' : 'apres' });
+    }
+    return paires;
+  }
+
+  /* ---------- Écran de configuration ---------- */
+  function choix(conteneur, options, valeur, surChoix) {
+    conteneur.replaceChildren(...options.map(([v, titre, aide]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'choix' + (v === valeur ? ' is-active' : '');
+      b.setAttribute('aria-pressed', v === valeur);
+      b.innerHTML = '<span class="choix__titre"></span>' + (aide ? '<span class="choix__aide"></span>' : '');
+      b.querySelector('.choix__titre').textContent = titre;
+      if (aide) b.querySelector('.choix__aide').textContent = aide;
+      b.addEventListener('click', () => { surChoix(v); configurer(); });
+      return b;
+    }));
+  }
+  function configurer() {
+    choix($('premier-niveaux'), Object.entries(NIVEAUX).map(([k, n]) => [k, n.titre, n.aide]), reglages.niveau, (v) => { reglages.niveau = v; });
+    choix($('premier-longueurs'), LONGUEURS.map((n) => [n, n + ' questions']), reglages.longueur, (v) => { reglages.longueur = v; });
+  }
+  function ouvrir() {
+    configurer();
+    Histehory.afficher('screen-premier-config');
+  }
+
+  /* ---------- Partie ---------- */
+  function demarrer() {
+    partie = { paires: tirerPaires(reglages.longueur), i: 0, score: 0, debut: Date.now(), repondu: false };
+    Histehory.afficher('screen-premier-jeu');
+    manche();
+  }
+
+  function remplirCadre(cadre, p) {
+    cadre.className = 'cadre';
+    cadre.disabled = false;
+    const img = portrait(p);
+    cadre.style.setProperty('--portrait', img ? 'url("' + img + '")' : 'none');
+    cadre.querySelector('.cadre__nom').textContent = p.nom;
+    cadre.querySelector('.cadre__info').textContent = [p.pays, (H.DOMAINES || {})[p.domaine]].filter(Boolean).join(' · ');
+    const date = cadre.querySelector('.cadre__date');
+    date.textContent = ne(p);
+    date.classList.add('invisible');
+  }
+
+  function manche() {
+    const m = partie.paires[partie.i];
+    partie.repondu = false;
+    $('premier-progression').textContent = 'Question ' + (partie.i + 1) + ' / ' + partie.paires.length;
+    $('premier-score').textContent = partie.score + ' point' + (partie.score > 1 ? 's' : '');
+    $('premier-barre').style.width = (100 * partie.i / partie.paires.length) + '%';
+    const mot = $('premier-sens');
+    mot.textContent = m.sens === 'avant' ? 'avant' : 'après';
+    mot.dataset.sens = m.sens;
+    remplirCadre($('premier-a'), m.a);
+    remplirCadre($('premier-b'), m.b);
+    $('premier-suite').classList.add('invisible');
+    $('premier-verdict').textContent = '';
+    $('premier-verdict').className = 'verdict';
+  }
+
+  function repondre(cote) {
+    if (!partie || partie.repondu) return;
+    partie.repondu = true;
+    const m = partie.paires[partie.i];
+    const premier = m.a.naissance < m.b.naissance ? 'a' : 'b';
+    const bon = m.sens === 'avant' ? premier : (premier === 'a' ? 'b' : 'a');
+    const juste = cote === bon;
+    if (juste) partie.score++;
+    ['a', 'b'].forEach((c) => {
+      const cadre = $('premier-' + c);
+      cadre.disabled = true;
+      cadre.classList.add(c === bon ? 'cadre--bon' : (c === cote ? 'cadre--faux' : 'cadre--autre'));
+      cadre.querySelector('.cadre__date').classList.remove('invisible');
+    });
+    const ecart = Math.abs(m.a.naissance - m.b.naissance);
+    const v = $('premier-verdict');
+    v.textContent = (juste ? 'Bonne réponse !' : 'Raté !') + ' ' + ecart + ' an' + (ecart > 1 ? 's' : '') + ' d\'écart.';
+    v.className = 'verdict ' + (juste ? 'verdict--bon' : 'verdict--faux');
+    $('premier-score').textContent = partie.score + ' point' + (partie.score > 1 ? 's' : '');
+    $('premier-barre').style.width = (100 * (partie.i + 1) / partie.paires.length) + '%';
+    const suite = $('premier-suite');
+    suite.textContent = partie.i + 1 < partie.paires.length ? 'Suivant →' : 'Voir le résultat';
+    suite.classList.remove('invisible');
+    suite.focus();
+  }
+
+  function suivant() {
+    if (!partie || !partie.repondu) return;
+    partie.i++;
+    if (partie.i < partie.paires.length) manche();
+    else terminer();
+  }
+
+  function terminer() {
+    const total = partie.paires.length, tempsMs = Date.now() - partie.debut;
+    const titre = 'Qui est venu en premier ? (' + NIVEAUX[reglages.niveau].titre + ')';
+    if (window.HistProfils) HistProfils.enregistrerPartie({ mode: 'premier', titre, score: partie.score, total, tempsMs });
+    const s = Math.round(tempsMs / 1000);
+    $('premier-fin-score').textContent = partie.score + ' / ' + total;
+    $('premier-fin-detail').textContent = NIVEAUX[reglages.niveau].titre + ' · ' + Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s';
+    const r = partie.score / total;
+    $('premier-fin-message').textContent = r === 1 ? 'Sans faute : un vrai historien !' : r >= .8 ? 'Excellent !'
+      : r >= .6 ? 'Bien joué !' : r >= .4 ? 'Pas mal, encore un effort.' : 'L\'histoire n\'attend que vous : rejouez !';
+    partie = null;
+    Histehory.afficher('screen-premier-fin');
+  }
+
+  /* ---------- Branchements ---------- */
+  function init() {
+    $('premier-commencer').addEventListener('click', demarrer);
+    $('premier-rejouer').addEventListener('click', demarrer);
+    $('premier-reglages').addEventListener('click', ouvrir);
+    $('premier-a').addEventListener('click', () => repondre('a'));
+    $('premier-b').addEventListener('click', () => repondre('b'));
+    $('premier-suite').addEventListener('click', suivant);
+    $('premier-quitter').addEventListener('click', () => { partie = null; ouvrir(); });
+    document.addEventListener('keydown', (e) => {
+      if (!partie || document.body.dataset.ecran !== 'screen-premier-jeu') return;
+      if (!partie.repondu && (e.key === 'ArrowLeft' || e.key === '1')) repondre('a');
+      else if (!partie.repondu && (e.key === 'ArrowRight' || e.key === '2')) repondre('b');
+      else if (partie.repondu && (e.key === 'Enter' || e.key === ' ') && e.target.id !== 'premier-suite') { e.preventDefault(); suivant(); }
+    });
+  }
+
+  Histehory.registerMode({
+    id: 'premier',
+    icone: '🥇',
+    titre: 'Qui est venu en premier ?',
+    description: 'Deux personnages : lequel est né avant, ou après, l\'autre ?',
+    ouvrir
+  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();

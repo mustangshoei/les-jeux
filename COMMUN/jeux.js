@@ -83,13 +83,16 @@
         { id: 'termes-medicaux', nom: 'Les termes médicaux', groupe: 'La langue médicale', variantes: ['Devinette', 'QCM'] }
       ] },
     /* bloque : la tuile reste visible, partout, mais elle n'est plus cliquable */
-    { id: 'histehory', dossier: 'HISTEHORY_QUIZZ', nom: 'Histehory Quizz', icone: '📜', version: '0.1.0', bloque: true,
+    { id: 'histehory', dossier: 'HISTEHORY_QUIZZ', nom: 'Histehory Quizz', icone: '📜', version: '1.0.0', bloque: true,
       couleur: '#33230d', accent: '#f59e0b',
-      description: 'Histoire : dates, personnages, chronologie, vrai ou faux.',
+      description: 'Histoire : dates, personnages, citations, paires, chronologie, vrai ou faux.',
       modes: [
         { id: 'date', nom: 'Trouver la date', bientot: true },
         { id: 'personne', nom: 'Deviner la personne', bientot: true },
-        { id: 'chronologie', nom: 'Chronologie aléatoire', bientot: true },
+        { id: 'premier', nom: 'Qui est venu en premier ?' },
+        { id: 'citation', nom: 'Qui a dit ça ?', bientot: true },
+        { id: 'paires', nom: 'Les paires', bientot: true },
+        { id: 'chronologie', nom: 'Chronologie', bientot: true },
         { id: 'vrai-faux', nom: 'Vrai ou Faux', bientot: true }
       ] },
     /* bloque : la tuile reste visible, partout, mais elle n'est plus cliquable */

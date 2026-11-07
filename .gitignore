@@ -8,3 +8,10 @@ __pycache__/
 *.pyc
 # gravures sources des images de la page d'accueil (voir ACCUEIL/img/CREDITS.md)
 ACCUEIL/outils/sources/
+# sources et planches de la fabrique des portraits (voir HISTEHORY_QUIZZ/outils/portraits/README.md)
+HISTEHORY_QUIZZ/outils/portraits/src/
+HISTEHORY_QUIZZ/outils/portraits/grand/
+HISTEHORY_QUIZZ/outils/portraits/alt/
+HISTEHORY_QUIZZ/outils/portraits/cand/
+HISTEHORY_QUIZZ/outils/portraits/personnes.json
+HISTEHORY_QUIZZ/outils/portraits/*.png

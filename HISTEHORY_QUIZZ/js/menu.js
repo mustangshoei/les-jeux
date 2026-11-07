@@ -15,8 +15,11 @@
 
   const MENU = [
     { mode: 'date',        icone: '📅', titre: 'Trouver la date',       description: 'Un événement historique : retrouvez sa date.' },
-    { mode: 'personne',    icone: '🕵️', titre: 'Deviner la personne',   description: 'Un personnage historique se cache derrière les indices : qui est-ce ?' },
-    { mode: 'chronologie', icone: '⏳', titre: 'Chronologie aléatoire', description: 'Des événements tirés au hasard, à remettre dans l\'ordre.' },
+    { mode: 'personne',    icone: '🕵️', titre: 'Deviner la personne',   description: 'Un personnage se cache derrière des indices progressifs : moins il en faut, plus vous gagnez de points.' },
+    { mode: 'premier',     icone: '🥇', titre: 'Qui est venu en premier ?', description: 'Deux événements ou personnages : cliquez sur le plus ancien.' },
+    { mode: 'citation',    icone: '💬', titre: 'Qui a dit ça ?',        description: 'Une citation célèbre : retrouvez son auteur.' },
+    { mode: 'paires',      icone: '🔗', titre: 'Les paires',            description: 'Reliez chaque personnage à son rôle ou son invention, chaque événement à son lieu.' },
+    { mode: 'chronologie', icone: '⏳', titre: 'Chronologie',           description: 'Des événements, des dynasties ou des successions de souverains à remettre dans l\'ordre.' },
     { mode: 'vrai-faux',   icone: '⚖️', titre: 'Vrai ou Faux',          description: 'Une affirmation historique : vraie ou fausse ?' }
   ];
 
