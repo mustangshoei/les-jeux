@@ -1,6 +1,6 @@
 /* ==========================================================================
    Histehory Quizz - js/donnees/dates.js
-   RECENSEMENT DES DATES HISTORIQUES (données seules : aucun mode de jeu ne les utilise encore).
+   RECENSEMENT DES DATES HISTORIQUES (utilisé par « Chronologie », js/modes/chronologie.js).
    --------------------------------------------------------------------------
    Une ligne par événement :
      E(id, événement, année, mois, jour, région, domaine, difficulté, résumé, options)
@@ -12,10 +12,11 @@
                     1 = tout le monde la connaît (prise de la Bastille) ; 2 = la plupart des gens ;
                     3 = un bon élève ; 4 = un lecteur curieux ; 5 = un spécialiste
        options    : A = année approximative ou discutée
-   Règles d'écriture : l'événement et le résumé ne donnent jamais la date (ni l'année, ni le siècle) ;
+   Règles d'écriture : l'événement et le résumé ne donnent jamais la date (ni l'année, ni le mois, ni le jour, ni le siècle,
+   ni « du 4 août » ou « 18 Brumaire » : on donne le nom de ce qui s'est passé) ;
    pour une date ancienne ou discutée, ne mettre ni mois ni jour et ajouter A.
    Le fichier est trié par date : placer chaque nouvel événement à sa place chronologique. L'id ne
-   change plus une fois choisi. Il n'est pas encore chargé par index.html.
+   change plus une fois choisi.
    ========================================================================== */
 (function () {
   'use strict';
@@ -41,7 +42,7 @@
   E("chute-troie", "Chute de Troie (date traditionnelle)", -1184, null, null, "moyen-orient", "militaire", 3, "Après dix ans de siège, selon Homère, la ville tombe grâce à un cheval de bois.", A);
   E("fondation-carthage", "Fondation de Carthage (date traditionnelle)", -814, null, null, "afrique", "politique", 4, "La reine Didon, venue de Tyr, fonde la cité qui rivalisera avec Rome.", A);
   E("premiers-jeux-olympiques", "Premiers Jeux olympiques antiques", -776, null, null, "europe", "sport", 2, "Date traditionnelle des premiers Jeux à Olympie, en l'honneur de Zeus.");
-  E("fondation-rome", "Fondation légendaire de Rome", -753, 4, 21, "europe", "politique", 2, "Selon la tradition, Romulus fonde Rome le 21 avril.");
+  E("fondation-rome", "Fondation légendaire de Rome", -753, 4, 21, "europe", "politique", 2, "Selon la tradition, Romulus trace le sillon de la future ville sur le Palatin.");
   E("koush-egypte", "Les rois de Koush règnent sur l'Égypte", -744, null, null, "afrique", "politique", 5, "Venue de Nubie, la 25e dynastie réunit de nouveau les deux pays.", A);
   E("chute-ninive", "Chute de Ninive", -612, null, null, "moyen-orient", "militaire", 5, "Babyloniens et Mèdes détruisent la capitale de l'Assyrie.");
   E("reformes-solon", "Réformes de Solon à Athènes", -594, null, null, "europe", "politique", 5, "Abolition des dettes et accès aux charges selon la richesse, non selon la naissance.", A);
@@ -92,7 +93,7 @@
   E("rubicon", "César franchit le Rubicon", -49, 1, 10, "europe", "politique", 3, "« Le sort en est jeté » : début de la guerre civile romaine.", A);
   E("pharsale", "Bataille de Pharsale", -48, 8, 9, "europe", "militaire", 4, "César bat Pompée et reste maître de Rome.");
   E("calendrier-julien", "Réforme du calendrier julien", -45, 1, 1, "europe", "societe", 4, "César adopte l'année de 365 jours avec une année bissextile tous les quatre ans.");
-  E("assassinat-cesar", "Assassinat de Jules César", -44, 3, 15, "europe", "politique", 2, "Poignardé en plein Sénat aux ides de mars.");
+  E("assassinat-cesar", "Assassinat de Jules César", -44, 3, 15, "europe", "politique", 2, "Poignardé en plein Sénat par des conjurés menés par Brutus et Cassius.");
   E("philippes", "Bataille de Philippes", -42, null, null, "europe", "militaire", 5, "Antoine et Octave vengent César en battant Brutus et Cassius.");
   E("actium", "Bataille d'Actium", -31, 9, 2, "europe", "militaire", 4, "Octave bat Antoine et Cléopâtre et devient seul maître de Rome.");
   E("mort-cleopatre", "Mort de Cléopâtre", -30, 8, 12, "afrique", "politique", 3, "La dernière reine d'Égypte se donne la mort ; l'Égypte devient une province romaine.");
@@ -352,7 +353,7 @@
   E("lepante", "Bataille de Lépante", 1571, 10, 7, "europe", "militaire", 3, "La flotte de la Sainte Ligue bat la flotte ottomane.");
   E("saint-barthelemy", "Massacre de la Saint-Barthélemy", 1572, 8, 24, "europe", "religion", 2, "Des milliers de protestants sont tués à Paris puis en province.");
   E("alcacer-quivir", "Bataille des Trois Rois", 1578, 8, 4, "afrique", "militaire", 5, "Le roi du Portugal Sébastien disparaît au Maroc.");
-  E("calendrier-gregorien", "Réforme du calendrier grégorien", 1582, 10, 15, "europe", "societe", 3, "Le lendemain du 4 octobre est le 15 octobre : dix jours disparaissent.");
+  E("calendrier-gregorien", "Réforme du calendrier grégorien", 1582, 10, 15, "europe", "societe", 3, "Le pape Grégoire XIII supprime dix jours pour rattraper le retard du calendrier julien.");
   E("marie-stuart", "Exécution de Marie Stuart", 1587, 2, 8, "europe", "politique", 4, "La reine d'Écosse est décapitée sur ordre de sa cousine Élisabeth Ire.");
   E("invincible-armada", "Défaite de l'Invincible Armada", 1588, null, null, "europe", "militaire", 3, "La flotte espagnole, envoyée contre l'Angleterre, est dispersée par les navires d'Élisabeth Ire et par la tempête.");
   E("journee-barricades", "Journée des barricades", 1588, 5, 12, "europe", "politique", 4, "Paris se soulève contre Henri III et chasse le roi de la capitale.");
@@ -461,7 +462,7 @@
   E("etats-generaux", "Ouverture des États généraux", 1789, 5, 5, "europe", "politique", 3, "Pour la première fois depuis près de deux siècles, le roi réunit les représentants des trois ordres.");
   E("serment-jeu-paume", "Serment du Jeu de paume", 1789, 6, 20, "europe", "politique", 2, "Les députés du tiers état jurent de ne pas se séparer avant d'avoir donné une constitution à la France.");
   E("prise-bastille", "Prise de la Bastille", 1789, 7, 14, "europe", "politique", 1, "Le peuple de Paris s'empare de la forteresse : début de la Révolution française.");
-  E("abolition-privileges", "Nuit du 4 août", 1789, 8, 4, "europe", "politique", 3, "L'Assemblée abolit les privilèges.");
+  E("abolition-privileges", "Abolition des privilèges", 1789, 8, 4, "europe", "politique", 3, "Au cours d'une séance de nuit, l'Assemblée constituante supprime les droits féodaux et les privilèges de la noblesse et du clergé.");
   E("ddhc", "Déclaration des droits de l'homme et du citoyen", 1789, 8, 26, "europe", "societe", 2, "Texte fondateur adopté par l'Assemblée nationale constituante.");
   E("marche-femmes-versailles", "Marche des femmes sur Versailles", 1789, 10, 5, "europe", "politique", 3, "Les Parisiennes réclament du pain et ramènent la famille royale à Paris.");
   E("constitution-civile-clerge", "Constitution civile du clergé", 1790, 7, 12, "europe", "religion", 5, "Les prêtres deviennent des fonctionnaires élus, ce qui divise les catholiques.");
@@ -478,7 +479,7 @@
   E("debut-terreur", "La Terreur à l'ordre du jour", 1793, 9, 5, "europe", "politique", 4, "La Convention décide d'employer la répression contre les ennemis de la Révolution.");
   E("loi-suspects", "Loi des suspects", 1793, 9, 17, "europe", "politique", 5, "Toute personne soupçonnée d'hostilité à la Révolution peut être arrêtée.");
   E("mort-marie-antoinette", "Exécution de Marie-Antoinette", 1793, 10, 16, "europe", "politique", 3, "L'ancienne reine est guillotinée, neuf mois après son mari.");
-  E("thermidor", "Chute de Robespierre", 1794, 7, 27, "europe", "politique", 3, "Le 9 thermidor, la Convention renverse l'Incorruptible : la Terreur prend fin.");
+  E("thermidor", "Chute de Robespierre", 1794, 7, 27, "europe", "politique", 3, "La Convention renverse l'Incorruptible : la Terreur prend fin.");
   E("systeme-metrique", "Adoption du système métrique", 1795, 4, 7, "europe", "sciences", 5, "La France adopte le mètre et le kilogramme, fondés sur des mesures naturelles.");
   E("mort-louis-17", "Mort de Louis XVII", 1795, 6, 8, "europe", "politique", 4, "Le fils de Louis XVI meurt en prison, à dix ans.");
   E("vaccin-jenner", "Premier vaccin de Jenner", 1796, 5, 14, "europe", "medecine", 3, "Le médecin anglais inocule la vaccine à un enfant pour le protéger de la variole.");
@@ -486,7 +487,7 @@
   E("expedition-egypte", "Départ de l'expédition d'Égypte", 1798, 5, 19, "europe", "militaire", 3, "Bonaparte embarque à Toulon avec une armée et des savants.");
   E("bataille-pyramides", "Bataille des Pyramides", 1798, 7, 21, "afrique", "militaire", 3, "Bonaparte bat les Mamelouks devant Le Caire.");
   E("pierre-rosette", "Découverte de la pierre de Rosette", 1799, null, null, "afrique", "sciences", 3, "Un soldat français trouve la pierre qui permettra à Champollion de déchiffrer les hiéroglyphes.");
-  E("brumaire", "Coup d'État du 18 Brumaire", 1799, 11, 9, "europe", "politique", 2, "Bonaparte renverse le Directoire et prend le pouvoir.");
+  E("brumaire", "Coup d'État de Bonaparte", 1799, 11, 9, "europe", "politique", 2, "Bonaparte renverse le Directoire et prend le pouvoir.");
   E("banque-de-france", "Création de la Banque de France", 1800, 1, 18, "europe", "economie", 5, "Bonaparte crée l'établissement qui émettra la monnaie du pays.");
   E("prefets", "Création des préfets", 1800, 2, 17, "europe", "politique", 5, "Le pouvoir central place un représentant à la tête de chaque département.");
   E("marengo", "Bataille de Marengo", 1800, 6, 14, "europe", "militaire", 4, "Bonaparte, d'abord en difficulté, bat les Autrichiens en Italie.");
@@ -583,7 +584,7 @@
   E("troisieme-republique", "Proclamation de la IIIe République", 1870, 9, 4, "europe", "politique", 3, "La foule envahit le Palais-Bourbon : l'Empire est tombé.");
   E("siege-paris-1870", "Début du siège de Paris", 1870, 9, 19, "europe", "militaire", 4, "Les Prussiens encerclent la capitale, qui résiste quatre mois.");
   E("empire-allemand", "Proclamation de l'Empire allemand à Versailles", 1871, 1, 18, "europe", "politique", 3, "Guillaume Ier est proclamé empereur dans la galerie des Glaces.");
-  E("commune-paris", "Début de la Commune de Paris", 1871, 3, 18, "europe", "politique", 3, "Insurrection parisienne, écrasée en mai pendant la « Semaine sanglante ».");
+  E("commune-paris", "Début de la Commune de Paris", 1871, 3, 18, "europe", "politique", 3, "Insurrection parisienne, écrasée pendant la « Semaine sanglante ».");
   E("traite-francfort", "Traité de Francfort", 1871, 5, 10, "europe", "politique", 4, "La France cède l'Alsace et une partie de la Lorraine à l'Allemagne.");
   E("semaine-sanglante", "Semaine sanglante", 1871, 5, 21, "europe", "militaire", 4, "L'armée reprend Paris aux communards, dans des combats de rue.");
   E("incendie-chicago", "Grand incendie de Chicago", 1871, 10, 8, "ameriques", "societe", 4, "Le feu détruit le centre de la ville, qui sera reconstruite en gratte-ciel.");
@@ -682,7 +683,7 @@
   E("gallipoli", "Débarquement de Gallipoli", 1915, 4, 25, "moyen-orient", "militaire", 4, "Les Alliés tentent de forcer les Dardanelles et échouent face aux Ottomans.");
   E("lusitania", "Naufrage du Lusitania", 1915, 5, 7, "europe", "militaire", 3, "Un sous-marin allemand coule le paquebot, où périssent des Américains.");
   E("verdun", "Début de la bataille de Verdun", 1916, 2, 21, "europe", "militaire", 3, "L'une des plus longues et meurtrières batailles de la Grande Guerre.");
-  E("paques-dublin", "Insurrection de Pâques à Dublin", 1916, 4, 24, "europe", "politique", 4, "Des républicains irlandais se soulèvent contre la domination britannique.");
+  E("paques-dublin", "Insurrection irlandaise de Dublin", 1916, 4, 24, "europe", "politique", 4, "Des républicains irlandais proclament la République et s'emparent de points clés de la capitale, avant d'être écrasés.");
   E("jutland", "Bataille du Jutland", 1916, 5, 31, "europe", "militaire", 5, "Le plus grand affrontement naval de la Première Guerre mondiale.");
   E("somme", "Début de la bataille de la Somme", 1916, 7, 1, "europe", "militaire", 3, "Le premier jour, l'armée britannique perd près de soixante mille hommes.");
   E("mutineries-1917", "Mutineries dans l'armée française", 1917, null, null, "europe", "militaire", 4, "Des soldats refusent de monter à l'assaut, épuisés par une guerre sans issue.");
@@ -691,11 +692,11 @@
   E("chemin-des-dames", "Offensive du Chemin des Dames", 1917, 4, 16, "europe", "militaire", 3, "Une offensive française mal préparée coûte des dizaines de milliers de morts.");
   E("caporetto", "Bataille de Caporetto", 1917, 10, 24, "europe", "militaire", 5, "L'armée italienne est écrasée par les Austro-Allemands.");
   E("declaration-balfour", "Déclaration Balfour", 1917, 11, 2, "moyen-orient", "politique", 4, "Le Royaume-Uni soutient la création d'un foyer national juif en Palestine.");
-  E("revolution-octobre", "Révolution d'Octobre", 1917, 11, 7, "europe", "politique", 3, "Les bolcheviks de Lénine prennent le pouvoir en Russie (25 octobre du calendrier julien).");
+  E("revolution-octobre", "Révolution bolchevique", 1917, 11, 7, "europe", "politique", 3, "Les bolcheviks de Lénine prennent le pouvoir à Petrograd.");
   E("grippe-espagnole", "Grippe espagnole", 1918, null, null, "europe", "medecine", 3, "Une pandémie tue plus de personnes que la guerre elle-même.");
   E("brest-litovsk", "Traité de Brest-Litovsk", 1918, 3, 3, "europe", "politique", 4, "La Russie bolchevique signe une paix séparée avec l'Allemagne.");
   E("massacre-romanov", "Exécution de la famille impériale russe", 1918, 7, 17, "europe", "politique", 4, "Nicolas II, sa femme et leurs enfants sont fusillés à Iekaterinbourg.");
-  E("armistice-1918", "Armistice de 1918", 1918, 11, 11, "europe", "militaire", 1, "Fin des combats de la Première Guerre mondiale.");
+  E("armistice-1918", "Armistice de la Première Guerre mondiale", 1918, 11, 11, "europe", "militaire", 1, "Fin des combats de la Première Guerre mondiale.");
   E("traite-versailles", "Traité de Versailles", 1919, 6, 28, "europe", "politique", 2, "L'Allemagne signe la paix dans la galerie des Glaces et accepte des réparations.");
   E("sdn", "Naissance de la Société des Nations", 1920, 1, 10, "europe", "politique", 4, "Une organisation internationale est créée pour préserver la paix.");
   E("ulysse-joyce", "Publication d'Ulysse de James Joyce", 1922, 2, 2, "europe", "litterature", 5, "Un roman qui suit une journée d'un Dublinois ordinaire change la littérature.");
@@ -719,7 +720,7 @@
   E("holodomor", "Holodomor", 1932, null, null, "europe", "societe", 5, "Une famine organisée tue des millions de paysans en Ukraine.", A);
   E("hitler-chancelier", "Hitler nommé chancelier", 1933, 1, 30, "europe", "politique", 3, "Arrivée des nazis au pouvoir en Allemagne.");
   E("incendie-reichstag", "Incendie du Reichstag", 1933, 2, 27, "europe", "politique", 4, "Les nazis s'en servent pour supprimer les libertés.");
-  E("6-fevrier-1934", "Émeutes du 6 février", 1934, 2, 6, "europe", "politique", 4, "Des ligues d'extrême droite manifestent contre le Parlement, place de la Concorde.");
+  E("6-fevrier-1934", "Émeute antiparlementaire place de la Concorde", 1934, 2, 6, "europe", "politique", 4, "Des ligues d'extrême droite manifestent contre le Parlement, place de la Concorde.");
   E("nuit-longs-couteaux", "Nuit des Longs Couteaux", 1934, 6, 30, "europe", "politique", 4, "Hitler fait assassiner les dirigeants des SA et d'autres opposants.");
   E("mort-marie-curie", "Mort de Marie Curie", 1934, 7, 4, "europe", "sciences", 5, "La seule femme à avoir reçu deux prix Nobel scientifiques s'éteint, usée par la radioactivité.");
   E("longue-marche", "Début de la Longue Marche", 1934, 10, 16, "asie", "militaire", 4, "Les communistes chinois fuient l'armée nationaliste sur des milliers de kilomètres.");
@@ -743,8 +744,8 @@
   E("declaration-guerre-1939", "La France et le Royaume-Uni déclarent la guerre à l'Allemagne", 1939, 9, 3, "europe", "militaire", 2, "Deux jours après l'invasion de la Pologne.");
   E("offensive-allemande-1940", "Offensive allemande à l'ouest", 1940, 5, 10, "europe", "militaire", 3, "La Wehrmacht attaque les Pays-Bas, la Belgique et la France.");
   E("dunkerque", "Début de l'évacuation de Dunkerque", 1940, 5, 26, "europe", "militaire", 3, "Plus de trois cent mille soldats alliés sont embarqués vers l'Angleterre.");
-  E("appel-18-juin", "Appel du 18 juin", 1940, 6, 18, "europe", "politique", 1, "De Gaulle appelle les Français à poursuivre le combat depuis Londres.");
-  E("armistice-1940", "Armistice du 22 juin", 1940, 6, 22, "europe", "politique", 2, "La France vaincue signe à Rethondes, dans le même wagon qu'en 1918.");
+  E("appel-18-juin", "Appel du général de Gaulle à poursuivre le combat", 1940, 6, 18, "europe", "politique", 1, "Depuis Londres, à la radio, un général peu connu refuse la défaite et appelle les Français à résister.");
+  E("armistice-1940", "Armistice franco-allemand de Rethondes", 1940, 6, 22, "europe", "politique", 2, "La France vaincue signe dans le wagon même où l'Allemagne avait signé l'armistice précédent.");
   E("pleins-pouvoirs-petain", "Vote des pleins pouvoirs à Pétain", 1940, 7, 10, "europe", "politique", 3, "Le Parlement met fin à la IIIe République et donne naissance à l'État français.");
   E("bataille-angleterre", "Début de la bataille d'Angleterre", 1940, 7, 10, "europe", "militaire", 3, "La Luftwaffe attaque l'Angleterre ; les pilotes de la RAF tiennent bon.");
   E("lascaux", "Découverte de la grotte de Lascaux", 1940, 9, 12, "europe", "arts", 3, "Quatre adolescents trouvent en Dordogne une grotte couverte de peintures préhistoriques.");
@@ -765,7 +766,7 @@
   E("teheran", "Conférence de Téhéran", 1943, 11, 28, "moyen-orient", "politique", 4, "Roosevelt, Churchill et Staline se rencontrent pour la première fois.");
   E("debarquement-normandie", "Débarquement en Normandie", 1944, 6, 6, "europe", "militaire", 1, "Le « Jour J » des Alliés.");
   E("oradour", "Massacre d'Oradour-sur-Glane", 1944, 6, 10, "europe", "societe", 3, "Une division SS massacre plus de six cents habitants d'un village du Limousin.");
-  E("attentat-20-juillet", "Attentat du 20 juillet contre Hitler", 1944, 7, 20, "europe", "politique", 4, "Une bombe posée par le colonel von Stauffenberg blesse le dictateur.");
+  E("attentat-20-juillet", "Attentat de Stauffenberg contre Hitler", 1944, 7, 20, "europe", "politique", 4, "Une bombe placée dans une salle de conférence blesse le dictateur : le complot d'officiers échoue.");
   E("debarquement-provence", "Débarquement de Provence", 1944, 8, 15, "europe", "militaire", 3, "Une armée franco-américaine débarque sur la côte varoise.");
   E("liberation-paris", "Libération de Paris", 1944, 8, 25, "europe", "militaire", 2, "La division Leclerc entre dans la capitale ; de Gaulle y prononce un discours célèbre.");
   E("ardennes", "Offensive des Ardennes", 1944, 12, 16, "europe", "militaire", 4, "Dernière grande contre-offensive allemande, arrêtée à Bastogne.");
@@ -807,7 +808,7 @@
   E("bannister", "Roger Bannister court le mile en moins de quatre minutes", 1954, 5, 6, "europe", "sport", 5, "Un record longtemps jugé impossible tombe à Oxford.");
   E("dien-bien-phu", "Chute de Diên Biên Phu", 1954, 5, 7, "asie", "militaire", 3, "L'armée française est vaincue par le Viêt-minh : fin de la guerre d'Indochine.");
   E("accords-geneve", "Accords de Genève sur l'Indochine", 1954, 7, 21, "asie", "politique", 4, "Le Viêt Nam est coupé en deux au niveau du 17e parallèle.");
-  E("toussaint-rouge", "Toussaint rouge", 1954, 11, 1, "afrique", "militaire", 3, "Une série d'attentats marque le début de la guerre d'Algérie.");
+  E("toussaint-rouge", "Premiers attentats du FLN en Algérie", 1954, 11, 1, "afrique", "militaire", 3, "Une série d'attentats marque le début de la guerre d'Algérie.");
   E("bandung", "Conférence de Bandung", 1955, 4, 18, "asie", "politique", 5, "Vingt-neuf pays d'Asie et d'Afrique affirment leur voix face aux deux blocs.");
   E("rosa-parks", "Arrestation de Rosa Parks", 1955, 12, 1, "ameriques", "societe", 3, "Elle refuse de céder sa place dans un bus : début du boycott de Montgomery.");
   E("budapest", "Insurrection de Budapest", 1956, 10, 23, "europe", "politique", 4, "Les Hongrois se soulèvent contre le régime soviétique ; les chars écrasent la révolte.");
@@ -837,14 +838,14 @@
   E("guerre-six-jours", "Guerre des Six Jours", 1967, 6, 5, "moyen-orient", "militaire", 3, "Israël détruit l'aviation égyptienne et s'empare du Sinaï, de Gaza et de la Cisjordanie.");
   E("television-couleur", "Début de la télévision en couleur en France", 1967, 10, 1, "europe", "societe", 5, "La deuxième chaîne diffuse ses premières images en SECAM.");
   E("greffe-coeur", "Première greffe du cœur", 1967, 12, 3, "afrique", "medecine", 3, "Le chirurgien Christiaan Barnard opère au Cap.");
-  E("mai-68", "Mai 68", 1968, null, null, "europe", "societe", 1, "Révolte étudiante et grève générale en France.");
+  E("mai-68", "La révolte étudiante et la grève générale", 1968, null, null, "europe", "societe", 1, "Barricades au Quartier latin, usines occupées : des millions de grévistes ébranlent le pouvoir gaulliste.");
   E("assassinat-mlk", "Assassinat de Martin Luther King", 1968, 4, 4, "ameriques", "societe", 3, "Le pasteur est abattu sur le balcon d'un motel de Memphis.");
   E("printemps-prague", "Invasion de la Tchécoslovaquie", 1968, 8, 21, "europe", "militaire", 3, "Les chars du pacte de Varsovie écrasent le Printemps de Prague.");
   E("poing-leve-mexico", "Le poing levé de Mexico", 1968, 10, 16, "ameriques", "sport", 4, "Deux athlètes américains lèvent un poing ganté de noir sur le podium.");
-  E("homme-sur-lune", "Premiers pas sur la Lune", 1969, 7, 21, "ameriques", "exploration", 1, "Neil Armstrong marche sur la Lune (le 20 juillet heure américaine).");
+  E("homme-sur-lune", "Premiers pas sur la Lune", 1969, 7, 21, "ameriques", "exploration", 1, "Neil Armstrong marche sur la Lune, devant des centaines de millions de téléspectateurs.");
   E("woodstock", "Festival de Woodstock", 1969, 8, 15, "ameriques", "musique", 3, "Un demi-million de jeunes se retrouvent pour trois jours de musique et de paix.");
   E("apollo-13", "Explosion à bord d'Apollo 13", 1970, 4, 13, "ameriques", "exploration", 3, "« Houston, nous avons un problème » : l'équipage revient sain et sauf.");
-  E("mort-de-gaulle", "Mort du général de Gaulle", 1970, 11, 9, "europe", "politique", 3, "L'homme du 18 Juin s'éteint à Colombey-les-Deux-Églises.");
+  E("mort-de-gaulle", "Mort du général de Gaulle", 1970, 11, 9, "europe", "politique", 3, "Le chef de la France libre s'éteint à Colombey-les-Deux-Églises.");
   E("manifeste-343", "Manifeste des 343", 1971, 4, 5, "europe", "societe", 4, "Trois cent quarante-trois femmes déclarent avoir avorté, alors que c'est un délit.");
   E("msf", "Création de Médecins sans frontières", 1971, 12, 20, "europe", "medecine", 4, "Des médecins et des journalistes fondent l'ONG humanitaire.");
   E("munich-1972", "Prise d'otages des Jeux de Munich", 1972, 9, 5, "europe", "politique", 3, "Un commando palestinien tue onze athlètes israéliens.");
@@ -925,9 +926,9 @@
   E("lancement-euro", "Lancement de l'euro", 1999, 1, 1, "europe", "economie", 3, "La monnaie unique est introduite pour les paiements électroniques dans onze pays.");
   E("pacs", "Vote du Pacs", 1999, 11, 15, "europe", "societe", 3, "Le pacte civil de solidarité est ouvert aux couples de même sexe ou non.");
   E("euro-2000", "La France remporte l'Euro de football", 2000, 7, 2, "europe", "sport", 4, "Le but en or de Trezeguet bat l'Italie en finale.");
-  E("attentats-11-septembre", "Attentats du 11 septembre 2001", 2001, 9, 11, "ameriques", "politique", 1, "Des avions détournés frappent le World Trade Center et le Pentagone.");
+  E("attentats-11-septembre", "Attentats contre le World Trade Center et le Pentagone", 2001, 9, 11, "ameriques", "politique", 1, "Des avions de ligne détournés par des terroristes d'Al-Qaïda frappent New York et Washington.");
   E("euro-pieces", "Mise en circulation de l'euro", 2002, 1, 1, "europe", "economie", 2, "Pièces et billets en euros remplacent douze monnaies nationales.");
-  E("21-avril-2002", "Élection présidentielle du 21 avril", 2002, 4, 21, "europe", "politique", 2, "Jean-Marie Le Pen arrive au second tour, à la surprise générale.");
+  E("21-avril-2002", "Le Pen qualifié pour le second tour de la présidentielle", 2002, 4, 21, "europe", "politique", 2, "À la surprise générale, le candidat d'extrême droite devance le Premier ministre socialiste au premier tour.");
   E("invasion-irak", "Invasion de l'Irak", 2003, 3, 20, "moyen-orient", "militaire", 2, "Les États-Unis et leurs alliés attaquent l'Irak de Saddam Hussein.");
   E("genome-humain", "Séquençage complet du génome humain annoncé", 2003, 4, 14, "ameriques", "sciences", 5, "Le projet international annonce avoir lu le livre complet de l'ADN humain.");
   E("facebook", "Création de Facebook", 2004, 2, 4, "ameriques", "economie", 3, "Mark Zuckerberg lance le réseau social depuis sa chambre d'étudiant à Harvard.");
@@ -957,7 +958,7 @@
   E("mariage-pour-tous", "Adoption de la loi sur le mariage pour tous", 2013, 4, 23, "europe", "societe", 3, "Le mariage est ouvert aux couples de même sexe en France.");
   E("philae", "Atterrissage de Philae sur une comète", 2014, 11, 12, "europe", "exploration", 4, "Le petit robot européen se pose sur Tchouri, après un voyage de dix ans.");
   E("charlie-hebdo", "Attentat contre Charlie Hebdo", 2015, 1, 7, "europe", "politique", 1, "Des terroristes tuent douze personnes dans la rédaction du journal satirique.");
-  E("attentats-13-novembre", "Attentats du 13 novembre à Paris", 2015, 11, 13, "europe", "politique", 1, "Des attaques coordonnées frappent le Stade de France, des terrasses et le Bataclan.");
+  E("attentats-13-novembre", "Attentats de Paris et de Saint-Denis", 2015, 11, 13, "europe", "politique", 1, "Des attaques coordonnées frappent le Stade de France, des terrasses de café et la salle du Bataclan.");
   E("cop21", "Accord de Paris sur le climat", 2015, 12, 12, "europe", "politique", 3, "Cent quatre-vingt-quinze pays s'engagent à limiter le réchauffement.");
   E("brexit-referendum", "Référendum sur le Brexit", 2016, 6, 23, "europe", "politique", 2, "Les Britanniques votent pour quitter l'Union européenne.");
   E("attentat-nice", "Attentat de Nice", 2016, 7, 14, "europe", "politique", 2, "Un camion fonce dans la foule venue assister au feu d'artifice.");

@@ -8,6 +8,7 @@
   <!-- Commun à tous les jeux (dossier ../COMMUN) : sélecteur « Changer de jeu ». S'il manque, le jeu marche sans. -->
   <link rel="stylesheet" href="../COMMUN/jeux.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/chronologie.css">
   <!-- Police des titres, commune à tout le site : à changer dans ../COMMUN/police.css (en dernier) -->
   <link rel="stylesheet" href="../COMMUN/police.css">
 </head>
@@ -115,6 +116,71 @@
   </div>
 </section>
 
+<!-- ===================== CHRONOLOGIE (js/modes/chronologie.js) ===================== -->
+<section id="screen-chronologie-config" class="screen page page--centre hidden">
+  <div class="config config--large">
+    <header class="config__tete">
+      <div class="config__icone" aria-hidden="true">⏳</div>
+      <h1>Chronologie</h1>
+      <p>Cinq événements, une frise : placez-les dans l'ordre, du plus ancien au plus récent. Vous pouvez les déplacer tant que vous n'avez pas validé ; les dates s'affichent ensuite.</p>
+    </header>
+    <!-- Trois filtres cumulables (période, difficulté, thématique) : construits par js/modes/chronologie.js -->
+    <div id="chrono-filtres"></div>
+    <h2 class="config__titre">Longueur</h2>
+    <div id="chrono-manches" class="choix-ligne" role="group" aria-label="Nombre de manches"></div>
+    <p id="chrono-etat" class="chrono-etat" role="status" aria-live="polite"></p>
+    <div class="config__actions">
+      <button type="button" class="btn btn-soft" data-action="menu">← Accueil</button>
+      <button type="button" id="chrono-commencer" class="btn btn-primary">Commencer</button>
+    </div>
+  </div>
+</section>
+
+<section id="screen-chronologie-jeu" class="screen jeu-ecran hidden">
+  <div class="jeu-barre">
+    <button type="button" id="chrono-quitter" class="btn-link">✕ Quitter</button>
+    <span id="chrono-progression" class="jeu-barre__info"></span>
+    <span class="jeu-barre__droite"><span id="chrono-score" class="jeu-barre__score"></span></span>
+  </div>
+  <div class="jeu-progres"><div id="chrono-barre"></div></div>
+  <div class="question-bloc">
+    <h1 class="question">Remettez ces événements dans l'ordre</h1>
+    <p id="chrono-aide" class="aide-jeu"></p>
+  </div>
+  <!-- Les blocs pas encore placés -->
+  <div id="chrono-reserve" class="chrono-reserve" data-vide="Tous les événements sont placés." role="group" aria-label="Événements à placer"></div>
+  <!-- La frise : cinq emplacements, du plus ancien au plus récent -->
+  <div class="chrono-frise-bloc">
+    <p class="chrono-axe" aria-hidden="true"><span class="chrono-axe__debut">Le plus ancien</span><span class="chrono-axe__trait"></span><span class="chrono-axe__fin">Le plus récent</span></p>
+    <ol id="chrono-frise" class="chrono-frise" aria-label="Frise chronologique, du plus ancien au plus récent"></ol>
+    <!-- Après validation : les cinq dates à l'échelle -->
+    <div id="chrono-echelle" class="chrono-echelle hidden">
+      <div id="chrono-echelle-trait" class="chrono-echelle__trait" aria-hidden="true"></div>
+      <p id="chrono-echelle-legende" class="chrono-echelle__legende"></p>
+    </div>
+  </div>
+  <div class="jeu-pied">
+    <p id="chrono-verdict" class="verdict" aria-live="polite"></p>
+    <button type="button" id="chrono-valider" class="btn btn-primary" disabled>Valider</button>
+    <button type="button" id="chrono-suite" class="btn btn-primary hidden">Manche suivante →</button>
+  </div>
+</section>
+
+<section id="screen-chronologie-fin" class="screen page page--centre hidden">
+  <div class="config fin">
+    <div class="config__icone" aria-hidden="true">🏆</div>
+    <h1>Partie terminée</h1>
+    <p id="chrono-fin-score" class="fin__score"></p>
+    <p id="chrono-fin-message" class="fin__message"></p>
+    <p id="chrono-fin-detail" class="fin__detail"></p>
+    <div class="config__actions">
+      <button type="button" class="btn btn-soft" data-action="menu">← Accueil</button>
+      <button type="button" id="chrono-reglages" class="btn btn-soft">Réglages</button>
+      <button type="button" id="chrono-rejouer" class="btn btn-primary">Rejouer</button>
+    </div>
+  </div>
+</section>
+
 <!-- 0. Commun à tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et sélecteur.
         Facultatifs : s'ils manquent, Histehory Quizz se joue en invité, sans sélecteur. -->
 <script src="../COMMUN/comptes.js"></script>
@@ -125,10 +191,12 @@
 <script src="js/profils.js"></script>
 <script src="js/compte.js"></script>
 
-<!-- 2. Données (personnes, portraits), puis modes de jeu : un fichier par mode, dans js/modes/ -->
+<!-- 2. Données (personnes, dates, portraits), puis modes de jeu : un fichier par mode, dans js/modes/ -->
 <script src="js/donnees/personnes.js"></script>
+<script src="js/donnees/dates.js"></script>
 <script src="js/donnees/portraits.js"></script>
 <script src="js/modes/premier.js"></script>
+<script src="js/modes/chronologie.js"></script>
 
 <!-- 3. Accueil (en dernier : il affiche les modes chargés ci-dessus) -->
 <script src="js/menu.js"></script>

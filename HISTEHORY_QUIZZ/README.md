@@ -3,12 +3,44 @@
 Jeu consacré à l'histoire (nom provisoire). Il fait partie du dossier des jeux : lancement, comptes
 communs et serveur sont décrits dans le [README à la racine](../README.md).
 
-**Version 1.1.1** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 1.2.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions)).
 
-**Modes de jeu** : un seul est jouable, **Qui est venu en premier ?** ; les six autres restent grisés
-(« Bientôt disponible ») : Trouver la date, Deviner la personne (indices progressifs), Qui a dit ça ?,
-Les paires, Chronologie (événements, dynasties, successions), Vrai ou Faux.
+**Modes de jeu** : deux sont jouables, **Qui est venu en premier ?** et **Chronologie** ; les cinq autres
+restent grisés (« Bientôt disponible ») : Trouver la date, Deviner la personne (indices progressifs),
+Qui a dit ça ?, Les paires, Vrai ou Faux.
+
+## Chronologie (`js/modes/chronologie.js`, `css/chronologie.css`)
+
+**Cinq événements, sous forme de blocs, à placer sur une frise de cinq emplacements**, du plus ancien
+(à gauche, ou en haut sur téléphone) au plus récent. Chaque bloc porte le titre de l'événement et deux
+indices (thématique · région), jamais sa date. Les événements viennent de `js/donnees/dates.js`
+(939 événements, de la préhistoire à 2025).
+
+- **Placer et déplacer** : on peut déplacer les blocs autant qu'on veut **avant de valider**.
+  - **Glisser** (souris ou doigt) un bloc jusqu'à un emplacement ; déposé sur un emplacement occupé, il
+    échange sa place avec l'autre bloc ; déposé dans la zone « à placer », il est retiré de la frise.
+  - **Cliquer** un bloc, puis un emplacement (ou un autre bloc, pour les échanger).
+  - **Clavier** : Tab, Entrée pour prendre un bloc, puis un chiffre de 1 à 5 (emplacement) ; ← / → (ou
+    ↑ / ↓) décalent un bloc de la frise ; Suppr le retire ; Échap lâche la sélection.
+- **Valider** (actif quand les cinq emplacements sont remplis) : la date de chaque événement s'affiche,
+  avec son résumé ; les blocs bien placés sont marqués ✓ (vert), les autres ✗ et la place qu'ils auraient
+  dû prendre (« ✗ n° 3 », rouge). Une échelle montre les cinq dates à leur vraie distance (deux dates très proches sont légèrement
+  écartées pour que les numéros restent lisibles), avec l'écart en années entre le plus ancien et le
+  plus récent. Un point par événement bien placé ; 5 sur 5 :
+  « Chronologie parfaite ».
+- **Préphase** : trois filtres **cumulables et croisés**, avec le nombre d'événements concernés sur chaque
+  case (compte tenu des deux autres filtres) et « Tout / Aucun » pour chaque groupe :
+  **période** (Antiquité, Moyen Âge, époque moderne, époque contemporaine), **difficulté** (1 à 5, comme
+  dans `dates.js`) et **thématique** (les 14 domaines). **Impossible de lancer la partie s'il y a moins
+  de 5 événements** qui correspondent : le message dit combien il y en a. Même chose si les événements
+  restants sont trop proches dans le temps pour en tirer cinq qu'on puisse départager. Puis la longueur :
+  3, 5 ou 10 manches (15, 25 ou 50 événements).
+- **Tirage** : les cinq événements d'une manche ne tombent jamais la même année (sauf deux événements à
+  date précise et différente) ; si une date est approximative, au moins 15 ans d'écart avec les autres.
+  Les événements ne reviennent pas d'une manche à l'autre tant qu'il en reste d'autres à tirer.
+- **Score** : un point par événement placé à sa vraie place, donc 5 par manche. La partie est enregistrée
+  pour le joueur (bonnes réponses = événements bien placés, questions = 5 × le nombre de manches).
 
 ## Qui est venu en premier ? (`js/modes/premier.js`)
 
@@ -44,6 +76,7 @@ d'où il s'affiche dans le menu « Jeux » et sur la page d'accueil.
 
 | Version | Date | Changements |
 |---|---|---|
+| 1.2.0 | 09/11/2026 | Nouveau mode **Chronologie** : cinq événements à placer sur une frise (glisser-déposer, clic ou clavier), validation qui révèle les dates, préphase avec filtres croisés par période, difficulté et thématique (lancement impossible sous 5 événements). 939 événements dans `dates.js`. |
 | 1.1.1 | 08/11/2026 | Consigne « en premier / en dernier » au lieu de « avant / après ». |
 | 1.1.0 | 08/11/2026 | Écran de jeu revu : portrait-héros et cartouche, consigne avant / après en couleurs et flèches opposées, badges ✓ / ✗, mini-frise, enchaînement automatique, série, survol réservé à la souris. |
 | 1.0.0 | 08/11/2026 | Mode « Qui est venu en premier ? » (avant / après), portraits des personnes, sept modes annoncés. |

@@ -30,7 +30,7 @@ n'est chargé depuis Internet (polices comprises).
 |---|---|---|---|---|---|
 | 🌍 GéoNohyne Quizz | `GEONOHYNE_QUIZZ/` | `geonohyne` | 2.2.0 | ouvert, le plus complet | **modèle de référence** (identifiants en français) |
 | 🦴 Anotehomy Quizz | `ANOTEHOMY_QUIZZ/` | `anotehomy` | 2.5.0 | ouvert | **modèle de référence** (identifiants en anglais, 3D) |
-| 📜 Histehory Quizz | `HISTEHORY_QUIZZ/` | `histehory` | 1.1.1 | fermé (`bloque`), 1 mode sur 7 | structure simple, à faire grandir |
+| 📜 Histehory Quizz | `HISTEHORY_QUIZZ/` | `histehory` | 1.2.0 | fermé (`bloque`), 2 modes sur 7 | structure simple, à faire grandir |
 | 🌿 Natehure Quizz | `NATEHURE_QUIZZ/` | `natehure` | 0.1.0 | fermé (`bloque`), menu seul | copie de la structure d'Anotehomy |
 
 **Quand tu crées quelque chose de nouveau, prends exemple d'abord sur GéoNohyne ou Anotehomy** : ce sont
@@ -187,8 +187,8 @@ qu'il est toujours d'actualité et comment il le voit.
   dans `js/menu.js` et `COMMUN/jeux.js`, données déjà dans `data/monde/infos-pays.js`).
 - **Anotehomy** : Les nerfs ; le module « Le corps humain » (chapitre « Apprendre la Vie », exploration
   libre) ; pas encore de classements publics.
-- **Histehory** (nom provisoire, fermé) : six modes à faire (Trouver la date, Deviner la personne, Qui a dit
-  ça ?, Les paires, Chronologie, Vrai ou Faux) ; ses totaux ne sont pas encore déclarés dans `totaux` de
+- **Histehory** (nom provisoire, fermé) : cinq modes à faire (Trouver la date, Deviner la personne, Qui a dit
+  ça ?, Les paires, Vrai ou Faux) ; ses totaux ne sont pas encore déclarés dans `totaux` de
   `COMMUN/jeux.js` (le bouton « Statistiques » de l'accueil ne le compte pas).
 - **Natehure** (fermé) : dix-huit cartes à construire, et d'abord un catalogue d'espèces.
 - **Défis de la semaine** : préparés par l'admin et enregistrés sur le serveur, mais aucun jeu ne les

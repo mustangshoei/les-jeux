@@ -1,0 +1,204 @@
+/* ==========================================================================
+   Histehory Quizz — mode « Chronologie » (js/modes/chronologie.js)
+   Réutilise les variables, boutons, écrans de configuration, barre et pied de css/style.css.
+   Chargé après style.css. Blocs et emplacements : mêmes couleurs que les cartes du jeu (brun, jaune,
+   orange) ; vert et rouge pour ✓ et ✗, comme « Qui est venu en premier ? ».
+   ========================================================================== */
+
+/* ---------- Préphase : filtres ---------- */
+.config--large { width: min(46rem, 100%); }
+.chrono-groupe__tete { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; }
+.chrono-groupe__tete .config__titre { margin-bottom: .45rem; }
+.chrono-groupe__outils { display: flex; gap: .2rem; font-size: .82rem; }
+.chrono-puces { display: flex; flex-wrap: wrap; gap: .4rem; }
+.puce {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .4rem;
+  padding: .38rem .7rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--card-2);
+  color: var(--muted);
+  font-size: .86rem;
+  font-weight: 700;
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.puce:hover { border-color: var(--accent); color: var(--ink); }
+.puce:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
+.puce.is-active { border-color: var(--accent); background: rgba(245, 158, 11, .14); color: var(--accent-clair); }
+.puce.is-vide { opacity: .45; }
+.puce__aide { font-size: .72rem; font-weight: 500; color: var(--muted); }
+.puce__n {
+  min-width: 1.5rem;
+  padding: 0 .38rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink-2);
+  font-size: .74rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.puce.is-active .puce__n { background: rgba(245, 158, 11, .25); color: var(--accent-clair); }
+.chrono-etat { margin-top: 1.2rem; text-align: center; font-size: .92rem; font-weight: 600; color: var(--ink-2); }
+.chrono-etat--non { color: var(--red); }
+
+/* ---------- Écran de partie : peut défiler si la place manque (téléphone, fenêtre basse) ---------- */
+#screen-chronologie-jeu { height: auto; min-height: 100dvh; }
+#screen-chronologie-jeu .question { font-size: clamp(1.25rem, 3.4vw, 1.9rem); }
+.verdict--moyen { color: var(--accent-clair); }
+
+/* ---------- Les blocs ---------- */
+.bloc {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-height: 5.2rem;
+  padding: .65rem .75rem;
+  border: 2px solid var(--bord-carte);
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, .1), rgba(0, 0, 0, .22)), var(--card-2);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.bloc:hover { border-color: var(--accent); }
+.bloc:focus-visible { outline: 0; border-color: var(--accent-clair); box-shadow: 0 0 0 3px var(--anneau); }
+.bloc.is-sel { border-color: var(--accent-clair); box-shadow: 0 0 0 3px var(--anneau), var(--shadow-sm); background-color: #33260f; }
+.bloc.is-origine { opacity: .3; }
+.bloc__titre { font-family: var(--serif); font-size: 1rem; font-weight: 700; line-height: 1.25; }
+.bloc__info { font-size: .72rem; color: var(--muted); }
+.bloc__date { margin-top: .15rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent-clair); }
+.bloc__resume { font-size: .74rem; line-height: 1.3; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.bloc__badge {
+  align-self: flex-start;
+  padding: .05rem .5rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 800;
+  color: #fff;
+  animation: pop .35s ease;
+}
+.bloc--bon { cursor: default; border-color: var(--green); box-shadow: 0 0 0 3px rgba(74, 222, 128, .3), var(--shadow-sm); }
+.bloc--bon .bloc__badge { background: #16a34a; }
+.bloc--faux { cursor: default; border-color: #f87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .3), var(--shadow-sm); }
+.bloc--faux .bloc__badge { background: #dc2626; }
+.bloc--fantome {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  margin: 0;
+  pointer-events: none;
+  cursor: grabbing;
+  box-shadow: var(--shadow);
+  border-color: var(--accent-clair);
+  rotate: 1.5deg;
+}
+body.chrono-glisse, body.chrono-glisse * { cursor: grabbing !important; }
+
+/* ---------- Zone des blocs à placer ---------- */
+.chrono-reserve {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .6rem;
+  min-height: 6.4rem;
+  padding: .6rem;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .02);
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.chrono-reserve > .bloc { flex: 0 1 11.5rem; }
+.chrono-reserve:empty { align-items: center; }
+.chrono-reserve:empty::before { content: attr(data-vide); color: var(--muted); font-size: .88rem; }
+.chrono-reserve.is-cible, .creneau.is-cible { border-color: var(--accent-clair); background: rgba(245, 158, 11, .1); }
+
+/* ---------- La frise ---------- */
+.chrono-frise-bloc { display: flex; flex-direction: column; gap: .6rem; }
+.chrono-axe { display: flex; align-items: center; gap: .6rem; margin: 0; font-size: .74rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.chrono-axe__trait { flex: 1; align-self: stretch; min-height: 1rem; background: linear-gradient(var(--accent), var(--accent)) center / 100% 2px no-repeat; }
+.chrono-axe__debut::before { content: '⟵ '; }
+.chrono-axe__fin::after { content: ' ⟶'; }
+.chrono-frise { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.creneau {
+  position: relative;
+  display: flex;
+  min-height: 7.4rem;
+  padding: 1rem .4rem .4rem;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .02);
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.creneau:focus-visible { outline: 0; border-color: var(--accent-clair); box-shadow: 0 0 0 3px var(--anneau); }
+.creneau > .bloc { flex: 1; }
+.creneau__num {
+  position: absolute;
+  top: -.6rem;
+  left: .8rem;
+  min-width: 1.5rem;
+  padding: 0 .4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-texte);
+  font-size: .78rem;
+  font-weight: 800;
+  text-align: center;
+}
+.creneau__vide { margin: auto; font-size: .82rem; color: var(--muted); }
+.creneau--bon, .creneau--faux { border-style: solid; background: none; }
+.creneau--bon { border-color: rgba(74, 222, 128, .45); }
+.creneau--faux { border-color: rgba(248, 113, 113, .45); }
+
+/* ---------- Les cinq dates à l'échelle (après validation) ---------- */
+.chrono-echelle { display: flex; flex-direction: column; gap: .35rem; padding: .3rem 0 .2rem; }
+.chrono-echelle__trait { position: relative; height: 2.6rem; background: linear-gradient(var(--accent), var(--accent)) center / 100% 2px no-repeat; }
+.chrono-point {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  color: #fff;
+  font-size: .76rem;
+  font-weight: 800;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 3px var(--bg);
+}
+.chrono-point:nth-child(even) { transform: translate(-50%, -50%) translateY(.55rem); }
+.chrono-point:nth-child(odd) { transform: translate(-50%, -50%) translateY(-.55rem); }
+.chrono-point--bon { background: #16a34a; }
+.chrono-point--faux { background: #dc2626; }
+.chrono-echelle__legende { margin: 0; text-align: center; font-size: .82rem; color: var(--ink-2); }
+
+/* ---------- Téléphone (écran plus haut que large) : la frise se lit de haut en bas ---------- */
+@media (max-aspect-ratio: 1/1), (max-width: 700px) {
+  .chrono-reserve { min-height: 4.4rem; gap: .45rem; }
+  .chrono-reserve > .bloc { flex: 1 1 calc(50% - .45rem); }
+  .bloc { min-height: 3.2rem; padding: .5rem .65rem; }
+  .bloc__titre { font-size: .9rem; }
+  .bloc__info { display: none; }
+  .chrono-frise-bloc { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); column-gap: .5rem; }
+  .chrono-axe { grid-row: 1 / 3; flex-direction: column; writing-mode: vertical-rl; letter-spacing: .1em; }
+  .chrono-axe__trait { align-self: auto; min-height: 0; min-width: 1rem; background-size: 2px 100%; }
+  .chrono-axe__debut::before, .chrono-axe__fin::after { content: none; }
+  .chrono-frise { grid-template-columns: 1fr; gap: .45rem; }
+  .creneau { min-height: 3.6rem; padding: .35rem .35rem .35rem 1.9rem; }
+  .creneau__num { top: 50%; left: .4rem; transform: translateY(-50%); }
+  .bloc__resume { display: none; }
+  .chrono-echelle { grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bloc, .puce, .chrono-reserve, .creneau { transition: none; }
+  .bloc__badge { animation: none !important; }
+}
