@@ -25,7 +25,7 @@ dans le `CLAUDE.md` de la racine ; la documentation pour un humain est dans `REA
 | `js/menu.js` | **le catalogue** (`MENU` : les 7 modes, dans l'ordre) ; une carte s'active quand son mode est enregistré ; chargé en dernier |
 | `js/modes/<mode>.js` | **un fichier par mode** (aujourd'hui : `premier.js`) |
 | `js/donnees/personnes.js` | 573 personnes (décédées), table `DIFFICULTE` (1 à 5, 3 par défaut) |
-| `js/donnees/dates.js` | 113 événements datés : **pas encore chargé** par `index.html` (prévu pour « Trouver la date » et « Chronologie ») |
+| `js/donnees/dates.js` | 939 événements datés, triés par date, répartis sur toutes les époques et les six régions (Europe : environ les deux tiers) ; difficulté de 1 à 5 : 23 / 68 / 256 / 345 / 247. **Pas encore chargé** par `index.html` (prévu pour « Trouver la date » et « Chronologie ») |
 | `js/donnees/portraits.js` | id → image : **généré** par `outils/portraits/f5_portraits.py`, ne pas l'éditer à la main |
 | `js/profils.js` / `js/compte.js` | statistiques (invité ou compte) / bouton et fenêtre du compte |
 | `img/personnes/`, `img/generiques/`, `img/CREDITS.md` | portraits (générés, ~30 Ko chacun), images génériques, crédits (généré) |
