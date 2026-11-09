@@ -8,8 +8,8 @@
    l'un des sous-espaces ci-dessous :
      AQ.util    utilitaires generiques
      AQ.data    donnees anatomiques (regions, catalogue des os)
-     AQ.geo     geometrie du squelette (primitives + vues)
-     AQ.engine  moteur : rendu SVG, camera, surbrillance, interactions
+     AQ.geo     (inutilise : vestige de l'ancien rendu SVG du squelette)
+     AQ.engine  moteur 3D (Three.js) : modele, scene, camera, surbrillance, interactions
      AQ.game    logique de jeu : correction, configuration, partie, resultats
      AQ.account compte du joueur (comptes communs a tous les jeux) et statistiques
    ========================================================================== */

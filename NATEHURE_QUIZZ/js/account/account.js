@@ -104,7 +104,7 @@
     }
     $('acctBody').innerHTML = html;
     $('acctHelp').textContent = !c && !serveur
-      ? 'Sans serveur, on joue en invité. Pour les comptes, lancez les jeux avec game.bat, à la racine du dossier des jeux.'
+      ? 'Sans serveur, on joue en invité. Pour les comptes, lancez les jeux avec game.bat, dans le dossier SERVEUR.'
       : 'Un seul compte pour tous les jeux : vous restez connecté en changeant de jeu.';
   }
 

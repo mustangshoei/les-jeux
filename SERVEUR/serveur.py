@@ -2,7 +2,7 @@
 Python 3.8+, aucune dépendance.
 
 Lancement (depuis n'importe où) :
-    game.bat                                  (Windows, à la racine) : double-clic, ouvre aussi le navigateur
+    SERVEUR/game.bat                          (Windows, à côté de ce fichier) : double-clic, ouvre aussi le navigateur
     python SERVEUR/serveur.py                 port 8080, toutes les interfaces
     python SERVEUR/serveur.py --port 8000
     python SERVEUR/serveur.py --ouvrir        ouvre la page d'accueil dans le navigateur (ce que fait game.bat)
@@ -11,7 +11,7 @@ Si le serveur tourne déjà sur ce port, un second lancement ouvre simplement le
 
 Ce que fait ce serveur
   - Il sert les fichiers du dossier des jeux (index.html, COMMUN/, GEONOHYNE_QUIZZ/, ANOTEHOMY_QUIZZ/…),
-    sauf SERVEUR/, IGNORED_BY_CLAUDE/ et les fichiers cachés.
+    sauf SERVEUR/, OUTILS/ (outils de développement), IGNORED_BY_CLAUDE/ et les fichiers cachés.
   - Il gère les comptes, COMMUNS À TOUS LES JEUX : un compte créé dans un jeu sert dans tous les autres
     (création, connexion, déconnexion, changement de nom et de mot de passe, suppression).
   - Chaque jeu range ses statistiques dans SON espace du compte (comptes.<id>.jeux.<id du jeu>) : il ne
@@ -61,7 +61,7 @@ DONNEES = (os.environ.get('JEUX_DONNEES') or os.environ.get('GEOQUIZ_DONNEES')
            or os.path.join(RACINE, 'SERVEUR', 'donnees'))
 FICHIER = os.path.join(DONNEES, 'comptes.json')
 # Jamais envoyés aux navigateurs (en plus des fichiers cachés et du dossier des données)
-DOSSIERS_PRIVES = [os.path.join(RACINE, n) for n in ('SERVEUR', 'IGNORED_BY_CLAUDE')] + [DONNEES]
+DOSSIERS_PRIVES = [os.path.join(RACINE, n) for n in ('SERVEUR', 'OUTILS', 'IGNORED_BY_CLAUDE')] + [DONNEES]
 
 LONGUEUR_NOM = 20
 MDP_MIN = 4

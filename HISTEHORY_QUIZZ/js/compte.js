@@ -113,7 +113,7 @@
       : serveur
         ? 'Connectez-vous pour retrouver vos statistiques sur tous vos appareils, ou continuez en invité (statistiques gardées dans ce navigateur). ' +
           'Un seul compte pour tous les jeux.'
-        : 'Vous jouez en invité : vos statistiques restent dans ce navigateur. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, à la racine du dossier des jeux.';
+        : 'Vous jouez en invité : vos statistiques restent dans ce navigateur. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, dans le dossier SERVEUR.';
     $('#compte-corps').innerHTML = connecte ? vueCompte() : serveur ? vueVisiteur()
       : '<div class="compte-actions"><button type="button" class="btn btn-primary" data-compte="invite">Continuer en invité</button></div>';
   }

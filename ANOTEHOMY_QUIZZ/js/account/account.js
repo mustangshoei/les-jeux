@@ -139,7 +139,7 @@
       ? 'Votre compte est commun à tous les jeux : vous restez connecté en changeant de jeu. Vos statistiques vous suivent sur tous vos appareils.'
       : server
         ? 'Un seul compte pour tous les jeux : vos statistiques vous suivent sur tous vos appareils.'
-        : 'Sans serveur, on joue en invité. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, à la racine du dossier des jeux.';
+        : 'Sans serveur, on joue en invité. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, dans le dossier SERVEUR.';
     $('acctBody').innerHTML = on ? accountView() : server ? visitorView()
       : guestIdentity() + `<div class="acct-lignes">${line('stats', 'Mes statistiques', 'Parties, réussite, éléments à revoir')}</div>`;
   }

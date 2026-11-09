@@ -1,15 +1,16 @@
 @echo off
 rem ==========================================================================
-rem  game.bat - Lance les jeux AVEC les comptes (Windows) : double-cliquez dessus.
+rem  SERVEUR\game.bat - Lance les jeux AVEC les comptes (Windows) : double-cliquez dessus.
 rem  Demarre le serveur des jeux (SERVEUR\serveur.py, Python 3.8 ou plus recent)
 rem  et ouvre la page d'accueil dans le navigateur. Laissez la fenetre ouverte
 rem  pendant que vous jouez ; la fermer arrete le serveur. Serveur deja lance :
 rem  un nouveau double-clic ouvre simplement le navigateur.
 rem  Options transmises au serveur, par exemple :  game.bat --port 8081
+rem  Ce fichier est dans SERVEUR\ : il se place d'abord a la racine du dossier des jeux.
 rem ==========================================================================
 chcp 65001 >nul
 title Les jeux - serveur
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 rem Python : lanceur "py" de Windows, sinon "python" (pas le raccourci du Microsoft Store)
 set "PY="
@@ -25,7 +26,7 @@ if not defined PY (
   echo  en cochant « Add python.exe to PATH », puis relancez game.bat.
   echo.
   echo  Sans Python, on peut quand même jouer en invité, sans comptes :
-  echo  ouvrez index.html.
+  echo  ouvrez index.html, à la racine du dossier des jeux.
   echo.
   pause
   exit /b 1

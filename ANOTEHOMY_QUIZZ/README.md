@@ -15,8 +15,8 @@ plusieurs sur un réseau.
 
 - **Seul, sur un ordinateur** : double-cliquez sur **`index.html`** (navigateur récent avec WebGL :
   Chrome, Edge, Firefox, Safari). On joue en invité (statistiques gardées dans le navigateur), sans comptes.
-- **Avec les comptes** : double-cliquez sur **`game.bat`**, à la racine du dossier des jeux (Windows, il
-  faut Python 3) : il lance le serveur des jeux et ouvre le navigateur. Ou, sur un NAS : lancez le serveur
+- **Avec les comptes** : double-cliquez sur **`SERVEUR/game.bat`**, dans le dossier des jeux (Windows,
+  il faut Python 3) : il lance le serveur des jeux et ouvre le navigateur. Ou, sur un NAS : lancez le serveur
   des jeux (voir le README à la racine) et ouvrez
   `http://<adresse-de-la-machine>:8080/ANOTEHOMY_QUIZZ/` (ou la page d'accueil `http://<adresse>:8080`,
   qui propose tous les jeux).
@@ -36,6 +36,7 @@ ouvrant directement le fichier. Chaque fichier range ses fonctions dans l'espace
 ```
 index.html                  page unique : écran de jeu (panneau latéral + scène 3D), menu, configuration,
                             résultats, statistiques, bouton de compte, menu du compte
+CLAUDE.md                   notes pour Claude : architecture, interfaces, pièges, plans
 CREDITS.md                  crédits et licences (modèles 3D, Three.js, polices, algorithmes)
 css/                        apparence, un fichier par partie de l'écran (base, layout, panel, stage, skeleton,
                             home, setup, results, account, responsive)
@@ -54,9 +55,9 @@ js/engine/                  moteur 3D : modèle, scène, caméra, surbrillance, 
                             vaisseaux et organes (fabrique commune systems.js), organe isolé (splanchno.js)
 js/game/                    logique de jeu : menu, correction des réponses, configuration, partie, résultats,
                             révision, et un adaptateur par jeu (skeleton-game.js, osteo-game.js, muscle-game.js,
-                            vessel-game.js, organ-game.js, splanchno-game.js) ; jeu des termes médicaux, sans 3D
-                            vocabulaire, sans 3D (lexique-*.js : moteur commun, modes Devinette et QCM,
-                            suggestions, un fichier par jeu)
+                            vessel-game.js, organ-game.js, splanchno-game.js) ; jeux de vocabulaire, sans 3D
+                            (lexique-*.js : moteur commun, modes Devinette et QCM, suggestions, un fichier
+                            par jeu)
 js/account/profile.js       statistiques du joueur (invité ou compte commun)
 js/account/account.js       bouton de compte, menu du compte, écran des statistiques
 js/vendor/three.min.js      Three.js r158 (licence MIT)

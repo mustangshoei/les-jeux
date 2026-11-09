@@ -40,7 +40,7 @@
         : '<a class="jeu"' + style + ' href="' + esc(Jeux.lien(j)) + '">' + corps +
           '<span class="jeu__aller">Jouer <span aria-hidden="true">→</span></span></a>';
     }).join('');
-    if (Jeux.version) $('#version').textContent = $('#admin-version').textContent = 'Les jeux · version ' + Jeux.version;
+    if (Jeux.version) $('#version').textContent = $('#admin-version').textContent = 'Quizzarium · version ' + Jeux.version;
   }
 
   if (!window.Comptes) return;
@@ -141,7 +141,7 @@
     }
     $('#compte-corps').innerHTML = html;
     $('#compte-note').textContent = !c && !serveur
-      ? 'Sans serveur, on joue en invité. Pour les comptes, lancez les jeux avec game.bat, à la racine du dossier des jeux.'
+      ? 'Sans serveur, on joue en invité. Pour les comptes, lancez les jeux avec game.bat, dans le dossier SERVEUR.'
       : c && c.admin
         ? 'Le tableau de bord n\'existe que sur cette page ; dans les jeux, « admin » joue comme les autres comptes.'
         : 'Un seul compte pour tous les jeux : vous restez connecté en changeant de jeu.';
@@ -185,7 +185,7 @@
     document.body.dataset.vue = admin ? 'admin' : 'jeux';
     $('#vue-jeux').hidden = admin;
     $('#vue-admin').hidden = !admin;
-    document.title = admin ? 'Tableau de bord · Les jeux' : 'Les jeux';
+    document.title = admin ? 'Tableau de bord · Quizzarium' : 'Quizzarium';
     if (admin) Admin.ouvrir();
     else if (Admin) Admin.fermer();
   }

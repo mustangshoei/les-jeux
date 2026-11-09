@@ -12,8 +12,8 @@ Python sans dépendance) qui permet de jouer à plusieurs sur un réseau, avec d
 
 - **Seul, sur un ordinateur** : double-cliquez sur **`index.html`**. Rien à installer ; on joue en
   invité (statistiques gardées dans le navigateur), sans comptes.
-- **Avec les comptes** : double-cliquez sur **`game.bat`**, à la racine du dossier des jeux (Windows, il
-  faut Python 3) : il lance le serveur des jeux et ouvre le navigateur. Ou, sur un NAS : lancez le serveur
+- **Avec les comptes** : double-cliquez sur **`SERVEUR/game.bat`**, dans le dossier des jeux (Windows,
+  il faut Python 3) : il lance le serveur des jeux et ouvre le navigateur. Ou, sur un NAS : lancez le serveur
   des jeux (voir le README à la racine) et ouvrez
   `http://<adresse-de-la-machine>:8080/GEONOHYNE_QUIZZ/` (ou la page d'accueil `http://<adresse>:8080`, qui
   propose tous les jeux) depuis n'importe quel appareil du réseau.
@@ -30,6 +30,7 @@ Les dossiers `js/` et `data/` sont rangés comme le menu : un sous-dossier par g
 
 ```
 index.html                         page unique (menu, mode Apprendre, choix de partie, jeu, fin de partie)
+CLAUDE.md                          notes pour Claude : architecture, contrats, pièges, plans
 css/style.css                      toute l'apparence (« Atlas en relief », thème sombre unique)
 css/polices/                       polices Bricolage Grotesque et IBM Plex Mono (licence OFL, fichiers OFL-*.txt)
 img/topo.svg                       fond : courbes de niveau

@@ -3,7 +3,7 @@
 
 /* ==========================================================================
    Histehory Quizz - js/donnees/personnes.js
-   RECENSEMENT DES PERSONNES HISTORIQUES (données seules : aucun mode de jeu ne les utilise encore).
+   RECENSEMENT DES PERSONNES HISTORIQUES (utilisé par « Qui est venu en premier ? », js/modes/premier.js).
    --------------------------------------------------------------------------
    Une ligne par personne :
      P(id, nom, naissance, mort, sexe, région, pays, domaine, résumé, options)

@@ -52,6 +52,7 @@ dans le stockage du navigateur).
 ```
 index.html              la page du jeu (une seule) : le menu et le bouton du compte
 README.md               ce fichier
+CLAUDE.md               notes pour Claude : architecture, conventions, plans
 css/
   base.css              thème « Herbier » : couleurs, polices, boutons, fond fixe
   home.css              le menu : chapitres, planche, repères, cartes

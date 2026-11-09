@@ -42,7 +42,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.2.1';
+  const VERSION = '1.2.2';
 
   const CIBLAGE = ['Ciblage', 'Nommage'];
   const NOMMAGE = ['Nommage', 'Ciblage'];

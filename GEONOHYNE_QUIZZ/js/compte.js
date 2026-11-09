@@ -188,7 +188,7 @@
       ? 'Votre compte est commun à tous les jeux : vous restez connecté en changeant de jeu. Les autres joueurs ne voient que votre nom et vos records.'
       : serveur
         ? 'Un seul compte pour tous les jeux : vos records vous suivent sur tous vos appareils et comptent dans les classements.'
-        : 'Sans serveur, on joue en invité. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, à la racine du dossier des jeux.';
+        : 'Sans serveur, on joue en invité. Pour créer un compte (commun à tous les jeux), lancez les jeux avec game.bat, dans le dossier SERVEUR.';
     $('#compte-corps').innerHTML = connecte ? vueCompte() : serveur ? vueVisiteur()
       : identiteInvite() + '<div class="compte-lignes">' + ligne('stats', 'Mes statistiques', 'Records, historique, zones à revoir') + '</div>';
   }
