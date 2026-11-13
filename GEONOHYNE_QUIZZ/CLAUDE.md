@@ -46,9 +46,25 @@ Ajouter un module : le fichier, sa balise `<script>` dans la bonne section de `i
 
 ## Mécanismes à connaître (et à réutiliser)
 
-- **Écran de choix** : construit par `core.js` à partir du `<template id="setup-modele">` ; une colonne par
-  quiz, deux avec `colonneDroite` (départements | préfectures ; sur téléphone, une seule dépliée).
-  Mini-carte cliquable des groupes (cocher une région, choisir le périmètre du record).
+- **Écran de choix** (modèle dessiné par Théo, 2.3.0) : construit par `core.js` à partir du
+  `<template id="setup-modele">` ; un **panneau** par quiz, et avec `colonneDroite` deux panneaux dont un seul est
+  montré, au choix du sélecteur **« Sujet du jeu »** (départements | préfectures ; dernier sujet mémorisé,
+  `geonohyne.setup.sujet.<id>`, seulement depuis le menu ; façon de jouer et mode record synchronisés entre les
+  deux). **Grille 2 × 2 dont les cases s'alignent en haut et en bas** (`grid-template-areas`, classe `is-record`
+  pour le mode record ; les conteneurs `occasionnel` / `partie-record` sont en `display: contents`). Mini-carte
+  cliquable des groupes (cocher une région, choisir le périmètre du record), liste en 3 colonnes (5 en record)
+  pour ne jamais défiler en 1280 × 720. **Couleur ambrée et lumières propres à cet écran** : bloc
+  `#screen-setup` de `css/style.css`, qui redéfinit `--coral…` (Théo l'étendra peut-être à tout le jeu). La
+  Liste des Départements réutilise les classes `.setup-*` : ne rien changer hors de `#screen-setup` sans la
+  vérifier.
+- **Indices** : `indices: [{ id, libelle, titre, texte(zone), dessous, ordonne }]` d'une catégorie → une ligne
+  « <nomIndice> : rien | … » (avec `aideIndice` dessous) ; `ordonne: true` met aussi les questions dans l'ordre
+  des codes. Départements et préfectures (choix de Théo) : **« Ordre INSEE (en indice) » : rien | code | ordre
+  + code**, plus de case « Ordre INSEE » séparée ni d'indice « département ». L'ancienne forme `indice` /
+  `indiceDessous` est convertie à l'enregistrement.
+- **La Liste, mode Hardcore** (`js/france/liste.js`) : Non / 3 / 5 / 10 / Illimité répétitions permises ; ni
+  liste ni carte pendant la partie (`#liste-zone` cachée, `#liste-hardcore` : noms cités et répétitions) ; un
+  nom déjà trouvé retapé = une répétition ; à la limite, `eliminer()` révèle le reste et la liste revient.
 - **Mode record** : périmètre fixe (tout, ou un seul groupe), sans indice ni rattrapage ni suggestion ;
   meilleur = score, puis temps au dixième. Clé `categorie|façon de jouer|périmètre`. Les records sont la
   **seule** donnée publiée (`publiques`) : GéoNohyne est le seul jeu avec des classements.

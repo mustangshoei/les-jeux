@@ -5,43 +5,7 @@
    orange) ; vert et rouge pour ✓ et ✗, comme « Qui est venu en premier ? ».
    ========================================================================== */
 
-/* ---------- Préphase : filtres ---------- */
-.config--large { width: min(46rem, 100%); }
-.chrono-groupe__tete { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; }
-.chrono-groupe__tete .config__titre { margin-bottom: .45rem; }
-.chrono-groupe__outils { display: flex; gap: .2rem; font-size: .82rem; }
-.chrono-puces { display: flex; flex-wrap: wrap; gap: .4rem; }
-.puce {
-  display: inline-flex;
-  align-items: baseline;
-  gap: .4rem;
-  padding: .38rem .7rem;
-  border: 2px solid var(--line);
-  border-radius: 999px;
-  background: var(--card-2);
-  color: var(--muted);
-  font-size: .86rem;
-  font-weight: 700;
-  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
-}
-.puce:hover { border-color: var(--accent); color: var(--ink); }
-.puce:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
-.puce.is-active { border-color: var(--accent); background: rgba(245, 158, 11, .14); color: var(--accent-clair); }
-.puce.is-vide { opacity: .45; }
-.puce__aide { font-size: .72rem; font-weight: 500; color: var(--muted); }
-.puce__n {
-  min-width: 1.5rem;
-  padding: 0 .38rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .08);
-  color: var(--ink-2);
-  font-size: .74rem;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-.puce.is-active .puce__n { background: rgba(245, 158, 11, .25); color: var(--accent-clair); }
-.chrono-etat { margin-top: 1.2rem; text-align: center; font-size: .92rem; font-weight: 600; color: var(--ink-2); }
-.chrono-etat--non { color: var(--red); }
+/* Préphase : les filtres en cases (.puce, .chrono-groupe…) sont dans css/style.css, partagés avec « Trouver la date ». */
 
 /* ---------- Écran de partie : peut défiler si la place manque (téléphone, fenêtre basse) ---------- */
 #screen-chronologie-jeu { height: auto; min-height: 100dvh; }

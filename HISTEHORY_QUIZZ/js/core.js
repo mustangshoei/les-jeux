@@ -1,9 +1,9 @@
 /* ==========================================================================
    core.js — Noyau de Histehory Quizz
 
-   L'enregistrement des modes de jeu et le passage d'un écran à l'autre. Un seul mode est jouable
-   (« Qui est venu en premier ? », js/modes/premier.js) ; la page d'accueil (js/menu.js) affiche les
-   autres grisés tant qu'ils ne sont pas enregistrés.
+   L'enregistrement des modes de jeu et le passage d'un écran à l'autre. Chaque mode jouable est un
+   fichier de js/modes/ ; la page d'accueil (js/menu.js) affiche les autres grisés tant qu'ils ne sont
+   pas enregistrés.
 
    CONTRAT D'UN MODE DE JEU (Histehory.registerMode)
      id, titre, ouvrir()   obligatoires (carte de l'accueil : { mode: 'id' } dans js/menu.js)

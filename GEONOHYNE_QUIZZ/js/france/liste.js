@@ -29,6 +29,10 @@
      Initiale   montre l'initiale d'un nom au hasard (« Q… ») ;
      Révéler    écrit un nom en entier, en rouge : il compte comme non trouvé. On révèle d'abord un
                 nom dont l'initiale est déjà affichée.
+   Hardcore (option : Non, 3, 5, 10 ou Illimité) : ni liste ni carte pendant la partie, seulement le nombre de
+   noms cités ; il faut se souvenir de ceux qu'on a déjà donnés. Citer un nom déjà cité est une répétition
+   (« ⚠️ Déjà cité ! ») ; à la 3ᵉ (5ᵉ, 10ᵉ) répétition, le joueur est éliminé : le reste est révélé, et la
+   liste réapparaît pour le bilan. « Illimité » : les répétitions sont seulement comptées.
    Un chronomètre tourne jusqu'à ce que tout soit trouvé ou révélé ; « Abandonner » révèle le reste.
    Une petite fenêtre fait le bilan : « Recommencer », « Afficher la liste » ou « Menu ».
 
@@ -51,6 +55,10 @@
   const CLE_ORDRE = 'geonohyne.liste.ordre'; // dernier tri choisi : 'code' ou 'region' (mémorisé)
   const CLE_DEVINER = 'geonohyne.liste.deviner';   // quoi deviner : 'tout', 'dep' ou 'pref' (mémorisé)
   const CLE_CARTE = 'geonohyne.liste.carte';       // '1' : carte affichée (mémorisé)
+  const CLE_HARDCORE = 'geonohyne.liste.hardcore'; // '0' (non), '3', '5', '10' ou 'inf' (mémorisé)
+  const HARDCORE = ['0', '3', '5', '10', 'inf'];
+  // Répétitions permises avant l'élimination : 0 = pas de hardcore, Infinity = jamais éliminé
+  const limiteHardcore = (v) => (v === 'inf' ? Infinity : Number(v) || 0);
   const DEVINER = {
     tout: { champs: ['dep', 'pref'], saisie: 'un département ou une préfecture',
       aide: 'Tous les départements et toutes les préfectures du périmètre, sans les associer.' },
@@ -132,6 +140,7 @@
   let ordre = 'code';              // tri de la liste : 'code' ou 'region'
   let deviner = 'tout';            // 'tout', 'dep' ou 'pref'
   let avecCarte = false;
+  let hardcore = '0';              // une valeur de HARDCORE
   let api = null;                  // outils de js/core.js (carte)
   let p = null;                    // partie en cours
 
@@ -141,6 +150,7 @@
     if (localStorage.getItem(CLE_ORDRE) === 'region') ordre = 'region';
     if (DEVINER[localStorage.getItem(CLE_DEVINER)]) deviner = localStorage.getItem(CLE_DEVINER);
     avecCarte = localStorage.getItem(CLE_CARTE) === '1';
+    if (HARDCORE.includes(localStorage.getItem(CLE_HARDCORE))) hardcore = localStorage.getItem(CLE_HARDCORE);
   } catch (e) { /* stockage indisponible : réglages par défaut */ }
   const memoriser = (cle, valeur) => {
     try { localStorage.setItem(cle, valeur); } catch (err) { /* stockage indisponible : valable pour la session */ }
@@ -155,7 +165,10 @@
       perimetre,
       lignes,
       champs,                      // ce qu'il faut deviner : ['dep', 'pref'], ['dep'] ou ['pref']
-      carte: avecCarte,
+      hardcore: limiteHardcore(hardcore),   // répétitions permises (0 : pas de hardcore ; Infinity : illimité)
+      repetitions: 0,              // hardcore : noms cités une seconde fois
+      elimine: false,              // hardcore : limite des répétitions atteinte
+      carte: avecCarte && !limiteHardcore(hardcore),   // hardcore : pas de carte
       statut: { dep: statuts('dep'), pref: statuts('pref') },
       initiales: 0,                // indices « Initiale » utilisés
       debut: Date.now(),
@@ -167,8 +180,13 @@
     $('#liste-titre').textContent = nomPerimetre(perimetre) + ' · ' + lignes.length + ' département' + (lignes.length > 1 ? 's' : '');
     $('#liste-total-dep').textContent = lignes.length;
     $('#liste-total-pref').textContent = lignes.length;
-    $('#liste-tri').classList.toggle('hidden', !plusieursRegions(perimetre));
+    $('#liste-tri').classList.toggle('hidden', !plusieursRegions(perimetre) || !!p.hardcore);
     $('.liste-table').dataset.deviner = deviner;     // colonnes, compteurs et indices affichés (css)
+    // Hardcore : ni liste ni carte, seulement les compteurs (la liste revient à la fin)
+    $('#liste-zone').classList.toggle('hidden', !!p.hardcore);
+    $('#liste-hardcore').classList.toggle('hidden', !p.hardcore);
+    $('#liste-hc-total').textContent = lignes.length * champs.length;
+    $('#liste-hc-max').textContent = p.hardcore && p.hardcore !== Infinity ? ' / ' + p.hardcore : '';
     preparerCarte();
     dessinerListe();
     const saisie = $('#liste-saisie');
@@ -177,7 +195,8 @@
     saisie.placeholder = DEVINER[deviner].saisie.charAt(0).toUpperCase() + DEVINER[deviner].saisie.slice(1) + ', puis Entrée…';
     $('#liste-valider').disabled = false;
     $('#liste-abandon').disabled = false;
-    retour('idle', 'Le chrono tourne ! Tapez ' + DEVINER[deviner].saisie + ', puis Entrée.');
+    retour('idle', 'Le chrono tourne ! Tapez ' + DEVINER[deviner].saisie + ', puis Entrée.' +
+      (p.hardcore ? ' Hardcore : sans liste, souvenez-vous de ce que vous avez cité.' : ''));
     majCompteurs();
     majChrono();
     p.chrono = setInterval(() => {
@@ -294,6 +313,10 @@
   function majCompteurs() {
     $('#liste-nb-dep').textContent = compter('dep', 'trouve');
     $('#liste-nb-pref').textContent = compter('pref', 'trouve');
+    $('#liste-hc-nb').textContent = p.champs.reduce((n, c) => n + compter(c, 'trouve'), 0);
+    $('#liste-hc-rep').textContent = p.repetitions;
+    // Hardcore : la case des répétitions rougit à l'approche de la limite (dernière répétition permise)
+    $('#liste-hc-repetitions').classList.toggle('is-danger', p.hardcore !== Infinity && p.repetitions > 0 && p.repetitions >= p.hardcore - 1);
     document.querySelectorAll('[data-indice]').forEach((b) => {
       b.disabled = p.fini || !candidats(b.dataset.champ, b.dataset.indice).length;
     });
@@ -327,6 +350,19 @@
       saisie.value = '';
       majCompteurs();
       return verifierFin();
+    }
+
+    if (deja.length && p.hardcore) {
+      // Hardcore : un nom déjà cité est une répétition ; à la limite, le joueur est éliminé
+      const { champ, i } = deja[0];
+      p.repetitions++;
+      const limite = p.hardcore === Infinity ? '' : ' / ' + p.hardcore;
+      retour('ko', '⚠️ <strong>' + esc(p.lignes[i][champ].nom) + '</strong> : déjà cité' + CHAMPS[champ].e +
+        ' ! Répétition ' + p.repetitions + limite + '.');
+      saisie.value = '';
+      majCompteurs();
+      if (p.repetitions >= p.hardcore) eliminer();
+      return;
     }
 
     if (deja.length) {
@@ -403,13 +439,25 @@
     if (!reste) terminer();
   }
 
+  // Ce qui reste à trouver est révélé (en rouge)
+  function revelerReste() {
+    Object.keys(CHAMPS).forEach((champ) => p.statut[champ].forEach((s, i) => {
+      if (s === 'vide' || s === 'initiale') { p.statut[champ][i] = 'revele'; rendreCase(champ, i); }
+    }));
+  }
+
   function abandonner() {
     if (!p || p.fini) return;
     if (enCours() && !confirm('Abandonner et afficher toute la liste ?')) return;
     p.abandon = true;
-    Object.keys(CHAMPS).forEach((champ) => p.statut[champ].forEach((s, i) => {
-      if (s === 'vide' || s === 'initiale') { p.statut[champ][i] = 'revele'; rendreCase(champ, i); }
-    }));
+    revelerReste();
+    terminer();
+  }
+
+  // Hardcore : limite des répétitions atteinte
+  function eliminer() {
+    p.elimine = true;
+    revelerReste();
     terminer();
   }
 
@@ -422,6 +470,10 @@
     $('#liste-saisie').disabled = true;
     $('#liste-valider').disabled = true;
     $('#liste-abandon').disabled = true;
+    if (p.hardcore) {                                // hardcore : la liste revient pour le bilan
+      $('#liste-zone').classList.remove('hidden');
+      $('#liste-tri').classList.toggle('hidden', !plusieursRegions(p.perimetre));
+    }
 
     p.lignes.forEach((_, i) => majCarte(i));        // rien trouvé : rouge
     const total = p.lignes.length * p.champs.length;
@@ -429,7 +481,8 @@
     const reveles = total - trouves;
     const temps = formaterTemps(p.duree);
     const parfait = !reveles && !p.initiales;
-    retour(reveles ? 'idle' : 'ok', (p.abandon ? '🏳️ Partie abandonnée' : parfait ? '🏆 Liste complète' : '🎉 Liste terminée') +
+    retour(reveles ? 'idle' : 'ok', (p.elimine ? '💀 Éliminé (' + p.repetitions + ' répétitions)' : p.abandon ? '🏳️ Partie abandonnée'
+      : parfait ? '🏆 Liste complète' : '🎉 Liste terminée') +
       ' en ' + temps + ' : ' + trouves + ' nom' + (trouves > 1 ? 's' : '') + ' trouvé' + (trouves > 1 ? 's' : '') + ' sur ' + total +
       (reveles > 1 ? ', les ' + reveles + ' autres sont en rouge.' : reveles ? ', l\'autre est en rouge.' : '.'));
 
@@ -437,8 +490,8 @@
     setTimeout(() => {
       // Entre-temps : nouvelle partie, retour aux options ou au menu → pas de fenêtre
       if (p !== partie || $('#screen-liste').classList.contains('hidden') || $('#liste-jeu').classList.contains('hidden')) return;
-      $('#liste-fin-emoji').textContent = p.abandon ? '🏳️' : parfait ? '🏆' : reveles ? '📋' : '🎉';
-      $('#liste-fin-titre').textContent = p.abandon ? 'Partie abandonnée' : reveles ? 'Liste terminée' : 'Liste complète !';
+      $('#liste-fin-emoji').textContent = p.elimine ? '💀' : p.abandon ? '🏳️' : parfait ? '🏆' : reveles ? '📋' : '🎉';
+      $('#liste-fin-titre').textContent = p.elimine ? 'Éliminé !' : p.abandon ? 'Partie abandonnée' : reveles ? 'Liste terminée' : 'Liste complète !';
       const n = p.lignes.length;
       const s = n > 1 ? 's' : '';
       $('#liste-fin-texte').textContent = nomPerimetre(p.perimetre) + ' : ' +
@@ -448,9 +501,12 @@
       $('#liste-fin-trouves-label').textContent = 'Trouvés sur ' + total;
       $('#liste-fin-reveles').textContent = reveles;
       $('#liste-fin-temps').textContent = temps;
-      $('#liste-fin-indices').textContent = p.initiales
-        ? '💡 ' + p.initiales + ' initiale' + (p.initiales > 1 ? 's' : '') + ' demandée' + (p.initiales > 1 ? 's' : '') + '.'
-        : '';
+      $('#liste-fin-indices').textContent = p.hardcore
+        ? '💀 Hardcore : ' + p.repetitions + ' répétition' + (p.repetitions > 1 ? 's' : '') +
+          (p.hardcore === Infinity ? '.' : ' sur ' + p.hardcore + ' permises' + (p.elimine ? ' : éliminé.' : '.'))
+        : p.initiales
+          ? '💡 ' + p.initiales + ' initiale' + (p.initiales > 1 ? 's' : '') + ' demandée' + (p.initiales > 1 ? 's' : '') + '.'
+          : '';
       $('#liste-fin').showModal();
     }, DELAI_FIN);
   }
@@ -486,6 +542,22 @@
       b.setAttribute('aria-pressed', String(actif));
     });
     memoriser(CLE_DEVINER, d);
+  }
+
+  // Hardcore : Non, 3, 5, 10 ou Illimité ; la carte n'est pas proposée (ni liste ni carte)
+  function definirHardcore(v) {
+    hardcore = v;
+    document.querySelectorAll('[data-liste-hardcore]').forEach((b) => {
+      const actif = b.dataset.listeHardcore === v;
+      b.classList.toggle('is-active', actif);
+      b.setAttribute('aria-pressed', String(actif));
+    });
+    const n = limiteHardcore(v);
+    $('#liste-carte-option').disabled = !!n;
+    $('#liste-hardcore-aide').textContent = 'Ni liste ni carte, juste le nombre de noms cités. ' + (!n
+      ? 'Choisissez les répétitions permises.'
+      : n === Infinity ? 'Répétitions comptées, sans élimination.' : 'Éliminé à la ' + n + 'ᵉ répétition.');
+    memoriser(CLE_HARDCORE, v);
   }
 
   // Périmètres : une case par choix (nom, et à droite le nombre de départements)
@@ -577,6 +649,9 @@
     document.querySelectorAll('[data-liste-deviner]').forEach((b) => b.addEventListener('click', () => {
       definirDeviner(b.dataset.listeDeviner);
     }));
+    document.querySelectorAll('[data-liste-hardcore]').forEach((b) => b.addEventListener('click', () => {
+      definirHardcore(b.dataset.listeHardcore);
+    }));
     $('#liste-carte-option').addEventListener('change', (e) => {
       avecCarte = e.target.checked;
       memoriser(CLE_CARTE, avecCarte ? '1' : '0');
@@ -642,6 +717,7 @@
       definirOrdre(ordre);
       definirDeviner(deviner);
       $('#liste-carte-option').checked = avecCarte;
+      definirHardcore(hardcore);
       choisirPerimetre(perimetre);
       afficherEtape('options');        // on choisit d'abord le périmètre, puis « Lancer la partie »
     }

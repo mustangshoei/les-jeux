@@ -49,7 +49,7 @@
 .defis-jeu h2,
 .dialogue__tete h2,
 
-/* GéoNohyne, Anotehomy et natehure : menu, chapitres, cartes des modes, écrans de réglage */
+/* GéoNohyne, Anotehomy, Natehure et Histehory : menu, chapitres, cartes des modes, écrans de réglage */
 h1.menu-titre,
 .chapitre-tete h2,
 .chapitre-nom,
@@ -71,9 +71,8 @@ h1.menu-titre,
 .brand h1,
 .res-title,
 
-/* Histehory : titre de l'accueil, catégories (et la fenêtre du compte, plus haut) */
-.hero h1,
-.cat-title {
+/* Histehory : titres des écrans de réglage et de fin de partie (le menu est dans la liste commune, plus haut) */
+.config h1 {
   font-family: var(--police-titres);
   /* Les jeux resserraient leurs titres pour l'ancienne police : avec celle-ci, les lettres se
      touchaient. « normal » rend l'espacement prévu par la police (valeur en em pour le régler). */

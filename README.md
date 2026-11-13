@@ -4,7 +4,7 @@ Ce dossier regroupe plusieurs jeux éducatifs, en HTML, CSS et JavaScript purs (
 connexion Internet). Chaque jeu fonctionne **seul et indépendamment** des autres ; tous partagent un
 **compte commun** et peuvent tourner en même temps, servis par un même petit serveur facultatif.
 
-**Version de l'ensemble : 1.2.2** (voir [Versions](#versions)).
+**Version de l'ensemble : 1.3.0** (voir [Versions](#versions)).
 
 **Jouer en ligne : <https://mustangshoei.github.io/quizzarium/>** (GitHub Pages, en invité : voir « Jouer »).
 
@@ -12,7 +12,7 @@ connexion Internet). Chaque jeu fonctionne **seul et indépendamment** des autre
 |---|---|---|---|---|
 | 🌍 **GéoNohyne Quizz** | 2.2.0 | `GEONOHYNE_QUIZZ/` | la géographie : départements et préfectures, fleuves, pays, mers du monde (quiz, jeux, mode Apprendre) | [GEONOHYNE_QUIZZ/README.md](GEONOHYNE_QUIZZ/README.md) |
 | 🦴 **Anotehomy Quizz** | 2.5.0 | `ANOTEHOMY_QUIZZ/` | l'anatomie humaine en 3D : os, ostéologie descriptive, muscles, vaisseaux sanguins, organes (corps masculin ou féminin), splanchnologie descriptive (nomenclature TA2) ; la langue médicale : pathologies, termes médicaux | [ANOTEHOMY_QUIZZ/README.md](ANOTEHOMY_QUIZZ/README.md) |
-| 📜 **Histehory Quizz** | 1.2.0 | `HISTEHORY_QUIZZ/` | l'histoire (deux modes jouables, « Qui est venu en premier ? » et « Chronologie », cinq autres annoncés) — **fermé** : sa tuile reste affichée mais n'est plus cliquable | [HISTEHORY_QUIZZ/README.md](HISTEHORY_QUIZZ/README.md) |
+| 📜 **Histehory Quizz** | 2.1.0 | `HISTEHORY_QUIZZ/` | l'histoire : dates, frises, personnages (trois modes jouables, « Qui est venu en premier ? », « Chronologie » et « Trouver la date », quatre autres annoncés) | [HISTEHORY_QUIZZ/README.md](HISTEHORY_QUIZZ/README.md) |
 | 🌿 **Natehure Quizz** | 0.1.0 | `NATEHURE_QUIZZ/` | la nature, les végétaux et l'agriculture (en préparation : menu et comptes seulement) — **fermé** : sa tuile reste affichée mais n'est plus cliquable | [NATEHURE_QUIZZ/README.md](NATEHURE_QUIZZ/README.md) |
 
 ## Contenu du dossier
@@ -50,7 +50,7 @@ OUTILS/                 outils de développement, pour l'ensemble (jamais envoy�
   push.ps1              git add + commit + push en une commande (refuse SERVEUR/donnees et IGNORED_BY_CLAUDE)
 GEONOHYNE_QUIZZ/        le jeu GéoNohyne Quizz (tout ce qui lui est propre)
 ANOTEHOMY_QUIZZ/        le jeu Anotehomy Quizz (tout ce qui lui est propre)
-HISTEHORY_QUIZZ/        le jeu Histehory Quizz (en préparation, fermé)
+HISTEHORY_QUIZZ/        le jeu Histehory Quizz (tout ce qui lui est propre)
 NATEHURE_QUIZZ/         le jeu Natehure Quizz (en préparation, fermé)
 IGNORED_BY_CLAUDE/      notes personnelles, hors des jeux (jamais servies par le serveur)
 ```
@@ -78,7 +78,7 @@ dossier de ce jeu (`outils/` ou `tools/`).
 - **Sur un NAS ou un ordinateur toujours allumé** : voir « Héberger les jeux », puis ouvrez
   `http://<adresse-de-la-machine>:8080` depuis n'importe quel appareil du réseau : la page d'accueil
   propose les jeux ouverts. Adresses directes : `…:8080/GEONOHYNE_QUIZZ/`, `…:8080/ANOTEHOMY_QUIZZ/`,
-  `…:8080/HISTEHORY_QUIZZ/` et `…:8080/NATEHURE_QUIZZ/` — les deux dernières marchent même si la page
+  `…:8080/HISTEHORY_QUIZZ/` et `…:8080/NATEHURE_QUIZZ/` — la dernière marche même si la page
   d'accueil n'y mène plus (voir « Accès aux jeux »).
 - **Changer de jeu** : chaque jeu a un bouton **« Jeux »** en haut à droite (sur ses écrans de menu, pas
   pendant les parties). Il liste les autres jeux et la page d'accueil. On **reste connecté** d'un jeu à
@@ -185,7 +185,7 @@ fonctionnel si on l'ouvre à la main (double-clic, ou son adresse tapée dans le
 - **Ce n'est pas une protection.** Le dépôt est public : qui lit `COMMUN/jeux.js` voit le dossier. Le but
   est d'empêcher d'y arriver par l'interface, pas de cacher le jeu.
 
-État actuel : **Histehory Quizz** et **Natehure Quizz** sont fermés. Aucun jeu n'est masqué pour le
+État actuel : **Natehure Quizz** est fermé (Histehory Quizz est ouvert depuis la version 1.3.0 de l'ensemble). Aucun jeu n'est masqué pour le
 moment : `masque` reste disponible si l'on veut un jour retirer un jeu de la liste pour de bon.
 
 ## Versions
@@ -212,6 +212,7 @@ Historique de l'ensemble :
 
 | Version | Date | Changements |
 |---|---|---|
+| 1.3.0 | 10/11/2026 | **Histehory Quizz ouvert au public** : sa tuile devient un lien sur la page d'accueil et dans le menu « Jeux », et ses totaux comptent dans le bouton « Statistiques » de l'accueil (champ `totaux` de `COMMUN/jeux.js`). `COMMUN/police.css` : les titres d'Histehory suivent sa nouvelle interface. |
 | 1.2.2 | 09/11/2026 | **Nouveau nom : Quizzarium** (le dépôt et le site s'appelaient « Les jeux » ; l'adresse en ligne devient `mustangshoei.github.io/quizzarium/`). **Rangement de la racine** : le lanceur `game.bat` passe dans `SERVEUR/` (les messages des jeux indiquent sa nouvelle place), `push.ps1` dans le nouveau dossier `OUTILS/` (jamais servi par le serveur) ; il ne reste à la racine que `index.html`, `README.md`, `CLAUDE.md` et `.gitignore`. Notes pour Claude : un `CLAUDE.md` à la racine (décisions, conventions, plans) et un par jeu (ses spécialités). Ce README retrouve ses sections « Administration », « Accès aux jeux » et « Versions », perdues le 05/11/2026 (une ancienne copie avait été poussée). |
 | 1.2.1 | 31/10/2026 | Nouvelle **police des titres**, Dumbledor 1, pour l'accueil et les quatre jeux (le texte courant ne change pas). Elle se règle en un seul endroit, `COMMUN/police.css` : fichier de la police, taille, et liste des titres concernés. |
 | 1.2.0 | 31/10/2026 | Quatrième jeu, **Natehure Quizz** (nature, agriculture & végétaux) : son menu, ses trois chapitres et ses dix-huit cartes, aucun mode de jeu encore. **Page d'accueil refondue** : un grand rectangle par jeu, haut (jusqu'à 65 % de la hauteur de la fenêtre) et au fond de sa couleur dominante — 4 de front sur ordinateur (au plus 65 % de la largeur), 2 × 2 sur tablette, 1 colonne sur téléphone ; un **fond animé** de bulles aux couleurs des quatre jeux ; dans chaque rectangle, sous ses libellés, une **gravure ancienne** fondue dans la couleur du jeu (globe de Delisle, écorché de Vésale, frise de monuments et médaillons d'Alexandre, Jeanne d'Arc et Napoléon, orme de Loudon) ; et un bouton **« Statistiques »** qui rassemble les totaux du joueur pour tous les jeux. Deux réglages d'accès dans `COMMUN/jeux.js` : `masque` (le jeu disparaît de la page d'accueil et du menu « Jeux ») et `bloque` (son rectangle reste visible mais inerte, marqué d'un cadenas). Histehory Quizz et Natehure Quizz sont tous deux fermés. |

@@ -5,7 +5,7 @@ GéoNohyne Quizz fait partie du dossier des jeux (voir le [README à la racine](
 avec les autres jeux les **comptes** (nom + mot de passe) et le serveur facultatif (`../SERVEUR/serveur.py`,
 Python sans dépendance) qui permet de jouer à plusieurs sur un réseau, avec des classements communs.
 
-**Version 2.2.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
+**Version 2.3.0** (numérotation MAJEUR.MINEUR.CORRECTIF : voir « Versions » dans le
 [README à la racine](../README.md#versions), et l'[historique](#versions) plus bas).
 
 ## Lancer le jeu
@@ -35,7 +35,7 @@ css/style.css                      toute l'apparence (« Atlas en relief », th�
 css/polices/                       polices Bricolage Grotesque et IBM Plex Mono (licence OFL, fichiers OFL-*.txt)
 img/topo.svg                       fond : courbes de niveau
 js/carte.js                        moteur de cartes (GeoJSON → SVG), sans donnée de pays
-js/core.js                         noyau : enregistrement des modules, écran de choix (une colonne par quiz), quiz (ciblage,
+js/core.js                         noyau : enregistrement des modules, écran de choix (un panneau par quiz), quiz (ciblage,
                                    nommage, record), mode Apprendre, zoom
 js/menu.js                         LE MENU : chapitres (grandes catégories), leurs cartes, carte des régions en relief
 js/profils.js                      comptes (communs à tous les jeux, via ../COMMUN/comptes.js) et invité, statistiques
@@ -45,7 +45,7 @@ js/ancien-nom.js                   reprend les réglages enregistrés dans le na
 
 js/france/                         « La France et sa géographie »
   quiz-departements.js             quiz des départements, carte « Les départements et leurs préfectures » (modèle des autres quiz)
-  quiz-prefectures.js              quiz des préfectures, sur la même carte du menu (colonne de droite de l'écran de choix)
+  quiz-prefectures.js              quiz des préfectures, sur la même carte du menu (second sujet de l'écran de choix)
   quiz-fleuves.js                  quiz « Fleuves & Océans »
   grand-chemin.js                  jeu « Le Grand Chemin » (relier deux départements, avec ou sans étapes)
   morpion.js                       jeu « Morpion des Départements » (tic-tac-toe à critères croisés)
@@ -100,8 +100,8 @@ Les records et statistiques ne sont pas dans le menu : on les ouvre depuis le me
 statistiques »), qui donne accès aux mêmes onglets.
 
 « Les départements et leurs préfectures » (« Placer et deviner les départements français et leurs préfectures
-sur une carte. ») réunit deux quiz, côte à côte sur son écran de choix : les départements (à gauche) et les
-préfectures (à droite, voir « Les préfectures » plus bas). La carte « Les Régions » (à venir) a été retirée.
+sur une carte. ») réunit deux quiz sur son écran de choix, au choix du sélecteur « Sujet du jeu » : les départements et les
+préfectures (voir « Les préfectures » plus bas). La carte « Les Régions » (à venir) a été retirée.
 
 Tout le menu est décrit au début de **`js/menu.js`** (constante `MENU`) : c'est là qu'on ajoute, déplace
 ou renomme une carte ou un chapitre, et qu'on choisit l'image d'un chapitre (`image`, une clé de
@@ -152,28 +152,35 @@ rattrapage) et en **mode record**.
 
 ## L'écran de choix de la partie
 
-Il tient **sur un seul écran, sans défilement** (vérifié de 1280 × 720 à 1920 × 1080, et sur téléphone) :
-une grille calée sur la hauteur de la fenêtre, dont la mini-carte est la partie souple. Sous 900 pixels de
-haut environ, la liste des régions peut défiler dans son cadre ; la page, elle, ne défile jamais.
+Il tient **sur un seul écran, sans défilement** (vérifié de 1280 × 720 à 1920 × 1080 ; sur téléphone, les
+cases s'empilent et l'écran défile). Un **panneau** dont les cases s'alignent deux à deux, en haut et en bas.
+Sa couleur d'action est un **orange ambré** (plus jaune que le corail du reste du jeu), et les choix actifs
+s'allument (lueur) ; ces couleurs sont propres à cet écran (bloc `#screen-setup` de `css/style.css`).
 
-- **En-tête** : « ← Menu » et le titre du quiz. En dessous, une colonne pour le quiz ; pour « Les
-  départements et leurs préfectures », **deux colonnes, « Départements » et « Préfectures »**, chacune
-  avec tous les réglages ci-dessous et son bouton « Lancer » (propriété `colonneDroite` de la catégorie des
-  départements, qui désigne la catégorie `prefectures`). Les colonnes sont faites par `js/core.js` à partir
-  d'un même modèle (`<template id="setup-modele">` de `index.html`). Sur téléphone, une seule colonne est
-  dépliée, l'autre se réduit à son titre et à un bouton « Afficher » qui la déplie (et replie la première).
-- **Mode record** : interrupteur en haut de la colonne, mémorisé.
-- **Façon de jouer** : deux cartes, 🎯 Ciblage et ⌨️ Nommage, chacune avec sa phrase d'explication.
-- **Questions** (occasionnel), deux onglets :
-  - **🎲 Au hasard** : le nombre en grand, boutons − et +, raccourcis 10 · 20 · 30 · 50 · Tous, curseur,
-    et l'interrupteur des zones optionnelles (Outre-Mer) ;
-  - **🗺️ Par régions** (continents, types, niveaux…) : une **mini-carte cliquable** (un clic coche ou
-    décoche toute la région, le survol l'éclaire avec sa case) et la liste des cases, synchronisées ;
-    « Tout », « Aucun ». Carte en longueur (le monde) : au-dessus de la liste ; sinon, à côté.
-- **Périmètre du record** : la même mini-carte (un clic choisit la région, un second revient à tout) et
-  la liste ; votre record et le meilleur de tous les joueurs, côte à côte.
-- **Options** : interrupteurs sur une ligne, libellés courts (`libelleOrdreCourt`, `libelleIndiceCourt`,
-  `zonesOptionnelles.libelleCourt` ; la version complète en info-bulle).
+- **En-tête** : « ← Menu » et le titre du quiz, centré.
+- **Sujet du jeu** (en haut du panneau, seulement pour « Les départements et leurs préfectures ») :
+  **Départements 🗺️ | Préfectures 🏛️**. Chaque sujet a son panneau et ses réglages (propriété
+  `colonneDroite` de la catégorie des départements, qui désigne la catégorie `prefectures`) ; le dernier
+  sujet choisi est mémorisé. Les panneaux sont faits par `js/core.js` à partir d'un même modèle
+  (`<template id="setup-modele">` de `index.html`).
+- **Mode record** : interrupteur en haut à droite du panneau, mémorisé, commun aux deux sujets.
+- En **mode occasionnel**, une grille 2 × 2 :
+  - **Façon de jouer** | **Mode de tirage** : deux cartes, 🎯 Ciblage et ⌨️ Nommage (chacune avec sa phrase
+    d'explication ; commune aux deux sujets), à côté de deux tuiles de même hauteur, **Au hasard 🎲** et
+    **Par régions 🗺️** (continents, types, niveaux…) ;
+  - **Nombre de questions** | **Options** : un encadré (le nombre en grand, − et +, curseur, raccourcis
+    10 · 20 · 30 · 50 · Tous, et l'interrupteur des zones optionnelles, Outre-Mer) à côté d'une tuile par
+    option, avec une phrase d'explication : **Ordre INSEE (en indice) : rien | code | ordre + code** (le
+    code à côté du nom ; avec « ordre », les questions viennent aussi dans l'ordre des codes) et
+    **Rattrapage** ; la première en haut, la dernière en bas. Pour les pays : **Indice : rien | continent**. Par régions, l'encadré devient « Régions à inclure » (avec « Tout », « Aucun ») : une
+    **mini-carte cliquable** (un clic coche ou décoche toute la région, le survol l'éclaire avec sa case) et
+    la liste des cases, synchronisées. Carte en longueur (le monde) : au-dessus de la liste ; sinon, à côté.
+- En **mode record** : Façon de jouer | **Records** (votre record et le meilleur de tous les joueurs), puis
+  le **périmètre du record** sur toute la largeur (la même mini-carte : un clic choisit la région, un second
+  revient à tout ; et la liste).
+- **Lancer la partie →** en bas du panneau, centré. Libellés courts des options (`libelleOrdreCourt`,
+  `zonesOptionnelles.libelleCourt`), la version complète en info-bulle ; les indices : `indices` de la
+  catégorie.
 - Le crédit de la carte (exigé par les licences) est en pied d'écran.
 
 ## Mode record
@@ -253,8 +260,8 @@ visite : la nouvelle version est vue tout de suite.
 
 ## Les préfectures
 
-Quiz de la carte « Les départements et leurs préfectures » : colonne **« Préfectures »**, à droite de celle
-des départements sur l'écran de choix, avec **les mêmes réglages** (ciblage ou nommage, mode record, au
+Quiz de la carte « Les départements et leurs préfectures » : sujet **« Préfectures »** de l'écran de choix
+(à côté de « Départements », dans le sélecteur « Sujet du jeu »), avec **les mêmes réglages** (ciblage ou nommage, mode record, au
 hasard ou par régions, Outre-Mer, ordre INSEE, indice, rattrapage). Code : `js/france/quiz-prefectures.js`
 (il reprend les régions et l'Outre-Mer de `js/france/quiz-departements.js`).
 
@@ -273,8 +280,9 @@ hasard ou par régions, Outre-Mer, ordre INSEE, indice, rattrapage). Code : `js/
   au-delà ; deux lettres inversées comptent pour une faute (« Motnauban », « Vanes », « clermont feran »). La
   réponse doit rester plus proche de la bonne préfecture que de toute autre : « Rennes » n'est pas une faute
   pour Vannes. Une réponse acceptée malgré une faute compte comme juste ; le message le signale.
-- **Indice** (option « Indice : département ») : le département et son numéro, **sous la question**
-  (« 💡 Meurthe-et-Moselle (54) »), en ciblage comme en nommage, et affiché pendant toute la question.
+- **Ordre INSEE (en indice)** (option, trois choix) : **rien** ; **code**, le numéro du département à côté
+  du nom (« Nancy (54) ») ; **ordre + code**, le numéro et, en plus, les questions dans l'ordre des codes
+  (… 54 Nancy, 55 Bar-le-Duc …). Mêmes choix pour les départements (« Meurthe-et-Moselle (54) »).
 - Les messages donnent le département entre parenthèses (« ✅ C'est bien Nancy (Meurthe-et-Moselle) »).
 - **Records et statistiques** à part, sous « Les préfectures » (records, classements, historique, zones à
   revoir avec le nom de la préfecture).
@@ -286,7 +294,7 @@ hasard ou par régions, Outre-Mer, ordre INSEE, indice, rattrapage). Code : `js/
   `python outils/placer-prefectures.py <dossier-cache>` (il faut une connexion Internet ; les noms viennent
   de `data/france/infos-departements.js`).
 - Dans `js/core.js`, ces points sont l'option `points` d'une catégorie (avec `nomZone`, `detail`,
-  `indiceDessous`, `tolerance` et `alias` : voir le contrat d'une catégorie en tête du fichier).
+  `indices`, `tolerance` et `alias` : voir le contrat d'une catégorie en tête du fichier).
 
 ## Le monde et ses pays
 
@@ -308,7 +316,7 @@ Sur le modèle du quiz des départements. Code : `js/monde/quiz-pays.js`.
   Afrique, Amérique du Nord (avec l'Amérique centrale et les Caraïbes), Amérique du Sud, Asie, Europe,
   Océanie ; chaque pays est dans un seul continent (Russie → Europe ; Turquie, Kazakhstan, Caucase → Asie ;
   Égypte → Afrique ; Chypre → Europe).
-- **Indice** (option) : le continent, « Mongolie (Asie) ».
+- **Indice** (option : rien | continent) : le continent, « Mongolie (Asie) ».
 
 ### Apprendre les pays
 
@@ -485,6 +493,13 @@ Jeu de la catégorie « La France et sa géographie », après le Morpion. Code 
   initiales demandées) : « Recommencer » (même périmètre), « Afficher la liste » ou « Menu ».
 - Le compteur de chaque colonne (ex. 3/12) ne compte que les noms trouvés ; une ligne entièrement trouvée
   passe en vert. La liste défile seule (son en-tête reste visible) et se place sur chaque nom trouvé.
+- **Hardcore 💀** (option : **Non · 3 · 5 · 10 · Illimité**) : **ni liste ni carte** pendant la partie,
+  seulement deux compteurs, les **noms cités** (ex. 37 / 202) et les **répétitions**. Il faut se souvenir de
+  ce qu'on a déjà cité : retaper un nom déjà trouvé est une répétition (« ⚠️ Ain : déjà cité ! Répétition
+  2 / 3. ») ; à la 3ᵉ (5ᵉ, 10ᵉ) répétition, le joueur est **éliminé** : le reste est révélé en rouge et la
+  liste réapparaît pour le bilan (« 💀 Éliminé ! »). « Illimité » : les répétitions sont seulement comptées.
+  La case des répétitions rougit à la dernière répétition permise. La carte n'est pas proposée en hardcore.
+  Réglage mémorisé (`geonohyne.liste.hardcore`).
 - **Carte** (option « Afficher une carte ») : à droite de la liste (au-dessus sur petit écran), la carte
   de France, cadrée sur le périmètre (les autres départements estompés). Chaque département est **gris**
   tant que rien n'est trouvé, **hachuré de vert** quand la moitié l'est (mode « les deux »), **vert**
@@ -710,6 +725,7 @@ page d'accueil.
 
 | Version | Date | Changements |
 |---|---|---|
+| 2.3.0 | 12/11/2026 | **Écran de choix des quiz revu** : un seul panneau, avec en haut un sélecteur **« Sujet du jeu » (Départements \| Préfectures)** au lieu de deux colonnes côte à côte (dernier sujet mémorisé ; façon de jouer et mode record communs aux deux) ; une grille dont les cases s'alignent en haut et en bas (façon de jouer \| mode de tirage, nombre de questions \| options) ; « Au hasard » et « Par régions » en grandes tuiles ; options en tuiles d'une ligne ; en mode record, les records à côté de la façon de jouer et le périmètre sur toute la largeur ; « Lancer la partie → » centré. Couleur **orange ambré** et lumières sur cet écran (le reste du jeu garde le corail). **Ordre INSEE (en indice)** : une seule option à trois choix, rien \| code \| ordre + code, au lieu de « Ordre INSEE » et « Indice » séparés (l'indice « département » des préfectures est retiré) ; pour les pays, Indice : rien \| continent (contrat : `indices` d'une catégorie, avec `ordonne`, `nomIndice`, `aideIndice` ; l'ancienne forme `indice` reste acceptée). **La Liste des Départements : mode Hardcore** (Non, 3, 5, 10 ou Illimité) : ni liste ni carte, seulement les noms cités et les répétitions ; éliminé à la limite des répétitions. Sur téléphone, l'écran défile au lieu de replier une colonne. |
 | 2.2.0 | 02/11/2026 | **Les préfectures** : la colonne « Préfectures » de « Les départements et leurs préfectures » devient un quiz, avec les mêmes réglages que les départements (ciblage ou nommage, record, au hasard ou par régions, Outre-Mer, ordre INSEE, rattrapage). Un point sur chaque préfecture (mairie, d'après geo.api.gouv.fr) ; en nommage, fautes de frappe légères tolérées (comme Anotehomy Quizz), article facultatif, « St » = « Saint », « Cergy » pour Pontoise ; indice « département (numéro) » sous la question. Records et statistiques à part. Sur l'écran de choix, chaque colonne a ses propres réglages ; sur téléphone, l'une est dépliée, l'autre réduite à son titre (« Afficher »). Carte du menu : « Placer et deviner les départements français et leurs préfectures sur une carte. » Mode record : « Vous » au lieu de votre nom quand vous êtes le meilleur de tous les joueurs. La Liste des Départements sur téléphone : l'écran des options (où « Lancer la partie » était caché) défile, et la légende de la carte ne cache plus l'Outre-Mer. |
 | 2.1.0 | 29/10/2026 | Le Écran de choix des quiz refait, sans défilement : interrupteur « Mode record » mémorisé, cartes Ciblage / Nommage, nombre de questions avec − / + et raccourcis, mini-carte cliquable des régions (et du périmètre du record), options en interrupteurs ; pour les départements, colonne « Préfectures » en structure seulement. Le Grand Chemin : bouton « Paramètres » (panneau qui s'ouvre vers le haut) avec la longueur du chemin (de 3 à 12 sauts, jusqu'à 15 avec des détours), les détours (1 à 5 étapes imposées, dans l'ordre, sans repasser par un même département ; 2 à 5 sauts entre deux arrêts, tirés au hasard) et les indications (Libre, Aide, Pas à pas : dans l'ordre, sans détour, sinon le département est en rouge) ; textes justifiés. Menu : « Les Départements » devient « Les départements et leurs préfectures » (fusion avec « Les Préfectures », titre seulement), « Les Régions » retirée, chapitre « Records et statistiques » retiré (les statistiques restent dans le menu du compte). |
 | 2.0.0 | 28/10/2026 | Refonte « Atlas en relief » : thème sombre, polices locales, menu en chapitres avec une carte en relief par chapitre (régions, monde, fleuves, votre réussite), menu du compte déroulant sur le modèle du menu « Jeux », partie avec parcours, compteurs, série et étiquette « +1 ». |

@@ -1,6 +1,6 @@
 /* ==========================================================================
    Histehory Quizz - js/donnees/dates.js
-   RECENSEMENT DES DATES HISTORIQUES (utilisé par « Chronologie », js/modes/chronologie.js).
+   RECENSEMENT DES DATES HISTORIQUES (utilisé par « Chronologie » et « Trouver la date », js/modes/).
    --------------------------------------------------------------------------
    Une ligne par événement :
      E(id, événement, année, mois, jour, région, domaine, difficulté, résumé, options)
@@ -14,6 +14,8 @@
        options    : A = année approximative ou discutée
    Règles d'écriture : l'événement et le résumé ne donnent jamais la date (ni l'année, ni le mois, ni le jour, ni le siècle,
    ni « du 4 août » ou « 18 Brumaire » : on donne le nom de ce qui s'est passé) ;
+   un intitulé désigne UN SEUL événement : si le monde en a connu plusieurs du même genre, on le précise
+   (« Première Coupe du monde remportée par la France », « Traité de Paris mettant fin à la guerre de Sept Ans ») ;
    pour une date ancienne ou discutée, ne mettre ni mois ni jour et ajouter A.
    Le fichier est trié par date : placer chaque nouvel événement à sa place chronologique. L'id ne
    change plus une fois choisi.
@@ -154,7 +156,7 @@
   E("karbala", "Bataille de Kerbala", 680, 10, 10, "moyen-orient", "religion", 4, "Husayn, petit-fils de Mahomet, est tué : le schisme entre chiites et sunnites s'installe.");
   E("dome-rocher", "Construction du Dôme du Rocher", 691, null, null, "moyen-orient", "arts", 5, "Le calife Abd al-Malik fait bâtir à Jérusalem le plus ancien grand monument de l'islam.", A);
   E("conquete-espagne", "Début de la conquête musulmane de l'Espagne", 711, null, null, "europe", "militaire", 4, "Tariq ibn Ziyad franchit le détroit de Gibraltar.");
-  E("bataille-poitiers-732", "Bataille de Poitiers", 732, null, null, "europe", "militaire", 2, "Charles Martel arrête une armée omeyyade.");
+  E("bataille-poitiers-732", "Charles Martel arrête les armées omeyyades à Poitiers", 732, null, null, "europe", "militaire", 2, "La bataille qui, selon la tradition, arrête l'avance musulmane en Gaule.");
   E("abbassides", "Les Abbassides prennent le califat", 750, null, null, "moyen-orient", "politique", 5, "Ils renversent les Omeyyades et déplacent le pouvoir de Damas vers l'Orient.");
   E("pepin-roi", "Pépin le Bref devient roi des Francs", 751, null, null, "europe", "politique", 4, "Il écarte le dernier roi mérovingien avec l'appui du pape.");
   E("talas", "Bataille du Talas", 751, null, null, "asie", "militaire", 5, "Les Arabes battent les Chinois en Asie centrale ; des prisonniers transmettent le secret du papier.");
@@ -162,7 +164,7 @@
   E("fondation-bagdad", "Fondation de Bagdad", 762, null, null, "moyen-orient", "politique", 4, "Le calife al-Mansour crée la capitale ronde des Abbassides.");
   E("roncevaux", "Bataille de Roncevaux", 778, 8, 15, "europe", "militaire", 3, "L'arrière-garde de Charlemagne est massacrée dans les Pyrénées ; Roland y trouve la mort.");
   E("lindisfarne", "Pillage du monastère de Lindisfarne", 793, 6, 8, "europe", "militaire", 3, "Les Vikings attaquent la côte anglaise : début des invasions scandinaves.");
-  E("couronnement-charlemagne", "Couronnement de Charlemagne", 800, 12, 25, "europe", "politique", 1, "Le pape Léon III sacre Charlemagne empereur à Rome, le jour de Noël.");
+  E("couronnement-charlemagne", "Couronnement impérial de Charlemagne", 800, 12, 25, "europe", "politique", 1, "Le pape Léon III sacre Charlemagne empereur à Rome.");
   E("mort-charlemagne", "Mort de Charlemagne", 814, 1, 28, "europe", "politique", 3, "L'empereur d'Occident meurt à Aix-la-Chapelle.");
   E("al-khwarizmi", "Al-Khwarizmi écrit son traité d'algèbre", 820, null, null, "moyen-orient", "sciences", 5, "Le savant de Bagdad donne son nom à l'algèbre et, par déformation, aux algorithmes.", A);
   E("maison-sagesse", "La Maison de la sagesse de Bagdad", 830, null, null, "moyen-orient", "sciences", 5, "Le calife al-Ma'mun fait traduire les savants grecs et attire les érudits.", A);
@@ -213,7 +215,7 @@
   E("dan-no-ura", "Bataille de Dan-no-ura", 1185, null, null, "asie", "militaire", 5, "Les Minamoto détruisent le clan Taira et gagnent la guerre civile au Japon.");
   E("saladin-jerusalem", "Saladin reprend Jérusalem", 1187, 10, 2, "moyen-orient", "militaire", 4, "Après sa victoire de Hattin, le sultan reprend la ville aux croisés.");
   E("troisieme-croisade", "Départ de la troisième croisade", 1189, null, null, "europe", "religion", 4, "Frédéric Barberousse, Philippe Auguste et Richard Cœur de Lion veulent reprendre Jérusalem.");
-  E("acre", "Prise de Saint-Jean-d'Acre", 1191, 7, 12, "moyen-orient", "militaire", 5, "Les croisés reprennent la ville après un long siège.");
+  E("acre", "Reprise de Saint-Jean-d'Acre par les croisés", 1191, 7, 12, "moyen-orient", "militaire", 5, "Après un long siège, Richard Cœur de Lion et Philippe Auguste font tomber la ville.");
   E("shogunat-kamakura", "Yoritomo devient shogun", 1192, null, null, "asie", "politique", 5, "Le Japon passe sous le gouvernement des guerriers, tandis que l'empereur garde un rôle symbolique.");
   E("mort-saladin", "Mort de Saladin", 1193, 3, 4, "moyen-orient", "politique", 5, "Le sultan qui a repris Jérusalem s'éteint à Damas.");
   E("lalibela", "Les églises creusées de Lalibela", 1200, null, null, "afrique", "arts", 5, "Un roi d'Éthiopie fait tailler onze églises dans la roche.", A);
@@ -266,9 +268,9 @@
   E("guerre-cent-ans", "Début de la guerre de Cent Ans", 1337, null, null, "europe", "militaire", 3, "Le roi d'Angleterre Édouard III revendique la couronne de France.");
   E("crecy", "Bataille de Crécy", 1346, 8, 26, "europe", "militaire", 3, "Les archers anglais déciment la chevalerie française.");
   E("peste-noire", "Arrivée de la peste noire en Europe", 1347, null, null, "europe", "medecine", 3, "L'épidémie tue entre un tiers et la moitié des Européens en quelques années.");
-  E("siege-calais", "Prise de Calais", 1347, 8, 3, "europe", "militaire", 5, "Après un an de siège, la ville capitule : six bourgeois s'offrent en otages.");
+  E("siege-calais", "Prise de Calais par Édouard III", 1347, 8, 3, "europe", "militaire", 5, "Après un an de siège, la ville capitule : six bourgeois s'offrent en otages.");
   E("decameron", "Boccace écrit le Décaméron", 1353, null, null, "europe", "litterature", 5, "Cent nouvelles racontées par dix jeunes gens réfugiés loin de la peste.", A);
-  E("poitiers-1356", "Bataille de Poitiers (guerre de Cent Ans)", 1356, 9, 19, "europe", "militaire", 4, "Le roi Jean le Bon est fait prisonnier par le Prince Noir.");
+  E("poitiers-1356", "Bataille de Poitiers : le roi Jean le Bon est capturé", 1356, 9, 19, "europe", "militaire", 4, "Le Prince Noir, avec ses archers, bat l'armée royale française.");
   E("jacquerie", "La Jacquerie", 1358, null, null, "europe", "societe", 4, "Les paysans du Beauvaisis se soulèvent contre les seigneurs.");
   E("bretigny", "Traité de Brétigny", 1360, 5, 8, "europe", "politique", 5, "Jean le Bon cède le tiers du royaume aux Anglais pour obtenir la paix.");
   E("dynastie-ming", "Fondation de la dynastie Ming", 1368, null, null, "asie", "politique", 4, "Zhu Yuanzhang chasse les Mongols et devient empereur.");
@@ -296,7 +298,7 @@
   E("formigny", "Bataille de Formigny", 1450, 4, 15, "europe", "militaire", 5, "Les Français reprennent la Normandie en battant les Anglais.");
 
   /* ---------------- Époque moderne ---------------- */
-  E("prise-constantinople", "Prise de Constantinople", 1453, 5, 29, "europe", "militaire", 2, "Les Ottomans de Mehmed II mettent fin à l'Empire byzantin.");
+  E("prise-constantinople", "Prise de Constantinople par les Ottomans", 1453, 5, 29, "europe", "militaire", 2, "Mehmed II met fin à l'Empire byzantin.");
   E("fin-guerre-cent-ans", "Bataille de Castillon", 1453, 7, 17, "europe", "militaire", 4, "Dernière bataille de la guerre de Cent Ans.");
   E("bible-gutenberg", "Impression de la Bible de Gutenberg", 1455, null, null, "europe", "sciences", 3, "Premier grand livre imprimé avec des caractères mobiles en Europe.", A);
   E("mariage-isabelle-ferdinand", "Mariage d'Isabelle de Castille et de Ferdinand d'Aragon", 1469, 10, 19, "europe", "politique", 4, "L'union de leurs couronnes prépare la naissance de l'Espagne.");
@@ -329,7 +331,7 @@
   E("pavie", "Bataille de Pavie", 1525, 2, 24, "europe", "militaire", 3, "François Ier est capturé par les troupes de Charles Quint.");
   E("panipat-1526", "Première bataille de Panipat", 1526, 4, 21, "asie", "militaire", 4, "Babur bat le sultan de Delhi et fonde l'empire moghol.");
   E("mohacs", "Bataille de Mohács", 1526, 8, 29, "europe", "militaire", 5, "Soliman le Magnifique écrase l'armée hongroise.");
-  E("sac-rome-1527", "Sac de Rome", 1527, 5, 6, "europe", "militaire", 4, "Les troupes de Charles Quint pillent la ville et assiègent le pape.");
+  E("sac-rome-1527", "Sac de Rome par les troupes de Charles Quint", 1527, 5, 6, "europe", "militaire", 4, "Des soldats impériaux, mal payés, pillent la ville et assiègent le pape.");
   E("siege-vienne-1529", "Premier siège de Vienne par les Ottomans", 1529, 9, 27, "europe", "militaire", 5, "Soliman le Magnifique échoue devant la capitale des Habsbourg.");
   E("pizarro-atahualpa", "Pizarro capture l'empereur inca Atahualpa", 1532, 11, 16, "ameriques", "militaire", 4, "Quelques centaines d'Espagnols renversent un empire de millions d'habitants.");
   E("mort-atahualpa", "Exécution d'Atahualpa", 1533, null, null, "ameriques", "politique", 4, "Malgré la rançon d'or payée par les Incas, l'empereur est mis à mort.");
@@ -345,7 +347,7 @@
   E("akbar", "Akbar devient empereur moghol", 1556, null, null, "asie", "politique", 5, "À treize ans, il commence un règne qui ouvre l'Inde à la tolérance.");
   E("abdication-charles-quint", "Abdication de Charles Quint", 1556, 1, 16, "europe", "politique", 5, "L'empereur abandonne ses couronnes et se retire dans un monastère.");
   E("cateau-cambresis", "Traité du Cateau-Cambrésis", 1559, 4, 3, "europe", "politique", 5, "La France renonce à l'Italie : fin des guerres d'Italie.");
-  E("mort-henri-2", "Mort d'Henri II", 1559, 7, 10, "europe", "politique", 4, "Le roi de France est blessé à l'œil lors d'un tournoi.");
+  E("mort-henri-2", "Mort d'Henri II, roi de France", 1559, 7, 10, "europe", "politique", 4, "Blessé à l'œil lors d'un tournoi, le roi succombe quelques jours plus tard.");
   E("wassy", "Massacre de Wassy", 1562, 3, 1, "europe", "religion", 3, "Les hommes du duc de Guise tuent des protestants : début des guerres de Religion.");
   E("mort-michel-ange", "Mort de Michel-Ange", 1564, 2, 18, "europe", "arts", 4, "Le sculpteur de David et de la Pietà s'éteint à Rome.");
   E("siege-malte", "Grand Siège de Malte", 1565, null, null, "europe", "militaire", 5, "Les chevaliers de Saint-Jean résistent à l'armée de Soliman.");
@@ -365,7 +367,7 @@
   E("sekigahara", "Bataille de Sekigahara", 1600, 10, 21, "asie", "militaire", 4, "Tokugawa Ieyasu bat ses rivaux et domine le Japon.");
   E("compagnie-indes-anglaise", "Création de la Compagnie anglaise des Indes orientales", 1600, 12, 31, "asie", "economie", 5, "Elle obtient le monopole du commerce avec l'Asie et deviendra une puissance politique.");
   E("voc", "Création de la Compagnie néerlandaise des Indes orientales", 1602, null, null, "asie", "economie", 5, "Une société par actions, première du genre, commerce avec l'Asie.");
-  E("mort-elisabeth-1", "Mort d'Élisabeth Ire", 1603, 3, 24, "europe", "politique", 4, "La reine sans héritier laisse le trône d'Angleterre au roi d'Écosse.");
+  E("mort-elisabeth-1", "Mort d'Élisabeth Ire d'Angleterre", 1603, 3, 24, "europe", "politique", 4, "La reine sans héritier laisse le trône d'Angleterre au roi d'Écosse.");
   E("shogunat-tokugawa", "Tokugawa Ieyasu devient shogun", 1603, 3, 24, "asie", "politique", 4, "Début de plus de deux siècles de paix dans le Japon d'Edo.");
   E("don-quichotte", "Cervantès publie Don Quichotte", 1605, null, null, "europe", "litterature", 3, "Le chevalier à la triste figure combat des moulins à vent.");
   E("conspiration-poudres", "Conspiration des poudres", 1605, 11, 5, "europe", "politique", 3, "Guy Fawkes tente de faire sauter le Parlement anglais.");
@@ -400,7 +402,7 @@
   E("pekin-qing", "Les Mandchous prennent Pékin", 1644, null, null, "asie", "militaire", 4, "Début de la dynastie Qing, dernière dynastie impériale de Chine.");
   E("fronde", "Début de la Fronde", 1648, null, null, "europe", "politique", 4, "Parlementaires puis nobles se soulèvent contre Mazarin et la régente Anne d'Autriche.");
   E("traites-westphalie", "Traités de Westphalie", 1648, 10, 24, "europe", "politique", 4, "Fin de la guerre de Trente Ans.");
-  E("execution-charles-1", "Exécution de Charles Ier", 1649, 1, 30, "europe", "politique", 4, "Le roi d'Angleterre est décapité pendant la révolution anglaise.");
+  E("execution-charles-1", "Exécution de Charles Ier d'Angleterre", 1649, 1, 30, "europe", "politique", 4, "Le roi d'Angleterre est décapité pendant la révolution anglaise.");
   E("traite-pyrenees", "Traité des Pyrénées", 1659, 11, 7, "europe", "politique", 4, "La France gagne le Roussillon et l'Artois ; Louis XIV épousera l'infante d'Espagne.");
   E("restauration-anglaise", "Restauration de la monarchie en Angleterre", 1660, 5, 29, "europe", "politique", 4, "Charles II rentre à Londres après onze ans de république.");
   E("royal-society", "Fondation de la Royal Society", 1660, 11, 28, "europe", "sciences", 5, "Des savants anglais créent la plus ancienne académie scientifique.");
@@ -440,7 +442,7 @@
   E("candide", "Voltaire publie Candide", 1759, null, null, "europe", "litterature", 4, "Un conte philosophique qui se moque de l'optimisme.");
   E("plaines-abraham", "Bataille des plaines d'Abraham", 1759, 9, 13, "ameriques", "militaire", 3, "Les Anglais prennent Québec ; Montcalm et Wolfe y trouvent la mort.");
   E("contrat-social", "Rousseau publie Du contrat social", 1762, null, null, "europe", "philosophie", 4, "« L'homme est né libre, et partout il est dans les fers ».");
-  E("traite-paris-1763", "Traité de Paris", 1763, 2, 10, "ameriques", "politique", 4, "La France perd la Nouvelle-France et l'Inde au profit de l'Angleterre.");
+  E("traite-paris-1763", "Traité de Paris mettant fin à la guerre de Sept Ans", 1763, 2, 10, "ameriques", "politique", 4, "La France perd la Nouvelle-France et l'Inde au profit de l'Angleterre.");
   E("machine-watt", "Watt brevète sa machine à vapeur", 1769, 1, 5, "europe", "sciences", 4, "Un condenseur séparé rend la machine bien plus efficace : elle lancera la révolution industrielle.");
   E("cook-australie", "James Cook atteint la côte est de l'Australie", 1770, 4, 29, "oceanie", "exploration", 4, "Il aborde à Botany Bay et prend possession de la région pour l'Angleterre.");
   E("partage-pologne", "Premier partage de la Pologne", 1772, null, null, "europe", "politique", 4, "La Russie, la Prusse et l'Autriche se partagent une partie du royaume.");
@@ -450,7 +452,7 @@
   E("independance-americaine", "Déclaration d'indépendance des États-Unis", 1776, 7, 4, "ameriques", "politique", 1, "Les treize colonies rompent avec la Grande-Bretagne.");
   E("tupac-amaru", "Révolte de Túpac Amaru II", 1780, 11, 4, "ameriques", "militaire", 5, "Un descendant des Incas soulève les Indiens du Pérou contre les Espagnols.");
   E("yorktown", "Bataille de Yorktown", 1781, 10, 19, "ameriques", "militaire", 4, "Les Britanniques capitulent devant Washington et Rochambeau, aidés par la flotte française.");
-  E("traite-paris-1783", "Traité de Paris", 1783, 9, 3, "ameriques", "politique", 4, "La Grande-Bretagne reconnaît l'indépendance des États-Unis.");
+  E("traite-paris-1783", "Traité de Paris reconnaissant l'indépendance des États-Unis", 1783, 9, 3, "ameriques", "politique", 4, "La Grande-Bretagne met fin à la guerre d'indépendance américaine et perd treize colonies.");
   E("montgolfiere", "Premier vol humain en montgolfière", 1783, 11, 21, "europe", "sciences", 3, "Pilâtre de Rozier et le marquis d'Arlandes s'élèvent au-dessus de Paris.");
   E("mort-frederic-2", "Mort de Frédéric II de Prusse", 1786, 8, 17, "europe", "politique", 5, "Le roi philosophe, ami de Voltaire, meurt à Potsdam.");
   E("constitution-usa", "Adoption de la Constitution des États-Unis", 1787, 9, 17, "ameriques", "politique", 4, "Les délégués réunis à Philadelphie signent le texte qui régit encore le pays.");
@@ -487,11 +489,11 @@
   E("expedition-egypte", "Départ de l'expédition d'Égypte", 1798, 5, 19, "europe", "militaire", 3, "Bonaparte embarque à Toulon avec une armée et des savants.");
   E("bataille-pyramides", "Bataille des Pyramides", 1798, 7, 21, "afrique", "militaire", 3, "Bonaparte bat les Mamelouks devant Le Caire.");
   E("pierre-rosette", "Découverte de la pierre de Rosette", 1799, null, null, "afrique", "sciences", 3, "Un soldat français trouve la pierre qui permettra à Champollion de déchiffrer les hiéroglyphes.");
-  E("brumaire", "Coup d'État de Bonaparte", 1799, 11, 9, "europe", "politique", 2, "Bonaparte renverse le Directoire et prend le pouvoir.");
+  E("brumaire", "Coup d'État de Bonaparte contre le Directoire", 1799, 11, 9, "europe", "politique", 2, "Bonaparte prend le pouvoir avec l'appui de l'armée et met fin à la Révolution.");
   E("banque-de-france", "Création de la Banque de France", 1800, 1, 18, "europe", "economie", 5, "Bonaparte crée l'établissement qui émettra la monnaie du pays.");
   E("prefets", "Création des préfets", 1800, 2, 17, "europe", "politique", 5, "Le pouvoir central place un représentant à la tête de chaque département.");
   E("marengo", "Bataille de Marengo", 1800, 6, 14, "europe", "militaire", 4, "Bonaparte, d'abord en difficulté, bat les Autrichiens en Italie.");
-  E("concordat", "Concordat", 1801, 7, 15, "europe", "religion", 3, "Bonaparte et le pape Pie VII réorganisent les rapports entre l'État et l'Église catholique.");
+  E("concordat", "Concordat entre Bonaparte et le pape", 1801, 7, 15, "europe", "religion", 3, "Bonaparte et le pape Pie VII réorganisent les rapports entre l'État et l'Église catholique.");
   E("paix-amiens", "Paix d'Amiens", 1802, 3, 25, "europe", "politique", 5, "La France et l'Angleterre cessent un moment de se combattre.");
   E("legion-honneur", "Création de la Légion d'honneur", 1802, 5, 19, "europe", "societe", 4, "Bonaparte crée une distinction pour récompenser les mérites civils et militaires.");
   E("independance-haiti", "Indépendance d'Haïti", 1804, 1, 1, "ameriques", "politique", 4, "Première république fondée par d'anciens esclaves.");
@@ -547,7 +549,7 @@
   E("abdication-louis-philippe", "Abdication de Louis-Philippe", 1848, 2, 24, "europe", "politique", 3, "Une insurrection parisienne renverse la monarchie de Juillet : la IIe République est proclamée.");
   E("abolition-esclavage-france", "Abolition de l'esclavage en France", 1848, 4, 27, "europe", "societe", 3, "Décret porté par Victor Schœlcher.");
   E("grande-exposition-londres", "Grande Exposition universelle de Londres", 1851, 5, 1, "europe", "economie", 4, "Le Crystal Palace, immense serre de verre, abrite les merveilles de l'industrie.");
-  E("coup-etat-1851", "Coup d'État de Louis-Napoléon Bonaparte", 1851, 12, 2, "europe", "politique", 3, "Le président de la République dissout l'Assemblée.");
+  E("coup-etat-1851", "Coup d'État du prince-président Louis-Napoléon Bonaparte", 1851, 12, 2, "europe", "politique", 3, "Le président de la République dissout l'Assemblée.");
   E("second-empire", "Proclamation du Second Empire", 1852, 12, 2, "europe", "politique", 3, "Louis-Napoléon devient l'empereur Napoléon III.");
   E("guerre-crimee", "Début de la guerre de Crimée", 1853, null, null, "europe", "militaire", 4, "La Russie affronte l'Empire ottoman, bientôt soutenu par la France et l'Angleterre.");
   E("revolte-cipayes", "Révolte des cipayes", 1857, 5, 10, "asie", "militaire", 5, "Les soldats indiens de l'armée britannique se soulèvent à Meerut.");
@@ -582,7 +584,7 @@
   E("guerre-franco-prussienne", "Déclaration de guerre de la France à la Prusse", 1870, 7, 19, "europe", "militaire", 4, "Napoléon III, trompé par la dépêche d'Ems, ouvre un conflit qu'il perdra.");
   E("sedan", "Capitulation de Napoléon III à Sedan", 1870, 9, 2, "europe", "militaire", 3, "L'empereur est fait prisonnier avec son armée.");
   E("troisieme-republique", "Proclamation de la IIIe République", 1870, 9, 4, "europe", "politique", 3, "La foule envahit le Palais-Bourbon : l'Empire est tombé.");
-  E("siege-paris-1870", "Début du siège de Paris", 1870, 9, 19, "europe", "militaire", 4, "Les Prussiens encerclent la capitale, qui résiste quatre mois.");
+  E("siege-paris-1870", "Début du siège de Paris par les Prussiens", 1870, 9, 19, "europe", "militaire", 4, "Les Prussiens encerclent la capitale, qui résiste quatre mois.");
   E("empire-allemand", "Proclamation de l'Empire allemand à Versailles", 1871, 1, 18, "europe", "politique", 3, "Guillaume Ier est proclamé empereur dans la galerie des Glaces.");
   E("commune-paris", "Début de la Commune de Paris", 1871, 3, 18, "europe", "politique", 3, "Insurrection parisienne, écrasée pendant la « Semaine sanglante ».");
   E("traite-francfort", "Traité de Francfort", 1871, 5, 10, "europe", "politique", 4, "La France cède l'Alsace et une partie de la Lorraine à l'Allemagne.");
@@ -596,7 +598,7 @@
   E("little-bighorn", "Bataille de Little Bighorn", 1876, 6, 25, "ameriques", "militaire", 4, "Sioux et Cheyennes anéantissent les troupes du colonel Custer.");
   E("phonographe", "Edison invente le phonographe", 1877, null, null, "ameriques", "sciences", 4, "Pour la première fois, un son est enregistré puis rejoué.");
   E("empire-inde", "Victoria proclamée impératrice des Indes", 1877, 1, 1, "asie", "politique", 5, "La reine d'Angleterre ajoute un titre impérial à sa couronne.");
-  E("guerre-pacifique", "Début de la guerre du Pacifique", 1879, 4, 5, "ameriques", "militaire", 5, "Le Chili affronte la Bolivie et le Pérou pour des gisements de salpêtre.");
+  E("guerre-pacifique", "Début de la guerre du Pacifique (Chili, Bolivie, Pérou)", 1879, 4, 5, "ameriques", "militaire", 5, "Le Chili affronte la Bolivie et le Pérou pour des gisements de salpêtre.");
   E("ampoule-edison", "Ampoule électrique d'Edison", 1879, 10, 22, "ameriques", "sciences", 3, "Un filament de carbone brille pendant plus de treize heures.");
   E("assassinat-alexandre-2", "Assassinat du tsar Alexandre II", 1881, 3, 13, "europe", "politique", 4, "Des terroristes lancent une bombe sur le tsar libérateur des serfs.");
   E("ecole-gratuite", "Loi sur l'école primaire gratuite", 1881, 6, 16, "europe", "societe", 3, "Jules Ferry supprime les frais de scolarité de l'école publique.");
@@ -628,7 +630,7 @@
   E("radium", "Les Curie annoncent la découverte du radium", 1898, 12, 26, "europe", "sciences", 4, "Marie et Pierre Curie isolent un nouvel élément très radioactif.");
   E("freud-reves", "Freud publie L'Interprétation des rêves", 1899, null, null, "europe", "sciences", 5, "Le fondateur de la psychanalyse fait des rêves la voie royale vers l'inconscient.");
   E("guerre-boers", "Début de la seconde guerre des Boers", 1899, 10, 11, "afrique", "militaire", 4, "Les républiques boers d'Afrique du Sud affrontent l'Empire britannique.");
-  E("exposition-1900", "Ouverture de l'Exposition universelle de Paris", 1900, 4, 14, "europe", "economie", 4, "Plus de cinquante millions de visiteurs découvrent le métro, les escaliers roulants et le cinéma parlant.");
+  E("exposition-1900", "Ouverture de l'Exposition universelle de Paris, celle du Grand Palais", 1900, 4, 14, "europe", "economie", 4, "Plus de cinquante millions de visiteurs découvrent les escaliers roulants, l'Art nouveau et le Grand Palais.");
   E("revolte-boxers", "Siège des légations de Pékin par les Boxers", 1900, 6, 20, "asie", "militaire", 4, "Des insurgés chinois assiègent les étrangers dans le quartier diplomatique.");
   E("metro-paris", "Inauguration du métro de Paris", 1900, 7, 19, "europe", "economie", 3, "La ligne 1 relie la porte de Vincennes à la porte Maillot.");
   E("federation-australie", "Naissance de la fédération australienne", 1901, 1, 1, "oceanie", "politique", 4, "Six colonies britanniques forment le Commonwealth d'Australie.");
@@ -696,7 +698,7 @@
   E("grippe-espagnole", "Grippe espagnole", 1918, null, null, "europe", "medecine", 3, "Une pandémie tue plus de personnes que la guerre elle-même.");
   E("brest-litovsk", "Traité de Brest-Litovsk", 1918, 3, 3, "europe", "politique", 4, "La Russie bolchevique signe une paix séparée avec l'Allemagne.");
   E("massacre-romanov", "Exécution de la famille impériale russe", 1918, 7, 17, "europe", "politique", 4, "Nicolas II, sa femme et leurs enfants sont fusillés à Iekaterinbourg.");
-  E("armistice-1918", "Armistice de la Première Guerre mondiale", 1918, 11, 11, "europe", "militaire", 1, "Fin des combats de la Première Guerre mondiale.");
+  E("armistice-1918", "Armistice mettant fin à la Première Guerre mondiale", 1918, 11, 11, "europe", "militaire", 1, "Fin des combats de la Première Guerre mondiale.");
   E("traite-versailles", "Traité de Versailles", 1919, 6, 28, "europe", "politique", 2, "L'Allemagne signe la paix dans la galerie des Glaces et accepte des réparations.");
   E("sdn", "Naissance de la Société des Nations", 1920, 1, 10, "europe", "politique", 4, "Une organisation internationale est créée pour préserver la paix.");
   E("ulysse-joyce", "Publication d'Ulysse de James Joyce", 1922, 2, 2, "europe", "litterature", 5, "Un roman qui suit une journée d'un Dublinois ordinaire change la littérature.");
@@ -708,7 +710,7 @@
   E("putsch-brasserie", "Putsch de la brasserie", 1923, 11, 8, "europe", "politique", 4, "Hitler tente un coup d'État à Munich ; il échoue et va en prison.");
   E("mort-lenine", "Mort de Lénine", 1924, 1, 21, "europe", "politique", 4, "Le fondateur de l'État soviétique meurt ; Staline lui succède peu à peu.");
   E("abolition-califat", "Abolition du califat", 1924, 3, 3, "moyen-orient", "religion", 5, "Atatürk met fin à une institution qui remontait à Mahomet.");
-  E("jo-paris-1924", "Cérémonie d'ouverture des Jeux de Paris", 1924, 7, 5, "europe", "sport", 3, "Les Jeux de la VIIIe olympiade se déroulent au stade de Colombes.");
+  E("jo-paris-1924", "Ouverture des Jeux olympiques de Paris au stade de Colombes", 1924, 7, 5, "europe", "sport", 3, "Les Jeux de la VIIIe olympiade, ceux de Johnny Weissmuller et des « Chariots de feu ».");
   E("mort-sun-yat-sen", "Mort de Sun Yat-sen", 1925, 3, 12, "asie", "politique", 5, "Le père de la République de Chine laisse un pays divisé.");
   E("lindbergh", "Lindbergh traverse l'Atlantique", 1927, 5, 21, "europe", "exploration", 2, "Le premier vol sans escale de New York à Paris dure trente-trois heures.");
   E("chanteur-jazz", "Sortie du Chanteur de jazz", 1927, 10, 6, "ameriques", "cinema", 4, "Le premier long métrage parlant, avec des séquences chantées.");
@@ -742,10 +744,10 @@
   E("pacte-germano-sovietique", "Pacte germano-soviétique", 1939, 8, 23, "europe", "politique", 3, "Hitler et Staline s'entendent secrètement pour se partager la Pologne.");
   E("invasion-pologne", "Invasion de la Pologne", 1939, 9, 1, "europe", "militaire", 2, "Début de la Seconde Guerre mondiale.");
   E("declaration-guerre-1939", "La France et le Royaume-Uni déclarent la guerre à l'Allemagne", 1939, 9, 3, "europe", "militaire", 2, "Deux jours après l'invasion de la Pologne.");
-  E("offensive-allemande-1940", "Offensive allemande à l'ouest", 1940, 5, 10, "europe", "militaire", 3, "La Wehrmacht attaque les Pays-Bas, la Belgique et la France.");
+  E("offensive-allemande-1940", "L'Allemagne nazie attaque les Pays-Bas, la Belgique et la France", 1940, 5, 10, "europe", "militaire", 3, "L'offensive éclair des chars et des avions passe par les Ardennes et contourne la ligne Maginot.");
   E("dunkerque", "Début de l'évacuation de Dunkerque", 1940, 5, 26, "europe", "militaire", 3, "Plus de trois cent mille soldats alliés sont embarqués vers l'Angleterre.");
   E("appel-18-juin", "Appel du général de Gaulle à poursuivre le combat", 1940, 6, 18, "europe", "politique", 1, "Depuis Londres, à la radio, un général peu connu refuse la défaite et appelle les Français à résister.");
-  E("armistice-1940", "Armistice franco-allemand de Rethondes", 1940, 6, 22, "europe", "politique", 2, "La France vaincue signe dans le wagon même où l'Allemagne avait signé l'armistice précédent.");
+  E("armistice-1940", "Armistice entre la France vaincue et l'Allemagne nazie", 1940, 6, 22, "europe", "politique", 2, "La France vaincue signe dans le wagon même où l'Allemagne avait signé l'armistice précédent.");
   E("pleins-pouvoirs-petain", "Vote des pleins pouvoirs à Pétain", 1940, 7, 10, "europe", "politique", 3, "Le Parlement met fin à la IIIe République et donne naissance à l'État français.");
   E("bataille-angleterre", "Début de la bataille d'Angleterre", 1940, 7, 10, "europe", "militaire", 3, "La Luftwaffe attaque l'Angleterre ; les pilotes de la RAF tiennent bon.");
   E("lascaux", "Découverte de la grotte de Lascaux", 1940, 9, 12, "europe", "arts", 3, "Quatre adolescents trouvent en Dordogne une grotte couverte de peintures préhistoriques.");
@@ -757,7 +759,7 @@
   E("vel-d-hiv", "Rafle du Vél' d'Hiv", 1942, 7, 16, "europe", "societe", 3, "La police française arrête plus de douze mille Juifs, dont des milliers d'enfants.");
   E("el-alamein", "Seconde bataille d'El-Alamein", 1942, 10, 23, "afrique", "militaire", 4, "Montgomery arrête Rommel en Égypte.");
   E("operation-torch", "Débarquement allié en Afrique du Nord", 1942, 11, 8, "afrique", "militaire", 4, "Les Américains et les Britanniques débarquent au Maroc et en Algérie.");
-  E("stalingrad", "Capitulation allemande à Stalingrad", 1943, 2, 2, "europe", "militaire", 3, "La VIe armée du maréchal Paulus se rend : tournant de la guerre à l'Est.");
+  E("stalingrad", "Capitulation du maréchal Paulus à Stalingrad", 1943, 2, 2, "europe", "militaire", 3, "La VIe armée allemande se rend : tournant de la guerre à l'Est.");
   E("ghetto-varsovie", "Soulèvement du ghetto de Varsovie", 1943, 4, 19, "europe", "militaire", 4, "Les Juifs du ghetto se battent avec des armes de fortune contre les SS.");
   E("cnr", "Première réunion du Conseil national de la Résistance", 1943, 5, 27, "europe", "politique", 3, "Jean Moulin réunit à Paris tous les mouvements de la Résistance.");
   E("koursk", "Bataille de Koursk", 1943, 7, 5, "europe", "militaire", 4, "Le plus grand affrontement de chars de l'histoire tourne à l'avantage des Soviétiques.");
@@ -769,14 +771,14 @@
   E("attentat-20-juillet", "Attentat de Stauffenberg contre Hitler", 1944, 7, 20, "europe", "politique", 4, "Une bombe placée dans une salle de conférence blesse le dictateur : le complot d'officiers échoue.");
   E("debarquement-provence", "Débarquement de Provence", 1944, 8, 15, "europe", "militaire", 3, "Une armée franco-américaine débarque sur la côte varoise.");
   E("liberation-paris", "Libération de Paris", 1944, 8, 25, "europe", "militaire", 2, "La division Leclerc entre dans la capitale ; de Gaulle y prononce un discours célèbre.");
-  E("ardennes", "Offensive des Ardennes", 1944, 12, 16, "europe", "militaire", 4, "Dernière grande contre-offensive allemande, arrêtée à Bastogne.");
+  E("ardennes", "Contre-offensive allemande des Ardennes", 1944, 12, 16, "europe", "militaire", 4, "Dernière grande contre-offensive allemande, arrêtée à Bastogne.");
   E("liberation-auschwitz", "Libération d'Auschwitz", 1945, 1, 27, "europe", "societe", 3, "L'Armée rouge découvre le camp d'extermination.");
   E("yalta", "Conférence de Yalta", 1945, 2, 4, "europe", "politique", 3, "Roosevelt, Churchill et Staline organisent l'après-guerre.");
   E("dresde", "Bombardement de Dresde", 1945, 2, 13, "europe", "militaire", 4, "Des raids alliés détruisent le centre de la ville et font des dizaines de milliers de morts.");
   E("okinawa", "Bataille d'Okinawa", 1945, 4, 1, "asie", "militaire", 5, "Les Américains débarquent sur l'île japonaise au prix de très lourdes pertes.");
   E("droit-vote-femmes-france", "Premier vote des Françaises", 1945, 4, 29, "europe", "societe", 3, "Les femmes votent pour la première fois, aux élections municipales.");
   E("mort-hitler", "Suicide de Hitler", 1945, 4, 30, "europe", "politique", 2, "Le dictateur se donne la mort dans son bunker de Berlin.");
-  E("capitulation-allemagne", "Capitulation de l'Allemagne", 1945, 5, 8, "europe", "militaire", 1, "Fin de la Seconde Guerre mondiale en Europe.");
+  E("capitulation-allemagne", "Capitulation de l'Allemagne nazie", 1945, 5, 8, "europe", "militaire", 1, "Fin de la Seconde Guerre mondiale en Europe.");
   E("hiroshima", "Bombardement atomique d'Hiroshima", 1945, 8, 6, "asie", "militaire", 2, "Première utilisation de la bombe atomique contre une ville.");
   E("nagasaki", "Bombe atomique sur Nagasaki", 1945, 8, 9, "asie", "militaire", 3, "Trois jours après Hiroshima, une seconde bombe frappe le Japon.");
   E("capitulation-japon", "Signature de la capitulation du Japon", 1945, 9, 2, "asie", "militaire", 3, "Sur le cuirassé Missouri, la Seconde Guerre mondiale prend fin officiellement.");
@@ -804,7 +806,7 @@
   E("adn-double-helice", "Publication de la structure de l'ADN", 1953, 4, 25, "europe", "sciences", 3, "Watson et Crick décrivent la double hélice, support de l'hérédité.");
   E("couronnement-elisabeth-2", "Couronnement d'Élisabeth II", 1953, 6, 2, "europe", "politique", 3, "La cérémonie est la première retransmise en direct à la télévision dans le monde.");
   E("armistice-coree", "Armistice de Corée", 1953, 7, 27, "asie", "militaire", 5, "La guerre s'arrête sur la ligne de démarcation actuelle, sans traité de paix.");
-  E("abbe-pierre", "Appel de l'abbé Pierre", 1954, 2, 1, "europe", "societe", 3, "Pendant un hiver glacial, il lance sur la radio un cri pour les sans-logis.");
+  E("abbe-pierre", "Appel de l'abbé Pierre", 1954, 2, 1, "europe", "societe", 3, "Il lance à la radio un cri pour les sans-logis, qui déclenche un immense élan de générosité.");
   E("bannister", "Roger Bannister court le mile en moins de quatre minutes", 1954, 5, 6, "europe", "sport", 5, "Un record longtemps jugé impossible tombe à Oxford.");
   E("dien-bien-phu", "Chute de Diên Biên Phu", 1954, 5, 7, "asie", "militaire", 3, "L'armée française est vaincue par le Viêt-minh : fin de la guerre d'Indochine.");
   E("accords-geneve", "Accords de Genève sur l'Indochine", 1954, 7, 21, "asie", "politique", 4, "Le Viêt Nam est coupé en deux au niveau du 17e parallèle.");
@@ -813,9 +815,9 @@
   E("rosa-parks", "Arrestation de Rosa Parks", 1955, 12, 1, "ameriques", "societe", 3, "Elle refuse de céder sa place dans un bus : début du boycott de Montgomery.");
   E("budapest", "Insurrection de Budapest", 1956, 10, 23, "europe", "politique", 4, "Les Hongrois se soulèvent contre le régime soviétique ; les chars écrasent la révolte.");
   E("crise-suez", "Crise de Suez", 1956, 10, 29, "afrique", "militaire", 3, "Israël, la France et le Royaume-Uni attaquent l'Égypte après la nationalisation du canal.");
-  E("traite-rome", "Traités de Rome", 1957, 3, 25, "europe", "politique", 3, "Naissance de la Communauté économique européenne.");
+  E("traite-rome", "Signature des traités de Rome", 1957, 3, 25, "europe", "politique", 3, "Naissance de la Communauté économique européenne.");
   E("spoutnik", "Lancement de Spoutnik 1", 1957, 10, 4, "europe", "sciences", 3, "Premier satellite artificiel, lancé par l'URSS.");
-  E("traite-rome-cee", "Entrée en vigueur du traité de Rome", 1958, 1, 1, "europe", "economie", 5, "La Communauté économique européenne naît avec six membres.");
+  E("traite-rome-cee", "Entrée en vigueur des traités de Rome", 1958, 1, 1, "europe", "economie", 5, "La Communauté économique européenne naît avec six membres.");
   E("retour-de-gaulle", "Retour de de Gaulle au pouvoir", 1958, 6, 1, "europe", "politique", 3, "Le général revient à la tête du gouvernement, au plus fort de la crise algérienne.");
   E("constitution-1958", "Promulgation de la Constitution de la Ve République", 1958, 10, 4, "europe", "politique", 2, "Le texte qui régit encore la France renforce le pouvoir du président.");
   E("revolution-cubaine", "Castro entre à La Havane", 1959, 1, 1, "ameriques", "politique", 3, "La révolution cubaine chasse le dictateur Batista.");
@@ -840,7 +842,7 @@
   E("greffe-coeur", "Première greffe du cœur", 1967, 12, 3, "afrique", "medecine", 3, "Le chirurgien Christiaan Barnard opère au Cap.");
   E("mai-68", "La révolte étudiante et la grève générale", 1968, null, null, "europe", "societe", 1, "Barricades au Quartier latin, usines occupées : des millions de grévistes ébranlent le pouvoir gaulliste.");
   E("assassinat-mlk", "Assassinat de Martin Luther King", 1968, 4, 4, "ameriques", "societe", 3, "Le pasteur est abattu sur le balcon d'un motel de Memphis.");
-  E("printemps-prague", "Invasion de la Tchécoslovaquie", 1968, 8, 21, "europe", "militaire", 3, "Les chars du pacte de Varsovie écrasent le Printemps de Prague.");
+  E("printemps-prague", "Invasion de la Tchécoslovaquie par les chars du pacte de Varsovie", 1968, 8, 21, "europe", "militaire", 3, "Moscou met fin au Printemps de Prague.");
   E("poing-leve-mexico", "Le poing levé de Mexico", 1968, 10, 16, "ameriques", "sport", 4, "Deux athlètes américains lèvent un poing ganté de noir sur le podium.");
   E("homme-sur-lune", "Premiers pas sur la Lune", 1969, 7, 21, "ameriques", "exploration", 1, "Neil Armstrong marche sur la Lune, devant des centaines de millions de téléspectateurs.");
   E("woodstock", "Festival de Woodstock", 1969, 8, 15, "ameriques", "musique", 3, "Un demi-million de jeunes se retrouvent pour trois jours de musique et de paix.");
@@ -876,7 +878,7 @@
   E("variole-eradiquee", "Éradication de la variole", 1980, 5, 8, "europe", "medecine", 5, "L'Organisation mondiale de la santé déclare la maladie vaincue.");
   E("solidarnosc", "Naissance de Solidarność", 1980, 8, 31, "europe", "societe", 4, "Les grévistes de Gdańsk, menés par Lech Wałęsa, obtiennent un syndicat libre.");
   E("assassinat-lennon", "Assassinat de John Lennon", 1980, 12, 8, "ameriques", "musique", 4, "L'ancien Beatle est tué devant son immeuble de New York.");
-  E("election-mitterrand", "Élection de François Mitterrand", 1981, 5, 10, "europe", "politique", 2, "Premier président socialiste de la Ve République.");
+  E("election-mitterrand", "Première élection de François Mitterrand", 1981, 5, 10, "europe", "politique", 2, "Premier président socialiste de la Ve République.");
   E("attentat-jean-paul-2", "Attentat contre Jean-Paul II", 1981, 5, 13, "europe", "religion", 4, "Le pape est blessé par balles place Saint-Pierre.");
   E("sida-premiers-cas", "Premiers cas de sida décrits", 1981, 6, 5, "ameriques", "medecine", 4, "Des médecins américains signalent une maladie inconnue qui détruit l'immunité.");
   E("mtv", "Lancement de MTV", 1981, 8, 1, "ameriques", "musique", 5, "La première chaîne de clips musicaux diffuse « Video Killed the Radio Star ».");
@@ -911,7 +913,7 @@
   E("genocide-rwanda", "Début du génocide des Tutsi au Rwanda", 1994, 4, 7, "afrique", "societe", 3, "Environ 800 000 personnes sont tuées en cent jours.");
   E("election-sud-africaine", "Premières élections multiraciales en Afrique du Sud", 1994, 4, 27, "afrique", "politique", 3, "Nelson Mandela devient président après la fin de l'apartheid.");
   E("tunnel-manche", "Inauguration du tunnel sous la Manche", 1994, 5, 6, "europe", "economie", 3, "Mitterrand et la reine Élisabeth II ouvrent la liaison ferroviaire entre la France et l'Angleterre.");
-  E("election-chirac", "Élection de Jacques Chirac", 1995, 5, 7, "europe", "politique", 3, "Il succède à François Mitterrand à l'Élysée.");
+  E("election-chirac", "Première élection de Jacques Chirac", 1995, 5, 7, "europe", "politique", 3, "Il succède à François Mitterrand à l'Élysée.");
   E("srebrenica", "Massacre de Srebrenica", 1995, 7, 11, "europe", "militaire", 3, "Plus de huit mille Bosniaques musulmans sont tués.");
   E("exoplanete", "Première exoplanète autour d'une étoile comme le Soleil", 1995, 10, 6, "europe", "sciences", 5, "Deux astronomes suisses découvrent 51 Pegasi b.");
   E("assassinat-rabin", "Assassinat d'Yitzhak Rabin", 1995, 11, 4, "moyen-orient", "politique", 4, "Le Premier ministre israélien est tué par un extrémiste juif.");
@@ -921,11 +923,11 @@
   E("mort-diana", "Mort de la princesse Diana", 1997, 8, 31, "europe", "societe", 2, "Elle meurt dans un accident de voiture à Paris.");
   E("mort-mere-teresa", "Mort de Mère Teresa", 1997, 9, 5, "asie", "religion", 5, "La religieuse qui soignait les mourants de Calcutta s'éteint.");
   E("vendredi-saint", "Accord du Vendredi saint", 1998, 4, 10, "europe", "politique", 4, "Un accord de paix met fin à trente ans de conflit en Irlande du Nord.");
-  E("france-98", "La France championne du monde de football", 1998, 7, 12, "europe", "sport", 1, "Les Bleus battent le Brésil 3-0 au Stade de France.");
+  E("france-98", "Première Coupe du monde de football remportée par la France", 1998, 7, 12, "europe", "sport", 1, "Les Bleus battent le Brésil 3-0 au Stade de France.");
   E("google-creation", "Création de Google", 1998, 9, 4, "ameriques", "economie", 4, "Deux étudiants de Stanford fondent le moteur de recherche.");
   E("lancement-euro", "Lancement de l'euro", 1999, 1, 1, "europe", "economie", 3, "La monnaie unique est introduite pour les paiements électroniques dans onze pays.");
   E("pacs", "Vote du Pacs", 1999, 11, 15, "europe", "societe", 3, "Le pacte civil de solidarité est ouvert aux couples de même sexe ou non.");
-  E("euro-2000", "La France remporte l'Euro de football", 2000, 7, 2, "europe", "sport", 4, "Le but en or de Trezeguet bat l'Italie en finale.");
+  E("euro-2000", "Deuxième Euro de football remporté par la France", 2000, 7, 2, "europe", "sport", 4, "Le but en or de Trezeguet bat l'Italie en finale.");
   E("attentats-11-septembre", "Attentats contre le World Trade Center et le Pentagone", 2001, 9, 11, "ameriques", "politique", 1, "Des avions de ligne détournés par des terroristes d'Al-Qaïda frappent New York et Washington.");
   E("euro-pieces", "Mise en circulation de l'euro", 2002, 1, 1, "europe", "economie", 2, "Pièces et billets en euros remplacent douze monnaies nationales.");
   E("21-avril-2002", "Le Pen qualifié pour le second tour de la présidentielle", 2002, 4, 21, "europe", "politique", 2, "À la surprise générale, le candidat d'extrême droite devance le Premier ministre socialiste au premier tour.");
@@ -944,7 +946,7 @@
   E("election-sarkozy", "Élection de Nicolas Sarkozy", 2007, 5, 6, "europe", "politique", 3, "Il bat Ségolène Royal au second tour.");
   E("traite-lisbonne", "Signature du traité de Lisbonne", 2007, 12, 13, "europe", "politique", 5, "Les Vingt-Sept réforment les institutions de l'Union.");
   E("lehman-brothers", "Faillite de Lehman Brothers", 2008, 9, 15, "ameriques", "economie", 3, "La banque s'effondre et déclenche une crise financière mondiale.");
-  E("election-obama", "Élection de Barack Obama", 2008, 11, 4, "ameriques", "politique", 1, "Premier président noir des États-Unis.");
+  E("election-obama", "Première élection de Barack Obama", 2008, 11, 4, "ameriques", "politique", 1, "Premier président noir des États-Unis.");
   E("bitcoin", "Premier bloc de bitcoins", 2009, 1, 3, "ameriques", "economie", 4, "Satoshi Nakamoto lance la première cryptomonnaie.");
   E("mort-michael-jackson", "Mort de Michael Jackson", 2009, 6, 25, "ameriques", "musique", 3, "Le « roi de la pop » s'éteint à cinquante ans.");
   E("seisme-haiti", "Séisme d'Haïti", 2010, 1, 12, "ameriques", "societe", 3, "Port-au-Prince est ravagée : plus de deux cent mille morts.");
@@ -962,18 +964,18 @@
   E("cop21", "Accord de Paris sur le climat", 2015, 12, 12, "europe", "politique", 3, "Cent quatre-vingt-quinze pays s'engagent à limiter le réchauffement.");
   E("brexit-referendum", "Référendum sur le Brexit", 2016, 6, 23, "europe", "politique", 2, "Les Britanniques votent pour quitter l'Union européenne.");
   E("attentat-nice", "Attentat de Nice", 2016, 7, 14, "europe", "politique", 2, "Un camion fonce dans la foule venue assister au feu d'artifice.");
-  E("election-trump", "Élection de Donald Trump", 2016, 11, 8, "ameriques", "politique", 2, "Le candidat républicain bat Hillary Clinton.");
-  E("election-macron", "Élection d'Emmanuel Macron", 2017, 5, 7, "europe", "politique", 2, "Le plus jeune président de la Ve République bat Marine Le Pen.");
-  E("france-2018", "La France championne du monde de football", 2018, 7, 15, "europe", "sport", 1, "Les Bleus battent la Croatie 4-2 à Moscou.");
+  E("election-trump", "Première élection de Donald Trump", 2016, 11, 8, "ameriques", "politique", 2, "Le candidat républicain bat Hillary Clinton.");
+  E("election-macron", "Première élection d'Emmanuel Macron", 2017, 5, 7, "europe", "politique", 2, "Le plus jeune président de la Ve République bat Marine Le Pen.");
+  E("france-2018", "Deuxième Coupe du monde de football remportée par la France", 2018, 7, 15, "europe", "sport", 1, "Les Bleus battent la Croatie 4-2 à Moscou.");
   E("gilets-jaunes", "Début du mouvement des gilets jaunes", 2018, 11, 17, "europe", "societe", 3, "Des citoyens occupent les ronds-points pour protester contre une taxe sur les carburants.");
   E("incendie-notre-dame", "Incendie de Notre-Dame de Paris", 2019, 4, 15, "europe", "societe", 1, "La flèche s'effondre et la charpente brûle sous les yeux du monde entier.");
   E("confinement-2020", "Premier confinement en France", 2020, 3, 17, "europe", "societe", 1, "Face à l'épidémie de Covid-19, les Français sont priés de rester chez eux.");
   E("assassinat-paty", "Assassinat de Samuel Paty", 2020, 10, 16, "europe", "politique", 3, "Un professeur d'histoire est tué près de son collège, à Conflans-Sainte-Honorine.");
   E("capitole", "Assaut du Capitole", 2021, 1, 6, "ameriques", "politique", 3, "Des partisans de Donald Trump envahissent le Congrès américain.");
-  E("invasion-ukraine", "Invasion de l'Ukraine par la Russie", 2022, 2, 24, "europe", "militaire", 1, "Les troupes russes attaquent l'Ukraine sur plusieurs fronts.");
+  E("invasion-ukraine", "Invasion de l'Ukraine à grande échelle par la Russie", 2022, 2, 24, "europe", "militaire", 1, "Les troupes russes attaquent l'Ukraine sur plusieurs fronts.");
   E("mort-elisabeth-2", "Mort de la reine Élisabeth II", 2022, 9, 8, "europe", "politique", 2, "Après soixante-dix ans de règne, la reine s'éteint à Balmoral.");
   E("argentine-qatar", "L'Argentine championne du monde au Qatar", 2022, 12, 18, "ameriques", "sport", 3, "Messi soulève la coupe après une finale spectaculaire contre la France.");
-  E("jo-paris-2024", "Cérémonie d'ouverture des Jeux de Paris", 2024, 7, 26, "europe", "sport", 2, "Pour la première fois, elle se déroule sur un fleuve, la Seine.");
+  E("jo-paris-2024", "Ouverture des Jeux olympiques de Paris sur la Seine", 2024, 7, 26, "europe", "sport", 2, "Pour la première fois, la cérémonie d'ouverture ne se déroule pas dans un stade mais sur un fleuve.");
   E("mort-pape-francois", "Mort du pape François", 2025, 4, 21, "europe", "religion", 3, "Le premier pape venu d'Amérique latine s'éteint à Rome.");
   E("election-leon-14", "Élection du pape Léon XIV", 2025, 5, 8, "europe", "religion", 4, "L'Américain Robert Prevost devient le premier pape des États-Unis.");
 

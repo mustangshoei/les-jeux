@@ -39,8 +39,11 @@
     carte: 'monde-pays',
 
     unite: 'pays',
-    libelleIndice: 'Afficher le continent à côté du nom : « Mongolie (Asie) »',
-    indice: (zone) => (INFOS.zones[zone.code] || {}).continent || '',
+    // Indice : rien, ou le continent à côté du nom
+    indices: [
+      { id: 'continent', libelle: 'continent', titre: 'Afficher le continent à côté du nom : « Mongolie (Asie) »',
+        texte: (zone) => (INFOS.zones[zone.code] || {}).continent || '' }
+    ],
 
     zonesOptionnelles: {
       codes: microEtats,

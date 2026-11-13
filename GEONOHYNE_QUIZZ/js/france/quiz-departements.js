@@ -17,7 +17,7 @@ GeoNohyne.registerCategory({
             'Choisissez la longueur de la partie.',
   question: 'Où se trouve…',
 
-  // Écran de choix : titre de la colonne de ce quiz, et à droite la colonne du quiz des préfectures
+  // Écran de choix : nom de ce quiz dans le sélecteur « Sujet du jeu », et l'autre sujet : les préfectures
   nomColonne: 'Départements',
   colonneDroite: 'prefectures',
 
@@ -25,11 +25,14 @@ GeoNohyne.registerCategory({
   carte: 'france-departements',
 
   unite: 'départements',
-  libelleOrdre: 'Dans l\'ordre des codes INSEE (… 67 Bas-Rhin, 68 Haut-Rhin …)',
-  libelleIndice: 'Afficher le code du département à côté du nom : « Nom (XX) »',
-  libelleOrdreCourt: 'Ordre INSEE',
-  libelleIndiceCourt: 'Indice : code',
-  indice: (zone) => zone.code,
+  // Ordre INSEE (en indice) : rien, le code à côté du nom, ou en plus les questions dans l'ordre des codes
+  nomIndice: 'Ordre INSEE (en indice)',
+  aideIndice: 'Le code à côté du nom ; « ordre » : questions dans l\'ordre des codes',
+  indices: [
+    { id: 'code', libelle: 'code', titre: 'Afficher le code du département à côté du nom : « Nom (XX) »', texte: (zone) => zone.code },
+    { id: 'ordre', libelle: 'ordre + code', titre: 'Les questions dans l\'ordre des codes INSEE (… 67 Bas-Rhin, 68 Haut-Rhin …), avec le code à côté du nom',
+      texte: (zone) => zone.code, ordonne: true }
+  ],
 
   // Départements d'Outre-Mer : absents du tirage « par nombre » sauf si la case est cochée
   zonesOptionnelles: {

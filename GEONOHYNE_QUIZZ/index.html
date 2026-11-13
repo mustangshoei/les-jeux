@@ -348,10 +348,23 @@
             <label class="interrupteur">
               <input id="liste-carte-option" type="checkbox" role="switch">
               <span class="interrupteur__piste" aria-hidden="true"></span>
-              <span class="interrupteur__texte"><b>Afficher une carte</b> à côté de la liste : chaque département passe
-                au vert quand tout ce qui le concerne est trouvé (hachuré à moitié). Ni noms ni clic : à vous de savoir
-                lequel c'est.</span>
+              <span class="interrupteur__texte" title="Chaque département passe au vert quand tout ce qui le concerne est trouvé (hachuré à moitié). Ni noms ni clic : à vous de savoir lequel c'est."><b>Afficher une carte</b> à côté de la liste : un département passe au vert quand il est trouvé.
+                Ni noms ni clic.</span>
             </label>
+          </div>
+
+          <!-- Hardcore : ni liste ni carte, seulement le nombre de noms cités ; un nom déjà cité est une répétition,
+               éliminé au bout de 3, 5 ou 10 répétitions (ou jamais) -->
+          <div class="setup-bloc">
+            <span class="setup-etiquette">Hardcore 💀</span>
+            <div class="onglets onglets--large" role="group" aria-label="Hardcore : répétitions permises avant l'élimination">
+              <button type="button" class="mode-btn onglet-btn is-active" data-liste-hardcore="0" aria-pressed="true">Non</button>
+              <button type="button" class="mode-btn onglet-btn" data-liste-hardcore="3" aria-pressed="false" title="Éliminé à la 3ᵉ répétition">3</button>
+              <button type="button" class="mode-btn onglet-btn" data-liste-hardcore="5" aria-pressed="false" title="Éliminé à la 5ᵉ répétition">5</button>
+              <button type="button" class="mode-btn onglet-btn" data-liste-hardcore="10" aria-pressed="false" title="Éliminé à la 10ᵉ répétition">10</button>
+              <button type="button" class="mode-btn onglet-btn" data-liste-hardcore="inf" aria-pressed="false" title="Jamais éliminé : les répétitions sont seulement comptées">Illimité</button>
+            </div>
+            <p id="liste-hardcore-aide" class="setup-aide"></p>
           </div>
         </div>
 
@@ -405,6 +418,18 @@
     </form>
 
     <div id="liste-feedback" class="fb fb-idle" aria-live="polite"><span>—</span></div>
+
+    <!-- Hardcore : ni liste ni carte pendant la partie, seulement ces deux compteurs (la liste revient à la fin) -->
+    <div id="liste-hardcore" class="liste-hardcore hidden">
+      <div class="liste-hardcore__case">
+        <span class="liste-hardcore__valeur"><b id="liste-hc-nb">0</b> / <span id="liste-hc-total">0</span></span>
+        <span class="liste-hardcore__nom">noms cités</span>
+      </div>
+      <div id="liste-hc-repetitions" class="liste-hardcore__case liste-hardcore__case--repet">
+        <span class="liste-hardcore__valeur"><b id="liste-hc-rep">0</b><span id="liste-hc-max"></span></span>
+        <span class="liste-hardcore__nom">répétitions</span>
+      </div>
+    </div>
 
     <!-- La liste et, en option, la carte (à droite ; au-dessus sur petit écran) -->
     <div id="liste-zone" class="liste-zone">
@@ -666,144 +691,172 @@
 </section>
 
 <!-- ===================== CHOIX DE LA PARTIE ===================== -->
-<!-- Tient sur un écran, sans défilement : l'en-tête, puis une colonne pour la catégorie et, si elle en déclare une
-     (colonneDroite), une seconde colonne, à droite, pour une autre catégorie (ex. les préfectures à côté des
-     départements). Les colonnes sont faites par js/core.js à partir du modèle ci-dessous : mêmes réglages. -->
+<!-- Tient sur un écran, sans défilement (sur téléphone, l'écran défile) : l'en-tête, puis le panneau de la
+     catégorie. Si elle en déclare une seconde (colonneDroite, ex. les préfectures à côté des départements), chacune
+     a son panneau et un seul est montré, au choix du sélecteur « Sujet du jeu ». Les panneaux sont faits par
+     js/core.js à partir du modèle ci-dessous. Couleur ambrée et lumières : propres à cet écran (css). -->
 <section id="screen-setup" class="screen setup hidden">
   <header class="setup-tete">
     <button type="button" data-action="menu" class="btn-link btn-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Menu</button>
     <h2 id="setup-titre" class="setup-titre">—</h2>
   </header>
 
-  <!-- Les colonnes (une ou deux) : js/core.js -->
+  <!-- Le panneau de la catégorie (ou ses deux panneaux, un seul montré) : js/core.js -->
   <div id="setup-colonnes" class="setup-colonnes"></div>
 
   <!-- Source de la carte (crédit exigé par les licences) ou message d'erreur : sur toute la largeur -->
   <p id="setup-status" class="status setup-pied" aria-live="polite"></p>
 
-  <!-- Modèle d'une colonne. Pas d'id (il y a une colonne par catégorie) : js/core.js trouve ses éléments par
-       leur attribut data-r. -->
+  <!-- Modèle d'un panneau, un par catégorie (avec colonneDroite, deux panneaux dont un seul est montré : le
+       sélecteur « Sujet du jeu » passe de l'un à l'autre). Pas d'id : js/core.js trouve ses éléments par leur
+       attribut data-r. Une grille 2 × 2 dont les cases s'alignent en haut et en bas :
+         occasionnel : façon de jouer | mode de tirage ; nombre de questions (ou groupes) | options
+         record      : façon de jouer | records ; périmètre du record (sur toute la largeur) -->
   <template id="setup-modele">
     <section class="setup-col">
       <div class="setup-col__tete">
         <h3 class="setup-col__nom" data-r="nom">Votre partie</h3>
+        <!-- Deux sujets (ex. départements | préfectures) : un bouton par panneau (js/core.js : preparerSujets) -->
+        <div data-r="sujets-wrap" class="setup-sujets hidden">
+          <span class="setup-etiquette">Sujet du jeu</span>
+          <div data-r="sujets" class="setup-sujets__choix" role="group" aria-label="Sujet du jeu"></div>
+        </div>
         <!-- Mode record : interrupteur ; le dernier état est mémorisé (geonohyne.setup.record) -->
         <label class="interrupteur interrupteur--record">
           <input data-r="record" type="checkbox" role="switch">
           <span class="interrupteur__piste" aria-hidden="true"></span>
           <span class="interrupteur__texte">🏆 Mode record</span>
         </label>
-        <!-- Téléphone : une colonne réduite à son titre se déplie ici (l'autre se replie) -->
-        <button type="button" class="setup-col__deplier" data-r="deplier">Afficher<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
       </div>
 
-      <!-- Façon de jouer : deux cartes (phrases : aideCiblage et aideNommage de la catégorie) -->
-      <div class="choix-cartes" role="group" aria-label="Façon de jouer">
-        <button type="button" class="mode-btn choix-carte is-active" data-jeu-type="ciblage" aria-pressed="true">
-          <span class="choix-carte__icone" aria-hidden="true">🎯</span>
-          <span class="choix-carte__titre">Ciblage</span>
-          <span class="choix-carte__desc" data-r="aide-ciblage">Un nom s'affiche : cliquez sur la carte</span>
-        </button>
-        <button type="button" class="mode-btn choix-carte" data-jeu-type="nommage" aria-pressed="false">
-          <span class="choix-carte__icone" aria-hidden="true">⌨️</span>
-          <span class="choix-carte__titre">Nommage</span>
-          <span class="choix-carte__desc" data-r="aide-nommage">Une zone s'allume : tapez son nom</span>
-        </button>
-      </div>
-      <p data-r="aide" class="setup-aide"></p>
+      <div class="setup-grille">
+        <!-- Façon de jouer : deux cartes (phrases : aideCiblage et aideNommage de la catégorie) -->
+        <div class="setup-case setup-case--facon">
+          <div class="setup-case__tete"><span class="setup-etiquette">Façon de jouer</span></div>
+          <div class="choix-cartes" role="group" aria-label="Façon de jouer">
+            <button type="button" class="mode-btn choix-carte is-active" data-jeu-type="ciblage" aria-pressed="true">
+              <span class="choix-carte__icone" aria-hidden="true">🎯</span>
+              <span class="choix-carte__titre">Ciblage</span>
+              <span class="choix-carte__desc" data-r="aide-ciblage">Un nom s'affiche : cliquez sur la carte</span>
+            </button>
+            <button type="button" class="mode-btn choix-carte" data-jeu-type="nommage" aria-pressed="false">
+              <span class="choix-carte__icone" aria-hidden="true">⌨️</span>
+              <span class="choix-carte__titre">Nommage</span>
+              <span class="choix-carte__desc" data-r="aide-nommage">Une zone s'allume : tapez son nom</span>
+            </button>
+          </div>
+        </div>
 
-      <!-- Mode occasionnel : les questions (au hasard ou par groupes), puis les options -->
-      <div data-r="occasionnel" class="setup-souple">
-        <div class="setup-bloc setup-bloc--souple">
-          <div class="setup-bloc__tete">
-            <span class="setup-etiquette">Questions</span>
-            <div data-r="modes" class="onglets hidden" role="group" aria-label="Choix des questions">
-              <button type="button" class="mode-btn onglet-btn is-active" data-mode="nombre" aria-pressed="true">🎲 Au hasard</button>
-              <button type="button" class="mode-btn onglet-btn" data-mode="groupes" aria-pressed="false">🗺️ Par <span data-r="nom-groupes">groupes</span></button>
+        <!-- Mode occasionnel (ses cases se placent dans la grille) -->
+        <div data-r="occasionnel" class="setup-souple">
+          <div class="setup-case setup-case--tirage">
+            <div class="setup-case__tete"><span class="setup-etiquette">Mode de tirage</span></div>
+            <div data-r="modes" class="setup-tirage" role="group" aria-label="Mode de tirage">
+              <button type="button" class="mode-btn tirage-btn is-active" data-mode="nombre" aria-pressed="true">Au hasard <span aria-hidden="true">🎲</span></button>
+              <button type="button" data-r="mode-groupes-btn" class="mode-btn tirage-btn" data-mode="groupes" aria-pressed="false">Par <span data-r="nom-groupes">groupes</span> <span aria-hidden="true">🗺️</span></button>
             </div>
           </div>
 
-          <!-- Au hasard : un nombre (− et +, raccourcis, curseur) -->
-          <div data-r="mode-nombre" class="nombre">
-            <div class="nombre__ligne">
-              <button type="button" class="nombre__pas" data-pas="-1" aria-label="Une question de moins">−</button>
-              <label class="nombre__valeur">
-                <input data-r="nombre" class="nombre__champ" type="number" min="10" max="96" step="1" value="20" inputmode="numeric" aria-label="Nombre de questions">
-                <span data-r="unite">zones</span>
-              </label>
-              <button type="button" class="nombre__pas" data-pas="1" aria-label="Une question de plus">+</button>
+          <div class="setup-case setup-case--questions">
+            <div class="setup-case__tete">
+              <span data-r="titre-questions" class="setup-etiquette">Nombre de questions</span>
+              <span data-r="groupes-outils" class="setup-case__outils hidden">
+                <button type="button" class="btn-link" data-groupes="tout">Tout</button>
+                <button type="button" class="btn-link" data-groupes="rien">Aucun</button>
+              </span>
             </div>
-            <div data-r="raccourcis" class="nombre__raccourcis" role="group" aria-label="Nombres rapides">
-              <button type="button" data-nombre="10">10</button>
-              <button type="button" data-nombre="20">20</button>
-              <button type="button" data-nombre="30">30</button>
-              <button type="button" data-nombre="50">50</button>
-              <button type="button" data-nombre="max">Tous · <span data-r="tous">96</span></button>
-            </div>
-            <div class="nombre__curseur">
-              <span data-r="min">10</span>
-              <input data-r="curseur" class="nombre__glissiere" type="range" min="10" max="96" step="1" value="20" aria-label="Nombre de questions (curseur)">
-              <span data-r="max">96</span>
-            </div>
-            <!-- Zones optionnelles (ex. Outre-Mer) : visible seulement si la catégorie en définit -->
-            <label data-r="extras-wrap" class="interrupteur hidden">
-              <input data-r="extras" type="checkbox" role="switch">
-              <span class="interrupteur__piste" aria-hidden="true"></span>
-              <span data-r="extras-label" class="interrupteur__texte"></span>
-            </label>
-          </div>
-
-          <!-- Par groupes (régions…) : la mini-carte cliquable et la liste, synchronisées -->
-          <div data-r="mode-groupes" class="groupes-choix hidden">
-            <div class="groupes-choix__carte">
-              <div class="groupes-head">
-                <span data-r="groupes-titre">Groupes à inclure</span>
-                <span>
-                  <button type="button" class="btn-link" data-groupes="tout">Tout</button>
-                  <button type="button" class="btn-link" data-groupes="rien">Aucun</button>
-                </span>
+            <div class="setup-boite">
+              <!-- Au hasard : un nombre (− et +, curseur, raccourcis) -->
+              <div data-r="mode-nombre" class="nombre">
+                <div class="nombre__ligne">
+                  <button type="button" class="nombre__pas" data-pas="-1" aria-label="Une question de moins">−</button>
+                  <label class="nombre__valeur">
+                    <input data-r="nombre" class="nombre__champ" type="number" min="10" max="96" step="1" value="20" inputmode="numeric" aria-label="Nombre de questions">
+                    <span data-r="unite">zones</span>
+                  </label>
+                  <button type="button" class="nombre__pas" data-pas="1" aria-label="Une question de plus">+</button>
+                </div>
+                <div class="nombre__curseur">
+                  <span data-r="min">10</span>
+                  <input data-r="curseur" class="nombre__glissiere" type="range" min="10" max="96" step="1" value="20" aria-label="Nombre de questions (curseur)">
+                  <span data-r="max">96</span>
+                </div>
+                <div data-r="raccourcis" class="nombre__raccourcis" role="group" aria-label="Nombres rapides">
+                  <button type="button" data-nombre="10">10</button>
+                  <button type="button" data-nombre="20">20</button>
+                  <button type="button" data-nombre="30">30</button>
+                  <button type="button" data-nombre="50">50</button>
+                  <button type="button" data-nombre="max">Tous · <span data-r="tous">96</span></button>
+                </div>
+                <!-- Zones optionnelles (ex. Outre-Mer) : visible seulement si la catégorie en définit -->
+                <label data-r="extras-wrap" class="interrupteur hidden">
+                  <input data-r="extras" type="checkbox" role="switch">
+                  <span class="interrupteur__piste" aria-hidden="true"></span>
+                  <span data-r="extras-label" class="interrupteur__texte"></span>
+                </label>
               </div>
-              <div class="mini-carte-place" data-mini-carte="groupes"></div>
+
+              <!-- Par groupes (régions…) : la mini-carte cliquable et la liste, synchronisées -->
+              <div data-r="mode-groupes" class="groupes-choix hidden">
+                <div class="groupes-choix__carte"><div class="mini-carte-place" data-mini-carte="groupes"></div></div>
+                <div data-r="groupes" class="groupes-liste"></div>
+              </div>
             </div>
-            <div data-r="groupes" class="groupes-liste"></div>
+          </div>
+
+          <!-- Options : une ligne chacune, le réglage à droite -->
+          <div class="setup-case setup-case--options">
+            <div class="setup-case__tete"><span class="setup-etiquette">Options</span></div>
+            <div class="options">
+              <label data-r="ordre-wrap" class="interrupteur option-ligne hidden">
+                <input data-r="ordre" type="checkbox" role="switch">
+                <span class="interrupteur__piste" aria-hidden="true"></span>
+                <span class="interrupteur__texte"><span data-r="ordre-label"></span> <span aria-hidden="true">📋</span></span>
+              </label>
+              <!-- Indice : « rien » ou l'un des indices de la catégorie (indices ; nomIndice : « Ordre INSEE (en indice) ») -->
+              <div data-r="indice-wrap" class="option-ligne option-ligne--choix hidden">
+                <span class="option-ligne__texte">
+                  <span class="option-ligne__nom"><span data-r="indice-nom">Indice</span> <span aria-hidden="true">💡</span></span>
+                  <span data-r="indice-aide" class="option-ligne__aide"></span>
+                </span>
+                <div data-r="indices" class="option-segments" role="group" aria-label="Indice"></div>
+              </div>
+              <label class="interrupteur option-ligne">
+                <input data-r="rattrapage" type="checkbox" role="switch" checked>
+                <span class="interrupteur__piste" aria-hidden="true"></span>
+                <span class="interrupteur__texte option-ligne__texte">
+                  <span class="option-ligne__nom">Rattrapage <span aria-hidden="true">🔁</span></span>
+                  <span class="option-ligne__aide">Les zones ratées sont redemandées en fin de partie</span>
+                </span>
+              </label>
+            </div>
           </div>
         </div>
 
-        <div class="setup-bloc setup-bloc--ligne">
-          <span class="setup-etiquette">Options</span>
-          <div class="options">
-            <label data-r="ordre-wrap" class="interrupteur hidden">
-              <input data-r="ordre" type="checkbox" role="switch">
-              <span class="interrupteur__piste" aria-hidden="true"></span>
-              <span data-r="ordre-label" class="interrupteur__texte"></span>
-            </label>
-            <label data-r="indice-wrap" class="interrupteur hidden">
-              <input data-r="indice" type="checkbox" role="switch">
-              <span class="interrupteur__piste" aria-hidden="true"></span>
-              <span data-r="indice-label" class="interrupteur__texte">Afficher un indice</span>
-            </label>
-            <label class="interrupteur">
-              <input data-r="rattrapage" type="checkbox" role="switch" checked>
-              <span class="interrupteur__piste" aria-hidden="true"></span>
-              <span class="interrupteur__texte" title="Rattrapage des erreurs : les zones ratées sont redemandées en fin de partie">Rattrapage</span>
-            </label>
+        <!-- Mode record : les records (à côté de la façon de jouer), puis le périmètre (tout, ou un seul groupe) -->
+        <div data-r="partie-record" class="setup-souple setup-record hidden">
+          <div class="setup-case setup-case--scores">
+            <div class="setup-case__tete"><span class="setup-etiquette">Records</span></div>
+            <div class="setup-scores">
+              <p data-r="aide" class="setup-aide"></p>
+              <div data-r="scores" class="record-scores" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="setup-case setup-case--perimetre">
+            <div class="setup-case__tete"><span class="setup-etiquette">Périmètre du record</span></div>
+            <div class="setup-boite">
+              <div class="groupes-choix">
+                <div class="groupes-choix__carte"><div class="mini-carte-place" data-mini-carte="record"></div></div>
+                <div data-r="perimetres" class="groupes-liste" role="radiogroup" aria-label="Périmètre du record"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Mode record : périmètre fixe (tout, ou un seul groupe : sur la mini-carte ou dans la liste) et records -->
-      <div data-r="partie-record" class="setup-souple setup-record hidden">
-        <div class="setup-bloc setup-bloc--souple">
-          <span class="setup-etiquette">Périmètre du record</span>
-          <div class="groupes-choix">
-            <div class="groupes-choix__carte"><div class="mini-carte-place" data-mini-carte="record"></div></div>
-            <div data-r="perimetres" class="groupes-liste" role="radiogroup" aria-label="Périmètre du record"></div>
-          </div>
-        </div>
-        <div data-r="scores" class="record-scores" aria-live="polite"></div>
+      <div class="setup-col__pied">
+        <button data-r="lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
       </div>
-
-      <button data-r="lancer" type="button" class="btn btn-primary btn-start">Lancer la partie</button>
     </section>
   </template>
 </section>

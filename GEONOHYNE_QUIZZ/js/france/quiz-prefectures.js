@@ -1,14 +1,15 @@
 /* ==========================================================================
    france/quiz-prefectures.js — Catégorie de quiz « Les préfectures »
 
-   Pas de carte à elle dans le menu : ce quiz est la colonne de droite de l'écran de choix de « Les
+   Pas de carte à elle dans le menu : ce quiz est le second sujet de l'écran de choix de « Les
    départements et leurs préfectures » (colonneDroite: 'prefectures' dans js/france/quiz-departements.js),
    avec les mêmes réglages (ciblage ou nommage, mode record, au hasard ou par régions, Outre-Mer, ordre
    INSEE, indice, rattrapage). Il se joue sur la carte des départements, où chaque préfecture est un point :
      - ciblage : le nom d'une préfecture s'affiche, on clique sur son point (ou sur son département) ;
      - nommage : un département et sa préfecture s'allument, on tape le nom de la préfecture (fautes de
        frappe légères acceptées, article du début facultatif, « St » = « Saint », « Cergy » pour Pontoise).
-   Indice (option) : le département et son numéro, sous la question (« 💡 Meurthe-et-Moselle (54) »).
+   Ordre INSEE (en indice, option) : rien, le numéro du département à côté du nom (« Nancy (54) »), ou en plus
+   les questions dans l'ordre des codes des départements.
    Ses records et ses statistiques sont à part (catégorie « Les préfectures »).
 
    Données : les noms dans data/france/infos-departements.js, les points dans data/france/points-prefectures.js
@@ -54,13 +55,14 @@
     alias: { '95': ['Cergy', 'Cergy-Pontoise'] },
 
     unite: 'préfectures',
-    libelleOrdre: 'Dans l\'ordre des codes INSEE des départements (… 54 Nancy, 55 Bar-le-Duc …)',
-    libelleOrdreCourt: 'Ordre INSEE',
-    // Indice : le département et son numéro, toujours affiché sous la question quand l'option est cochée
-    libelleIndice: 'Afficher le département et son numéro sous la question : « Meurthe-et-Moselle (54) »',
-    libelleIndiceCourt: 'Indice : département',
-    indice: (zone) => zone.nom + ' (' + zone.code + ')',
-    indiceDessous: true,
+    // Ordre INSEE (en indice) : rien, le numéro du département à côté du nom, ou en plus les questions dans l'ordre
+    nomIndice: 'Ordre INSEE (en indice)',
+    aideIndice: 'Le n° du département à côté du nom ; « ordre » : questions dans l\'ordre',
+    indices: [
+      { id: 'code', libelle: 'code', titre: 'Afficher le numéro du département à côté du nom : « Nancy (54) »', texte: (zone) => zone.code },
+      { id: 'ordre', libelle: 'ordre + code', titre: 'Les questions dans l\'ordre des codes INSEE des départements (… 54 Nancy, 55 Bar-le-Duc …), avec le numéro à côté du nom',
+        texte: (zone) => zone.code, ordonne: true }
+    ],
 
     // Les mêmes régions et le même Outre-Mer que les départements
     zonesOptionnelles: {

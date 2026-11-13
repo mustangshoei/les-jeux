@@ -1,49 +1,112 @@
 /* ==========================================================================
-   Histehory Quizz — feuille de style
-   Inspirée de GéoNohyne Quizz, en thème sombre seulement (pas de thème clair),
-   aux couleurs dominantes jaune et orange.
+   Histehory Quizz — feuille de style « Chroniques »
+   Thème sombre unique : brun d'archives, accents ambre (actions, sélection) et orange (consignes),
+   ivoire pour le texte, menthe pour ce qui est juste, rouge pour ce qui est faux. Fond : papier réglé
+   de registre (lignes fines, grands repères de siècle) et deux lueurs fixes — rien ne bouge en fond.
+   Même construction que GéoNohyne Quizz, Anotehomy Quizz et Natehure Quizz (menu « atlas » :
+   css/menu.css ; compte : css/compte.css). Polices locales Bricolage Grotesque et IBM Plex Mono
+   (licence OFL, css/polices/) ; la police des titres est commune à tout le site (../COMMUN/police.css).
    Aucune dépendance externe : ni CDN, ni police web, ni framework.
    ========================================================================== */
 
+/* ---------- Polices ---------- */
+@font-face {
+  font-family: 'Bricolage Grotesque'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url(polices/bricolage-grotesque-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url(polices/bricolage-grotesque-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(polices/ibm-plex-mono-500-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(polices/ibm-plex-mono-500-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(polices/ibm-plex-mono-600-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(polices/ibm-plex-mono-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------- Couleurs et mesures ---------- */
 :root {
   color-scheme: dark;
-  --bg: #110d08;
+  --bg: #120d07;
+  --bg-profond: #0b0804;
+  --surface: #1e160c;           /* fonds pleins : menus déroulants, fenêtres */
   --card: #1c160e;
   --card-2: #271e12;            /* surfaces douces : boutons secondaires, sélecteurs, encarts */
-  --ink: #f5ecdc;
-  --ink-2: #c4b294;
+  --champ: rgba(11, 8, 4, .72); /* champs de saisie, petits boutons */
+  --verre: linear-gradient(180deg, rgba(255, 236, 200, .065), rgba(255, 236, 200, .02));
+  --ink: #f6ecdb;
+  --ink-2: #cdb999;
   --muted: #9a876a;
-  --line: #3a2c19;
-  --accent: #f59e0b;            /* jaune orangé : boutons, survols, sélection */
+  --line: rgba(255, 220, 160, .14);
+  --line-2: rgba(255, 220, 160, .26);
+  --accent: #f59e0b;            /* ambre : boutons, survols, sélection */
   --accent-clair: #fbbf24;
+  --accent-pale: #fde3a7;
   --accent-2: #ea580c;          /* orange */
+  --accent-ombre: #8a5506;
   --accent-texte: #1a1105;      /* texte posé sur l'accent */
   --bord-carte: #4a3415;
   --anneau: rgba(245, 158, 11, .35);
   --green: #4ade80;
   --red: #fca5a5;
+  --ok: #4ade80;
+  --warn: #fdba74;
   --radius: 16px;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4), 0 1px 3px rgba(0, 0, 0, .35);
-  --shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  --shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  --police: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, "Times New Roman", serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body { min-height: 100%; }
-
+html { min-height: 100%; scrollbar-color: rgba(255, 220, 160, .28) transparent; }
 body {
+  min-height: 100%;
   margin: 0;
-  background: radial-gradient(ellipse 60rem 28rem at 50% -6rem, rgba(245, 158, 11, .13), transparent 70%) no-repeat, var(--bg);
+  background: var(--bg);
   color: var(--ink);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.45;
+  font: 15px/1.45 var(--police);
   -webkit-font-smoothing: antialiased;
 }
+/* Fond de tous les écrans : deux lueurs (bougie, braise) et un papier réglé de registre (lignes fines,
+   et tous les 120 px un trait plus marqué, comme les siècles d'une frise) ; tout est fixe. */
+body::before, body::after { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+body::before {
+  background:
+    radial-gradient(ellipse at 12% 6%, rgba(245, 158, 11, .14), transparent 52%),
+    radial-gradient(ellipse at 90% 94%, rgba(234, 88, 12, .08), transparent 55%);
+}
+body::after {
+  background-image:
+    linear-gradient(90deg, rgba(255, 210, 140, .055) 1px, transparent 1px),
+    linear-gradient(rgba(255, 210, 140, .03) 1px, transparent 1px);
+  background-size: 120px 120px, 100% 30px;
+}
 
-button, input, select { font: inherit; }
+button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 h1, h2, h3, p { margin: 0; }
+::placeholder { color: var(--muted); opacity: 1; }
+[hidden] { display: none !important; }
 
 .hidden { display: none !important; }
 
@@ -59,29 +122,43 @@ h1, h2, h3, p { margin: 0; }
   border: 0;
 }
 
+/* Petit texte en capitales, à chasse fixe (surtitres, repères) */
+.surtitre {
+  margin: 0;
+  font: 600 .78rem/1.3 var(--mono);
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--accent-clair);
+}
+
 /* ---------- Mise en page des écrans ---------- */
 /* Les boutons de compte et « Jeux » occupent le haut : les pages commencent un peu plus bas */
 .page { max-width: 52rem; margin: 0 auto; padding: 4.5rem 1rem 2.5rem; }
 
 /* ---------- Boutons ---------- */
 .btn {
-  border: 0;
+  border: 1px solid var(--line-2);
   border-radius: 12px;
   padding: .7rem 1.4rem;
+  background: var(--champ);
+  color: var(--ink);
   font-weight: 600;
-  box-shadow: var(--shadow-sm);
-  transition: background-color .15s ease, transform .1s ease;
   white-space: nowrap;
+  transition: background-color .2s ease, border-color .2s ease, transform .1s ease, box-shadow .1s ease;
 }
+.btn:hover { border-color: var(--accent); background: rgba(245, 158, 11, .1); }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
-.btn-primary { background: var(--accent); color: var(--accent-texte); }
-.btn-primary:hover { background: var(--accent-clair); }
-.btn-soft { background: var(--card-2); color: var(--ink-2); box-shadow: none; }
-.btn-soft:hover { background: var(--line); color: var(--ink); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Action principale : ambre, avec un petit relief */
+.btn-primary { border-color: transparent; background: var(--accent); color: var(--accent-texte); box-shadow: 0 3px 0 var(--accent-ombre); }
+.btn-primary:hover { border-color: transparent; background: var(--accent-clair); }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--accent-ombre); }
+.btn-primary:disabled:hover { background: var(--accent); }
+.btn-soft { background: var(--champ); color: var(--ink-2); }
+.btn-soft:hover { color: var(--ink); }
 .btn-danger, .btn-danger:hover { color: var(--red); }
-.btn-danger-plein { background: #dc2626; color: #fff; }
+.btn-danger-plein { border-color: transparent; background: #dc2626; color: #fff; }
 .btn-danger-plein:hover { background: #b91c1c; }
 
 .btn-link {
@@ -89,214 +166,19 @@ h1, h2, h3, p { margin: 0; }
   border: 0;
   padding: .4rem .25rem;
   color: var(--ink-2);
-  font-weight: 500;
-}
-.btn-link:hover { color: var(--ink); }
-
-/* ---------- Accueil ---------- */
-.hero { text-align: center; margin-bottom: 2.5rem; }
-.logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 4rem;
-  height: 4rem;
-  margin-bottom: 1rem;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--accent-clair), var(--accent-2));
-  font-size: 2rem;
-  box-shadow: 0 10px 30px rgba(234, 88, 12, .3);
-}
-.hero h1 { font-family: var(--serif); font-size: clamp(2.3rem, 6vw, 3.1rem); font-weight: 700; letter-spacing: -.01em; }
-.hero p { margin-top: .75rem; font-size: 1.1rem; color: var(--ink-2); }
-
-.accueil-titre {
-  margin-bottom: 1rem;
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  text-align: center;
-  color: var(--muted);
-}
-
-/* Cartes des modes de jeu (js/menu.js) : deux par ligne sur grand écran, une sur mobile */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-  gap: 1.25rem;
-}
-
-.cat-card {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: var(--card);
-  border: 2px solid var(--bord-carte);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  color: inherit;
-  box-shadow: var(--shadow-sm);
-  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-}
-.cat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--accent); }
-.cat-card:focus-visible { outline: 0; box-shadow: 0 0 0 4px var(--anneau); }
-/* Pas encore disponible : grisée, comme dans GéoNohyne Quizz */
-.cat-card--soon {
-  border-color: var(--line);
-  background: rgba(28, 22, 14, .6);
-  box-shadow: none;
-  opacity: .6;
-  filter: grayscale(1);
-  cursor: not-allowed;
-}
-.cat-card--soon:hover { transform: none; box-shadow: none; border-color: var(--line); }
-.cat-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
-.cat-icon { font-size: 2.25rem; line-height: 1; }
-.cat-title { margin-top: 1rem; font-size: 1.25rem; font-weight: 700; }
-.cat-desc { margin-top: .25rem; color: var(--ink-2); }
-
-.badge {
-  flex: none;
-  border-radius: 999px;
-  padding: .25rem .75rem;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-.badge--ok { background: #14532d; color: #bbf7d0; }
-.badge--soon { background: var(--line); color: var(--ink-2); }
-
-/* ---------- Sélecteur à onglets (se connecter / créer un compte) ---------- */
-.mode-switch {
-  display: flex;
-  gap: .25rem;
-  padding: .25rem;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-.mode-btn {
-  flex: 1;
-  border: 0;
-  border-radius: 9px;
-  padding: .55rem .75rem;
-  background: transparent;
-  color: var(--ink-2);
   font-weight: 600;
 }
-.mode-btn:hover { color: var(--ink); }
-.mode-btn.is-active { background: var(--card-2); color: var(--accent-clair); box-shadow: var(--shadow-sm); }
-.mode-btn:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
+.btn-link:hover { color: var(--accent-clair); }
 
 .checkbox-row {
   display: flex;
-  align-items: center;
-  gap: .75rem;
+  align-items: flex-start;
+  gap: .6rem;
   color: var(--ink-2);
   cursor: pointer;
   user-select: none;
 }
-.checkbox-row input { width: 1.25rem; height: 1.25rem; accent-color: var(--accent); }
-
-/* ---------- Bouton de compte (en haut à gauche, js/compte.js) ---------- */
-.compte-bouton {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 50;
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  max-width: calc(100vw - 5.5rem);      /* place pour le bouton « Jeux », à droite */
-  height: 2.5rem;
-  padding: 0 .85rem 0 .3rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--ink);
-  box-shadow: var(--shadow-sm);
-  font-weight: 700;
-  font-size: .92rem;
-}
-.compte-bouton:hover { border-color: var(--accent); }
-.compte-bouton:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
-.compte-nom { max-width: 11rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.compte-avatar {
-  flex: none;
-  display: inline-grid;
-  place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 50%;
-  background: var(--avatar, #64748b);
-  color: #fff;
-  font-weight: 800;
-  font-size: .95rem;
-  line-height: 1;
-}
-.compte-avatar--grand { width: 3.5rem; height: 3.5rem; font-size: 1.6rem; }
-@media (min-width: 561px) { .compte-bouton { max-width: calc(100vw - 9rem); } }
-
-/* Changer de jeu (../COMMUN/jeux.js, apparence dans ../COMMUN/jeux.css) : en haut à droite,
-   aux couleurs du jeu. Pendant les futures parties, cacher ce coin et le bouton de compte ici. */
-.jeux-coin {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 50;
-  --jx-fond: var(--card);
-  --jx-texte: var(--ink);
-  --jx-attenue: var(--ink-2);
-  --jx-doux: var(--card-2);
-  --jx-bord: var(--line);
-  --jx-accent: var(--accent);
-  --jx-ombre: var(--shadow-sm);
-  --jx-ombre-menu: var(--shadow);
-}
-
-/* ---------- Fenêtre du compte ---------- */
-.dialogue {
-  width: min(30rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - 2rem);
-  padding: 1.4rem;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: var(--card);
-  color: var(--ink);
-  box-shadow: var(--shadow);
-}
-.dialogue::backdrop { background: rgba(0, 0, 0, .6); }
-.dialogue-tete { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.dialogue-tete h2 { font-size: 1.35rem; font-weight: 800; }
-.dialogue-fermer { flex: none; width: 2.2rem; height: 2.2rem; border: 0; border-radius: 10px; background: var(--card-2); color: var(--ink-2); font-size: 1rem; }
-.dialogue-fermer:hover { background: var(--line); color: var(--ink); }
-.dialogue-aide { margin-top: .4rem; font-size: .88rem; color: var(--ink-2); }
-
-.compte-onglets { margin-top: 1rem; }
-.compte-form { display: flex; flex-direction: column; gap: .7rem; margin-top: 1rem; }
-.compte-champ { display: flex; flex-direction: column; gap: .3rem; font-size: .85rem; font-weight: 600; color: var(--ink-2); }
-.compte-champ input {
-  padding: .6rem .8rem;
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  background: var(--bg);
-  color: var(--ink);
-  font-weight: 400;
-}
-.compte-champ input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--anneau); }
-.compte-reprendre { font-size: .88rem; }
-.compte-erreur { font-size: .85rem; font-weight: 600; color: var(--red); }
-.compte-erreur:empty { display: none; }
-.compte-valider { padding: .7rem 1rem; }
-.compte-form__boutons { display: flex; flex-wrap: wrap; gap: .5rem; }
-.compte-form--danger { padding: .8rem; border: 1px solid #7f1d1d; border-radius: 12px; background: #3b1717; color: #fecaca; font-size: .9rem; }
-.compte-carte { display: flex; align-items: center; gap: .9rem; margin-top: 1rem; padding: .8rem; border-radius: 14px; background: var(--bg); }
-.compte-carte__nom { font-size: 1.2rem; font-weight: 800; overflow-wrap: anywhere; }
-.compte-carte__info { margin-top: .1rem; font-size: .82rem; color: var(--ink-2); }
-.compte-info { margin-top: .8rem; font-size: .88rem; font-weight: 600; color: var(--green); }
-.compte-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.checkbox-row input { flex: none; width: 1.05rem; height: 1.05rem; margin: .1rem 0 0; accent-color: var(--accent); }
 
 /* ==========================================================================
    Modes de jeu : configuration, partie, fin
@@ -304,7 +186,7 @@ h1, h2, h3, p { margin: 0; }
 .invisible { visibility: hidden; }
 
 /* Pendant une partie : ni bouton de compte ni « Jeux » (place pour la barre du jeu) */
-body[data-ecran$="-jeu"] .compte-bouton,
+body[data-ecran$="-jeu"] .acct-coin,
 body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 
 /* Configuration et fin : centrées, sans défilement */
@@ -312,10 +194,12 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 .config {
   width: min(34rem, 100%);
   padding: 1.6rem;
-  border: 2px solid var(--bord-carte);
+  border: 1px solid var(--line-2);
   border-radius: 22px;
-  background: var(--card);
-  box-shadow: var(--shadow);
+  background: var(--verre), rgba(20, 14, 7, .84);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), var(--shadow);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 .config__tete { text-align: center; }
 .config__icone { font-size: 2.6rem; line-height: 1; text-align: center; }
@@ -323,8 +207,7 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 .config__tete p { margin-top: .6rem; color: var(--ink-2); text-align: justify; hyphens: auto; }
 .config__titre {
   margin: 1.3rem 0 .55rem;
-  font-size: .72rem;
-  font-weight: 700;
+  font: 600 .72rem/1.3 var(--mono);
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--muted);
@@ -349,6 +232,44 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 .choix__aide { font-size: .74rem; font-weight: 500; color: var(--muted); text-align: center; }
 .config__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-top: 1.6rem; }
 
+/* ---------- Préphase : filtres en cases, croisés (« Chronologie », « Trouver la date ») ---------- */
+.config--large { width: min(46rem, 100%); }
+.chrono-groupe__tete { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; }
+.chrono-groupe__tete .config__titre { margin-bottom: .45rem; }
+.chrono-groupe__outils { display: flex; gap: .2rem; font-size: .82rem; }
+.chrono-puces { display: flex; flex-wrap: wrap; gap: .4rem; }
+.puce {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .4rem;
+  padding: .38rem .7rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--card-2);
+  color: var(--muted);
+  font-size: .86rem;
+  font-weight: 700;
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.puce:hover { border-color: var(--accent); color: var(--ink); }
+.puce:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
+.puce.is-active { border-color: var(--accent); background: rgba(245, 158, 11, .14); color: var(--accent-clair); }
+.puce.is-vide { opacity: .45; }
+.puce__aide { font-size: .72rem; font-weight: 500; color: var(--muted); }
+.puce__n {
+  min-width: 1.5rem;
+  padding: 0 .38rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--ink-2);
+  font-size: .74rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.puce.is-active .puce__n { background: rgba(245, 158, 11, .25); color: var(--accent-clair); }
+.chrono-etat { margin-top: 1.2rem; text-align: center; font-size: .92rem; font-weight: 600; color: var(--ink-2); }
+.chrono-etat--non { color: var(--red); }
+
 .fin { text-align: center; }
 .fin__score { margin-top: .8rem; font-family: var(--serif); font-size: 3.2rem; font-weight: 700; color: var(--accent-clair); line-height: 1.1; }
 .fin__message { margin-top: .4rem; font-size: 1.15rem; font-weight: 600; }
@@ -365,7 +286,7 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
   padding: .8rem 1rem 1rem;
 }
 .jeu-barre { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.jeu-barre__info { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.jeu-barre__info { color: var(--ink); font: 600 .82rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 .jeu-barre__droite { display: flex; align-items: center; gap: .7rem; }
 .jeu-barre__score { color: var(--ink-2); font-weight: 600; font-variant-numeric: tabular-nums; }
 .jeu-barre__serie {
@@ -561,15 +482,8 @@ body[data-ecran$="-jeu"] .jeux-coin { display: none; }
 @keyframes remplir { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @media (max-width: 640px) { .jeu-pied { gap: .35rem .8rem; } .frise__trait { min-width: 4.5rem; } }
 
-/* ---------- Petits écrans ---------- */
-@media (max-width: 640px) {
-  .hero { margin-bottom: 2rem; }
-  .cat-card { padding: 1.25rem; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .cat-card, .btn, .cadre, .cadre__portrait, .jeu-progres > div { transition: none; }
+  .btn, .cadre, .cadre__portrait, .jeu-progres > div, .puce { transition: none; }
   .cadre:not(:disabled):hover, .cadre:not(:disabled):hover .cadre__portrait { transform: none; }
   .question__sens--anime, .cadre__badge, .jeu-barre__serie, #premier-suite.btn-auto::after { animation: none !important; }
-  .cat-card:hover { transform: none; }
 }

@@ -29,10 +29,11 @@
      carte           obligatoire : identifiant d'une carte de data/ (voir carte.js)
      icone, description   textes de la carte du menu
      consigne        phrase d'explication de la catégorie (l'écran de choix décrit lui-même ciblage et nommage)
-     nomColonne      titre de sa colonne sur l'écran de choix (défaut : « Votre partie »)
-     colonneDroite   id d'une autre catégorie, montrée dans une seconde colonne, à droite, avec les mêmes réglages
-                     (ex. 'prefectures' à côté des départements) ; ouvrir cette autre catégorie (révision depuis les
-                     statistiques) ouvre ce même écran. Sans colonneDroite, une seule colonne, centrée
+     colonneDroite   id d'une autre catégorie, proposée sur le même écran de choix (ex. 'prefectures' avec les
+                     départements) : chacune a son panneau, un seul est montré, au choix du sélecteur « Sujet du jeu »
+                     (le dernier sujet choisi depuis le menu est mémorisé : geonohyne.setup.sujet.<id>). Ouvrir cette
+                     autre catégorie (révision depuis les statistiques) ouvre ce même écran, sur son panneau
+     nomColonne      nom de la catégorie dans le sélecteur « Sujet du jeu » (avec son icone)
      question        texte au-dessus du nom à trouver (défaut : « Où se trouve… »)
      questionNommage, consigneNommage   en nommage : texte au-dessus de la zone à nommer (défaut : « Quel est le nom
                      de la zone en surbrillance ? ») et message d'attente (défaut : « Tapez le nom de la zone… »)
@@ -51,10 +52,14 @@
      alias           { code: ['autre nom', …] } : autres noms acceptés en nommage (ex. « Cergy » pour Pontoise)
      unite           nom des zones, au pluriel (« départements »), pour le sélecteur de nombre
      libelleOrdre    texte de la case « ordre des codes » (la case n'apparaît que s'il est défini)
-     indice(zone)    renvoie le texte de l'indice, affiché à côté du nom : « Nom (code) » (active la case à cocher)
-     indiceDessous   true : l'indice s'affiche sous le nom, sur sa propre ligne (« 💡 Meurthe-et-Moselle (54) »)
-     libelleIndice   texte de cette case à cocher
-     libelleOrdreCourt, libelleIndiceCourt   (facultatifs) versions courtes, affichées sur l'écran de choix
+     indices         [{ id, libelle, titre, texte(zone), dessous, ordonne }] : les indices proposés ; l'écran de choix
+                     montre « Indice : rien | libelle | … » (titre en info-bulle). texte(zone) est affiché à côté du nom
+                     (« Nom (code) »), ou sous le nom, sur sa propre ligne, avec dessous: true (« 💡 Nom (54) ») ;
+                     ordonne: true : les questions viennent en plus dans l'ordre des codes (« ordre + code »)
+     nomIndice, aideIndice   (facultatifs) nom de la ligne des indices (défaut : « Indice ») et phrase sous ce nom
+     indice(zone), indiceDessous, libelleIndice, libelleIndiceCourt   ancienne forme d'un indice unique : vaut
+                     indices: [{ id: 'indice', libelle: libelleIndiceCourt, titre: libelleIndice, texte: indice, dessous }]
+     libelleOrdreCourt  (facultatif) version courte de libelleOrdre, affichée sur l'écran de choix
                      (la version complète reste en info-bulle)
      zonesOptionnelles  { codes: [...], libelle, libelleCourt } : zones écartées du tirage « par nombre » sauf
                      si la case (libellée libelle, ou libelleCourt sur l'écran de choix) est cochée ; elles
@@ -156,9 +161,10 @@
   let jeu = null;                 // état de la partie en cours
   let derniereTaille = 20;        // dernier nombre de questions choisi
   const CLE_RECORD = 'geonohyne.setup.record';   // dernier état de l'interrupteur « Mode record »
+  const CLE_SUJET = 'geonohyne.setup.sujet.';     // + id de la catégorie : dernier sujet choisi (départements / préfectures)
   let derniereConfig = null;      // réglages de la dernière partie (bouton « Rejouer »)
   let jeuType = 'ciblage';        // dernière façon de jouer choisie : 'ciblage' ou 'nommage' (gardée d'un écran à l'autre)
-  let colonnes = [];              // écran de choix : une colonne par catégorie affichée (voir creerColonne)
+  let colonnes = [];              // écran de choix : un panneau par catégorie proposée (voir creerColonne), un seul montré
   let apprendre = null;           // module « Apprendre » ouvert (null : la carte sert au quiz)
   let selection = null;           // code de la zone affichée dans la fiche
   let activite = null;            // jeu à part en cours (reçoit les clics sur la carte)
@@ -172,6 +178,12 @@
     }
     if (categories.some((c) => c.id === def.id)) {
       throw new Error('GeoNohyne.registerCategory : catégorie déjà enregistrée (' + def.id + ')');
+    }
+    // Ancienne forme d'un indice unique (indice, indiceDessous, libelleIndice…) : ramenée à la liste indices
+    if (!Array.isArray(def.indices)) {
+      def.indices = typeof def.indice === 'function'
+        ? [{ id: 'indice', libelle: def.libelleIndiceCourt || 'oui', titre: def.libelleIndice || '', texte: def.indice, dessous: !!def.indiceDessous }]
+        : [];
     }
     categories.push(def);
   }
@@ -212,7 +224,7 @@
 
   // Ouvre un module depuis le menu
   function ouvrir(type, id) {
-    if (type === 'quiz') ouvrirCategorie(id);
+    if (type === 'quiz') ouvrirCategorie(id, true);
     else if (type === 'jeu') ouvrirJeu(id);
     else if (type === 'apprendre') ouvrirApprentissage(id);
     else if (type === 'page') { const p = trouver('page', id); if (p) { arreterPartie(); p.ouvrir(); } }
@@ -274,11 +286,13 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Écran de choix de la partie : une colonne par catégorie             */
+  /* Écran de choix de la partie : un panneau par catégorie              */
   /* ------------------------------------------------------------------ */
-  // L'écran montre la catégorie ouverte et, si elle en déclare une (colonneDroite), une seconde catégorie à
-  // droite (ex. les préfectures à côté des départements). Chaque colonne est faite à partir du même modèle
-  // (<template id="setup-modele"> de index.html) et a ses propres réglages :
+  // L'écran propose la catégorie ouverte et, si elle en déclare une (colonneDroite), une seconde catégorie
+  // (ex. les préfectures avec les départements) : un panneau chacune, un seul montré, au choix du sélecteur
+  // « Sujet du jeu ». La façon de jouer et le mode record sont communs aux deux panneaux ; le reste est
+  // propre à chacun. Chaque panneau (« colonne » dans le code) est fait à partir du même modèle
+  // (<template id="setup-modele"> de index.html) :
   //   col = { racine (<section>), cat, carte, codes (Set des zones de sa carte), index,
   //           jeuType, partieType ('occasionnel' | 'record'), mode ('nombre' | 'groupes'),
   //           perimetre (du record : 'tout' ou un groupe), miniCarte (<svg> des groupes) }
@@ -327,6 +341,10 @@
     enfoncer(col, 'mode', m);
     dans(col, 'mode-nombre').classList.toggle('hidden', m !== 'nombre');
     dans(col, 'mode-groupes').classList.toggle('hidden', m !== 'groupes');
+    // La case change de titre : « Nombre de questions », ou « Régions à inclure » (avec Tout / Aucun)
+    const nom = col.cat.nomGroupes || 'groupes';
+    dans(col, 'titre-questions').textContent = m === 'groupes' ? nom.charAt(0).toUpperCase() + nom.slice(1) + ' à inclure' : 'Nombre de questions';
+    dans(col, 'groupes-outils').classList.toggle('hidden', m !== 'groupes');
     majBoutonLancer(col);
     majMiniCarte(col);
   }
@@ -352,6 +370,7 @@
 
   function definirPartieType(col, t) {
     col.partieType = t;
+    col.racine.classList.toggle('is-record', t === 'record');
     dans(col, 'record').checked = t === 'record';
     dans(col, 'occasionnel').classList.toggle('hidden', t !== 'occasionnel');
     dans(col, 'partie-record').classList.toggle('hidden', t !== 'record');
@@ -498,16 +517,15 @@
       ligne('Meilleur de tous les joueurs', premier, premier ? nomJoueur(premier) : '');
   }
 
-  // Une case à cocher par groupe ; sans groupes dans la catégorie, le choix du mode est masqué
+  // Une case à cocher par groupe ; sans groupes dans la catégorie, le bouton « Par groupes » est masqué
   function preparerGroupes(col) {
     const cat = col.cat;
     const liste = dans(col, 'groupes');
     liste.innerHTML = '';
-    dans(col, 'modes').classList.toggle('hidden', !cat.groupes);
+    dans(col, 'mode-groupes-btn').classList.toggle('hidden', !cat.groupes);   // sans groupes : « Au hasard » seul
     if (cat.groupes) {
       const nom = cat.nomGroupes || 'groupes';
       dans(col, 'nom-groupes').textContent = nom;
-      dans(col, 'groupes-titre').textContent = nom.charAt(0).toUpperCase() + nom.slice(1) + ' à inclure';
       Object.keys(cat.groupes).forEach((g) => {
         const n = cat.groupes[g].filter((c) => col.codes.has(c)).length;
         if (!n) return;
@@ -557,6 +575,7 @@
   function majRaccourcis(col) {
     const curseur = dans(col, 'curseur');
     const v = +curseur.value, min = +curseur.min, max = +curseur.max;
+    curseur.style.setProperty('--rempli', (max > min ? (v - min) / (max - min) * 100 : 100) + '%');   // piste remplie (css)
     dans(col, 'tous').textContent = max;
     dans(col, 'raccourcis').querySelectorAll('[data-nombre]').forEach((b) => {
       const tous = b.dataset.nombre === 'max';
@@ -574,30 +593,44 @@
     return Math.min(+curseur.max, Math.max(+curseur.min, isNaN(v) ? +curseur.value : v));
   }
 
-  /* ---------- Les colonnes : création, réglages, lancement ---------- */
+  /* ---------- Les panneaux : création, réglages, lancement ---------- */
 
-  // Une colonne pour la catégorie cat (index : 0 à gauche, 1 à droite), faite à partir du modèle de index.html
+  // Un panneau pour la catégorie cat (index : 0 pour la catégorie hôte, 1 pour sa colonneDroite), fait à partir du
+  // modèle de index.html
   function creerColonne(cat, index) {
     const racine = $('#setup-modele').content.firstElementChild.cloneNode(true);
     const col = {
       racine, cat, index, carte: GeoCarte.obtenir(cat.carte), codes: new Set(),
-      jeuType, partieType: lireRecord() ? 'record' : 'occasionnel', mode: 'nombre', perimetre: 'tout', miniCarte: null
+      jeuType, partieType: lireRecord() ? 'record' : 'occasionnel', mode: 'nombre', perimetre: 'tout', miniCarte: null,
+      indice: ''                                   // id de l'indice choisi ('' : sans indice)
     };
     const nom = dans(col, 'nom');
     nom.id = 'setup-col-nom-' + index;
     nom.textContent = cat.nomColonne || 'Votre partie';
     racine.setAttribute('aria-labelledby', nom.id);
-    dans(col, 'deplier').setAttribute('aria-label', 'Afficher les réglages : ' + nom.textContent);
     if (cat.aideCiblage) dans(col, 'aide-ciblage').textContent = cat.aideCiblage;
     if (cat.aideNommage) dans(col, 'aide-nommage').textContent = cat.aideNommage;
     dans(col, 'unite').textContent = cat.unite || 'zones';
-    // Options : libellé court sur l'écran (libelleOrdreCourt, libelleIndiceCourt, libelleCourt), le complet en info-bulle
+    // Options : libellé court sur l'écran (libelleOrdreCourt, libelleCourt), le complet en info-bulle
     dans(col, 'ordre-wrap').classList.toggle('hidden', !cat.libelleOrdre);
     dans(col, 'ordre-label').textContent = cat.libelleOrdreCourt || cat.libelleOrdre || '';
     dans(col, 'ordre-label').title = cat.libelleOrdreCourt ? cat.libelleOrdre : '';
-    dans(col, 'indice-wrap').classList.toggle('hidden', typeof cat.indice !== 'function');
-    dans(col, 'indice-label').textContent = cat.libelleIndiceCourt || cat.libelleIndice || 'Afficher un indice';
-    dans(col, 'indice-label').title = cat.libelleIndiceCourt ? cat.libelleIndice : '';
+    // Indice : « rien », puis un bouton par indice de la catégorie (code, ordre + code…)
+    dans(col, 'indice-wrap').classList.toggle('hidden', !cat.indices.length);
+    dans(col, 'indice-nom').textContent = cat.nomIndice || 'Indice';
+    dans(col, 'indice-aide').textContent = cat.aideIndice || '';
+    dans(col, 'indice-aide').classList.toggle('hidden', !cat.aideIndice);
+    dans(col, 'indices').setAttribute('aria-label', cat.nomIndice || 'Indice');
+    dans(col, 'indices').replaceChildren(...[{ id: '', libelle: 'rien', titre: 'Pas d\'indice' }].concat(cat.indices).map((i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mode-btn segment-btn';
+      b.dataset.indice = i.id;
+      b.textContent = i.libelle;
+      if (i.titre) b.title = i.titre;
+      return b;
+    }));
+    enfoncer(col, 'indice', col.indice);
     const opt = cat.zonesOptionnelles;
     dans(col, 'extras-wrap').classList.toggle('hidden', !opt);
     dans(col, 'extras-label').textContent = opt ? opt.libelleCourt || opt.libelle : '';
@@ -609,7 +642,7 @@
     if (!col.carte) {
       // Le détail technique va dans la console (développeur) ; le joueur ne voit qu'un message simple
       console.error('core.js : carte introuvable « ' + cat.carte + ' » : vérifiez que son fichier (dossier data/) existe et est référencé dans index.html');
-      racine.querySelectorAll('input, button:not([data-r="deplier"])').forEach((e) => { e.disabled = true; });
+      racine.querySelectorAll('input, button').forEach((e) => { e.disabled = true; });
       dans(col, 'lancer').textContent = 'Carte indisponible';
       return col;
     }
@@ -625,7 +658,7 @@
     return col;
   }
 
-  // Les réglages d'une colonne (chaque colonne a les siens)
+  // Les réglages d'un panneau (la façon de jouer et le mode record valent pour tous les panneaux de l'écran)
   function brancherColonne(col) {
     const racine = col.racine;
     const curseur = dans(col, 'curseur');
@@ -652,11 +685,17 @@
 
     // Façon de jouer, mode (occasionnel / record), périmètre du record
     racine.querySelectorAll('.mode-btn[data-jeu-type]').forEach((b) => {
-      b.addEventListener('click', () => definirJeuType(col, b.dataset.jeuType));
+      b.addEventListener('click', () => tousLesPanneaux(col).forEach((c) => definirJeuType(c, b.dataset.jeuType)));
     });
     dans(col, 'record').addEventListener('change', (e) => {
       try { localStorage.setItem(CLE_RECORD, e.target.checked ? '1' : '0'); } catch (err) { /* valable pour la session */ }
-      definirPartieType(col, e.target.checked ? 'record' : 'occasionnel');
+      tousLesPanneaux(col).forEach((c) => definirPartieType(c, e.target.checked ? 'record' : 'occasionnel'));
+    });
+    dans(col, 'indices').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-indice]');
+      if (!b || b.disabled) return;
+      col.indice = b.dataset.indice;
+      enfoncer(col, 'indice', col.indice);
     });
     dans(col, 'perimetres').addEventListener('change', (e) => {
       if (e.target.type !== 'radio') return;
@@ -700,19 +739,52 @@
         majMiniCarte(col);
       });
     });
+  }
 
-    // Téléphone : une colonne réduite à son titre se déplie d'un clic sur celui-ci (l'autre se replie)
-    racine.querySelector('.setup-col__tete').addEventListener('click', (e) => {
-      if (racine.classList.contains('is-repliee') && !e.target.closest('label')) deplier(col);
+  // Les panneaux de l'écran (col n'en fait pas encore partie pendant sa création)
+  const tousLesPanneaux = (col) => (colonnes.includes(col) ? colonnes : [col]);
+
+  /* ---------- Sujet du jeu (deux panneaux : départements | préfectures) ---------- */
+
+  // Dans chaque panneau, un bouton par panneau de l'écran (nomColonne et icone de la catégorie)
+  function preparerSujets() {
+    const deux = colonnes.length > 1;
+    colonnes.forEach((col) => {
+      dans(col, 'sujets-wrap').classList.toggle('hidden', !deux);
+      dans(col, 'sujets').replaceChildren(...(deux ? colonnes : []).map((c) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mode-btn sujet-btn';
+        b.dataset.sujet = c.cat.id;
+        b.append(c.cat.nomColonne || c.cat.titre);
+        if (c.cat.icone) {
+          const i = document.createElement('span');
+          i.setAttribute('aria-hidden', 'true');
+          i.textContent = c.cat.icone;
+          b.append(' ', i);
+        }
+        b.addEventListener('click', () => { montrerSujet(c, true); c.racine.querySelector('.sujet-btn.is-active').focus(); });
+        return b;
+      }));
     });
   }
 
-  // Téléphone : une seule colonne dépliée, les autres réduites à leur titre (css) ; sans effet sur un grand écran
-  function deplier(col) {
-    colonnes.forEach((c) => c.racine.classList.toggle('is-repliee', colonnes.length > 1 && c !== col));
+  // Montre le panneau col (les autres sont cachés) ; retenir : mémorise ce choix pour la catégorie hôte
+  function montrerSujet(col, retenir) {
+    colonnes.forEach((c) => {
+      c.racine.classList.toggle('hidden', c !== col);
+      enfoncer(c, 'sujet', col.cat.id);
+    });
+    if (retenir && colonnes.length > 1) {
+      try { localStorage.setItem(CLE_SUJET + colonnes[0].cat.id, col.cat.id); } catch (e) { /* valable pour la session */ }
+    }
   }
 
-  // Bouton « Lancer » d'une colonne : la partie de sa catégorie, avec ses réglages
+  function lireSujet(hote) {
+    try { return localStorage.getItem(CLE_SUJET + hote.id); } catch (e) { return null; }
+  }
+
+  // Bouton « Lancer » d'un panneau : la partie de sa catégorie, avec ses réglages
   function lancer(col) {
     if (!col.carte) return;
     const base = { cat: col.cat, jeu: col.jeuType };
@@ -721,7 +793,7 @@
         perimetre: { id: col.perimetre, nom: nomPerimetre(col) } }));
     }
     Object.assign(base, {
-      ordonne: dans(col, 'ordre').checked, indice: dans(col, 'indice').checked, rattrapage: dans(col, 'rattrapage').checked
+      ordonne: dans(col, 'ordre').checked, indice: col.indice, rattrapage: dans(col, 'rattrapage').checked
     });
     if (col.mode === 'groupes') {
       const codes = codesChoisis(col);
@@ -738,9 +810,10 @@
     }
   }
 
-  // Ouvre l'écran de choix d'une catégorie ; renvoie sa colonne (null si la catégorie n'existe pas). Une catégorie
-  // montrée à droite d'une autre (colonneDroite, ex. les préfectures) s'ouvre sur l'écran de celle-ci.
-  function ouvrirCategorie(id) {
+  // Ouvre l'écran de choix d'une catégorie ; renvoie son panneau (null si la catégorie n'existe pas). Une catégorie
+  // proposée avec une autre (colonneDroite, ex. les préfectures) s'ouvre sur l'écran de celle-ci, sur son panneau.
+  // depuisMenu : ouverture depuis le menu (carte de la catégorie hôte) : on retrouve le dernier sujet choisi.
+  function ouvrirCategorie(id, depuisMenu) {
     const cat = categories.find((c) => c.id === id);
     if (!cat) return null;
     arreterPartie();
@@ -754,8 +827,10 @@
     const boite = $('#setup-colonnes');
     boite.replaceChildren(...colonnes.map((c) => c.racine));
     boite.classList.toggle('setup-colonnes--deux', colonnes.length > 1);
-    const col = colonnes.find((c) => c.cat === cat);
-    deplier(col);
+    preparerSujets();
+    let col = colonnes.find((c) => c.cat === cat);
+    if (depuisMenu && cat === hote) col = colonnes.find((c) => c.cat.id === lireSujet(hote)) || col;
+    montrerSujet(col, false);
     afficher('screen-setup');
 
     // Pied de l'écran : la source des données (crédit exigé par les licences des cartes), ou l'erreur
@@ -1274,11 +1349,17 @@
        perimetre    { id, nom } du record
        codes        zones tirables (défaut : toute la carte)
        nombre       nombre de questions (défaut : toutes les zones tirables)
-       ordonne      true : zones présentées dans l'ordre des codes
-       indice       true : indice affiché (si la catégorie en a un)
+       ordonne      true : zones présentées dans l'ordre des codes (ou un indice avec ordonne: true)
+       indice       id de l'indice affiché (un des indices de la catégorie ; '' : aucun ; true : le premier)
        rattrapage   false : pas de rattrapage des erreurs à la fin (défaut : avec)
        estompe      true : zones hors sélection estompées (groupes, record), false : masquées (zones optionnelles)
        description  résumé de la sélection, pour l'historique (« 20 départements au hasard »…) */
+  // L'indice d'une catégorie désigné par son id (true : le premier, comme l'ancienne case à cocher) ; null : aucun
+  function indiceChoisi(cat, choix) {
+    const liste = cat.indices || [];
+    return (choix === true ? liste[0] : liste.find((i) => i.id === choix)) || null;
+  }
+
   function demarrer(config) {
     const c = config.cat && GeoCarte.obtenir(config.cat.carte);
     if (!c) return;
@@ -1294,7 +1375,8 @@
     const candidats = config.codes || [...zones.keys()];
     const taille = Math.max(1, Math.min(Number(config.nombre) || candidats.length, candidats.length));
     const pool = melanger(candidats).slice(0, taille);
-    if (config.ordonne && !record) pool.sort(comparerCodes);
+    const indiceJeu = record ? null : indiceChoisi(config.cat, config.indice);   // { texte, dessous, ordonne } ou null
+    if ((config.ordonne || (indiceJeu && indiceJeu.ordonne)) && !record) pool.sort(comparerCodes);
 
     // Zones hors sélection : estompées (groupes, record) ou masquées (zones optionnelles non incluses)
     const estompe = !!config.estompe;
@@ -1334,7 +1416,7 @@
       rattrapage: false,      // true pendant la mini-session finale
       principal: null,        // score de la partie, mémorisé au début du rattrapage
       tempsPrincipal: 0,      // temps de la partie (sans le rattrapage)
-      indice: !record && typeof categorie.indice === 'function' && !!config.indice,
+      indice: indiceJeu,
       serie: 0,               // bonnes réponses d'affilée
       debut: Date.now(),
       chrono: null,
@@ -1406,11 +1488,11 @@
     const code = jeu.pool[jeu.idx];
     const z = zones.get(code);
     jeu.verrou = false;
-    // Indice : entre parenthèses à côté du nom (« Nom (XX) »), ou sur sa ligne, sous le nom (indiceDessous) ; il reste
+    // Indice : entre parenthèses à côté du nom (« Nom (XX) »), ou sur sa ligne, sous le nom (dessous) ; il reste
     // affiché jusqu'à la question suivante
-    const texteIndice = jeu.indice ? categorie.indice(z.brut) : '';
-    const indice = texteIndice && !categorie.indiceDessous ? ' (' + texteIndice + ')' : '';
-    $('#target-hint').textContent = texteIndice && categorie.indiceDessous ? '💡 ' + texteIndice : '';
+    const texteIndice = jeu.indice ? jeu.indice.texte(z.brut) : '';
+    const indice = texteIndice && !jeu.indice.dessous ? ' (' + texteIndice + ')' : '';
+    $('#target-hint').textContent = texteIndice && jeu.indice.dessous ? '💡 ' + texteIndice : '';
     boutonAction('Passer', false);
     if (jeu.jeuType === 'nommage') {
       // La zone à nommer s'allume ; l'anneau pulsant aide à repérer les très petites

@@ -1,0 +1,379 @@
+/* ==========================================================================
+   Histehory Quizz — mode « Trouver la date » (js/modes/date.js)
+   Réutilise les variables, boutons, écrans de configuration, barre, pied et filtres en cases de
+   css/style.css. Chargé après style.css. Préphase en grille 2 × 2 (titres alignés ligne à ligne),
+   cartes ambrées, interrupteurs « Tout / Aucun », curseur stylé ; tout est restreint à .date-config
+   pour ne pas toucher « Chronologie ». Vert et rouge pour ✓ et ✗, comme les autres modes.
+   ========================================================================== */
+
+/* ---------- Préphase : grille 2 × 2, titres alignés ligne à ligne ----------
+   ligne 1 : façon de jouer | période ; ligne 2 : nombre d'événements | difficulté et thématique */
+#screen-date-config { max-width: 64rem; }
+.date-config { width: min(60rem, 100%); padding: 1.4rem 1.8rem 1.3rem; }
+.date-config__tete { display: flex; align-items: center; justify-content: center; gap: .75rem; }
+.date-config__icone { font-size: 2.1rem; line-height: 1; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .5)); }
+.date-config h1 { margin: 0; }
+.date-config__grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 1.2rem 2rem; margin-top: 1.2rem; }
+.date-bloc { display: flex; flex-direction: column; min-width: 0; }
+.date-bloc--filtres { gap: 1rem; }
+.date-bloc--filtres > div { display: flex; flex-direction: column; }
+.date-config .chrono-groupe__tete { align-items: center; height: 1.6rem; margin-bottom: .55rem; }
+.date-config .chrono-groupe__tete .config__titre,
+.date-config .config__titre { margin: 0; }
+
+/* « Tout ◯ Aucun » : interrupteur à trois positions (tout coché à gauche, rien à droite, entre les deux au milieu) */
+.date-bascule { align-items: center; gap: .45rem; }
+.date-bascule .btn-link { padding: 0; font-size: .8rem; line-height: 1.6rem; }
+.date-bascule__interrupteur {
+  position: relative;
+  width: 1.9rem;
+  height: 1.05rem;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--champ);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.date-bascule__interrupteur::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: .12rem;
+  width: .72rem;
+  height: .72rem;
+  border-radius: 50%;
+  background: var(--ink-2);
+  transform: translateY(-50%);
+  transition: left .15s ease, background-color .15s ease;
+}
+.date-bascule__interrupteur[data-etat="tout"] { border-color: var(--accent); background: var(--accent); }
+.date-bascule__interrupteur[data-etat="tout"]::after { background: #fff8eb; }
+.date-bascule__interrupteur[data-etat="partiel"]::after { left: calc(50% - .36rem); }
+.date-bascule__interrupteur[data-etat="aucun"]::after { left: calc(100% - .84rem); }
+.date-bascule__interrupteur:hover { border-color: var(--accent); }
+.date-bascule__interrupteur:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
+
+/* Façon de jouer : deux grandes cartes, de la hauteur des quatre périodes */
+.date-facons { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.date-facons .choix { justify-content: center; gap: .2rem; padding: .7rem .5rem; border-width: 1.5px; border-radius: 16px; background: rgba(255, 236, 200, .035); }
+.date-facons .choix__icone { margin-bottom: .3rem; font-size: 2.4rem; line-height: 1; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .55)); }
+.date-facons .choix__titre { font-size: .95rem; color: var(--ink); }
+.date-facons .choix.is-active {
+  border-color: var(--accent-clair);
+  background: linear-gradient(160deg, rgba(245, 158, 11, .36), rgba(194, 90, 12, .18));
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, .25), 0 0 24px -6px rgba(245, 158, 11, .6);
+}
+.date-facons .choix.is-active .choix__titre { color: var(--accent-clair); }
+.date-facons .choix.is-active .choix__aide { color: var(--accent-pale); }
+
+/* Les cases des filtres : allumées en ambre, éteintes en sourdine */
+.date-config .puce { position: relative; align-items: center; border-width: 1.5px; }
+.date-config .chrono-puces { gap: .4rem .35rem; }
+.date-config .chrono-puces .puce { padding: .24rem .55rem; font-size: .82rem; }
+.date-config .puce__icone { font-size: .95rem; line-height: 1; transition: opacity .15s ease, filter .15s ease; }
+.date-config .puce:not(.is-active) .puce__icone { opacity: .5; filter: grayscale(.7); }
+.date-config .puce.is-active {
+  border-color: var(--accent);
+  background: linear-gradient(160deg, rgba(245, 158, 11, .24), rgba(245, 158, 11, .08));
+  box-shadow: 0 0 16px -7px rgba(245, 158, 11, .8);
+  color: var(--ink);
+}
+/* Petite coche sur les cases rondes cochées */
+.date-config .chrono-puces .puce.is-active::after {
+  content: '✓';
+  position: absolute;
+  top: -.42rem;
+  right: -.3rem;
+  display: grid;
+  place-items: center;
+  width: .95rem;
+  height: .95rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px #1a130a;
+  color: var(--accent-texte);
+  font-size: .58rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Compteurs de largeur fixe (jusqu'à 3 chiffres) : les cases ne bougent pas quand les nombres changent */
+.date-config .puce__n { min-width: 2.1rem; padding: 0 .3rem; }
+/* Difficulté et thématique : lignes justifiées, chaque case s'étire, son compteur poussé à droite */
+.date-lignes { flex-direction: column; flex-wrap: nowrap; }
+.date-ligne { display: flex; flex-wrap: wrap; gap: .4rem .35rem; }
+.date-ligne .puce { flex: 1 1 auto; }
+.date-ligne .puce__n { margin-left: auto; }
+
+/* Période : quatre cartes (emoji, nom, années, nombre) */
+.date-cartes { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.puce--carte {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .7rem;
+  padding: .55rem .75rem;
+  border-radius: 14px;
+  text-align: left;
+}
+.puce--carte .puce__icone { font-size: 1.85rem; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .5)); }
+.puce__texte { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+.puce--carte .puce__nom { font-size: .95rem; line-height: 1.2; color: var(--ink-2); }
+.puce--carte.is-active .puce__nom { color: var(--ink); }
+.puce--carte .puce__aide { font-size: .74rem; }
+
+/* Nombre d'événements : un encadré (− nombre +, curseur, raccourcis, puis ce que donnent les filtres) */
+.date-nombre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .85rem;
+  padding: .9rem 1rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(11, 8, 4, .38);
+}
+.nombre__ligne { display: flex; align-items: center; justify-content: center; gap: 1.4rem; }
+.nombre__pas {
+  width: 2.3rem;
+  height: 2.3rem;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: var(--card-2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .45);
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.nombre__pas:hover { border-color: var(--accent); background: rgba(245, 158, 11, .14); }
+.nombre__pas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.nombre__valeur { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
+.nombre__champ {
+  width: 2.4ch;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  font-family: var(--serif);
+  font-size: 2.7rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  color: var(--accent-clair);
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.nombre__champ::-webkit-inner-spin-button, .nombre__champ::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.nombre__champ:focus { outline: 0; border-bottom-color: var(--accent); }
+.nombre__valeur span { font-size: .85rem; font-weight: 600; color: var(--ink-2); }
+
+/* Le curseur : piste ambrée remplie jusqu'au nombre (--rempli, posé par date.js), bouton ivoire */
+.nombre__curseur { display: flex; align-items: center; gap: .7rem; font: 500 .72rem var(--mono); color: var(--muted); }
+.nombre__glissiere {
+  flex: 1;
+  height: .32rem;
+  margin: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--accent-2), var(--accent-clair)) 0 0 / var(--rempli, 18%) 100% no-repeat,
+    rgba(255, 236, 200, .14);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.nombre__glissiere::-webkit-slider-thumb {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid #fff8eb;
+  border-radius: 50%;
+  background: #d9cbb3;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .6);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.nombre__glissiere::-moz-range-thumb {
+  width: .9rem;
+  height: .9rem;
+  border: 2px solid #fff8eb;
+  border-radius: 50%;
+  background: #d9cbb3;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .6);
+}
+.nombre__glissiere:focus-visible { outline: 0; }
+.nombre__glissiere:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--anneau); }
+.nombre__glissiere:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--anneau); }
+
+.nombre__raccourcis { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; }
+.nombre__raccourcis button {
+  min-width: 2.3rem;
+  padding: .26rem .5rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--champ);
+  color: var(--ink-2);
+  font-size: .85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.nombre__raccourcis button:hover { border-color: var(--accent); color: var(--ink); }
+.nombre__raccourcis button:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--anneau); }
+.nombre__raccourcis button.is-active { border-color: var(--accent); background: var(--accent); color: var(--accent-texte); box-shadow: 0 0 14px -4px rgba(245, 158, 11, .7); }
+.date-etat { margin: .1rem 0 0; padding-top: .75rem; border-top: 1px solid var(--line); font-size: .86rem; font-weight: 500; line-height: 1.4; }
+
+.date-config .config__actions { margin-top: 1.3rem; }
+#date-commencer:not(:disabled) { box-shadow: 0 3px 0 var(--accent-ombre), 0 0 26px -6px rgba(245, 158, 11, .75); }
+
+/* Fenêtre basse : un peu moins d'air */
+@media (max-height: 760px) and (min-width: 761px) {
+  #screen-date-config { padding-top: 3.8rem; }
+  .date-config { padding-top: 1rem; padding-bottom: 1rem; }
+  .date-config__grille { margin-top: .9rem; row-gap: .9rem; }
+  .date-bloc--filtres { gap: .75rem; }
+  .date-config .config__actions { margin-top: 1rem; }
+}
+/* Téléphone : une seule colonne (façon, période, nombre, difficulté, thématique) */
+@media (max-width: 760px) {
+  .date-config { padding: 1.2rem 1rem; }
+  /* Plus de lignes imposées : les cases se suivent et s'étirent pour remplir chaque ligne */
+  .date-lignes { flex-direction: row; flex-wrap: wrap; }
+  .date-ligne { display: contents; }
+  .date-config__grille { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .date-cartes { grid-template-columns: minmax(0, 1fr); }
+  .date-config h1 { font-size: 1.5rem; }
+}
+
+/* ---------- Écran de partie ---------- */
+#screen-date-jeu { height: auto; min-height: 100dvh; }
+.date-scene { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.3rem; }
+
+/* L'événement : une fiche d'archive */
+.date-carte {
+  width: min(46rem, 100%);
+  padding: 1.3rem 1.6rem 1.4rem;
+  border: 1px solid var(--line-2);
+  border-radius: 22px;
+  background: var(--verre), rgba(20, 14, 7, .84);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), var(--shadow);
+  text-align: center;
+}
+.date-carte__tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .3rem .7rem; }
+.date-theme {
+  padding: .15rem .7rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-texte);
+  font: 600 .74rem/1.4 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.date-region { font: 500 .74rem/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.date-carte__titre { margin-top: .7rem; font-family: var(--serif); font-size: clamp(1.4rem, 3.8vw, 2.2rem); line-height: 1.2; }
+.date-carte__resume { margin-top: .6rem; color: var(--ink-2); font-size: 1rem; }
+
+/* La saisie */
+.date-saisie { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+.date-consigne { text-align: center; font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: var(--warn); }
+.date-note { display: block; margin-top: .1rem; font-family: var(--police); font-size: .85rem; font-weight: 500; color: var(--ink-2); }
+.date-champs { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: .6rem; }
+.date-champ { display: flex; flex-direction: column; gap: .2rem; }
+.date-champ__nom { font: 600 .68rem/1.3 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.date-champ input, .date-champ select {
+  height: 3.2rem;
+  padding: 0 .7rem;
+  border: 2px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--champ);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.date-champ input::placeholder { color: rgba(154, 135, 106, .45); }
+.date-champ input:focus, .date-champ select:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px var(--anneau); }
+.date-champ select option { background: var(--surface); color: var(--ink); font-family: var(--police); font-size: 1rem; }
+.date-champ--jour input { width: 4.2rem; text-align: center; }
+.date-champ--mois select { width: 11rem; cursor: pointer; }
+.date-champ--annee input { width: 7.4rem; text-align: center; }
+.date-champ input:disabled, .date-champ select:disabled { opacity: 1; color: var(--ink); cursor: default; }
+.date-champ.is-bon input, .date-champ.is-bon select { border-color: var(--green); box-shadow: 0 0 0 3px rgba(74, 222, 128, .3); }
+.date-champ.is-faux input, .date-champ.is-faux select { border-color: #f87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .3); text-decoration: line-through; text-decoration-color: rgba(248, 113, 113, .8); }
+
+/* L'ère : deux boutons accolés */
+.date-ere { display: flex; height: 3.2rem; border: 2px solid var(--line-2); border-radius: 12px; overflow: hidden; }
+.date-ere button { padding: 0 .8rem; border: 0; background: var(--champ); color: var(--muted); font-size: .88rem; font-weight: 700; white-space: nowrap; }
+.date-ere button + button { border-left: 1px solid var(--line-2); }
+.date-ere button:hover:not(:disabled) { color: var(--ink); }
+.date-ere button:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--accent); }
+.date-ere button.is-active { background: rgba(245, 158, 11, .18); color: var(--accent-clair); }
+.date-ere button:disabled { cursor: default; }
+
+/* La correction (sa place est réservée : rien ne saute quand elle apparaît) */
+.date-correction { display: flex; flex-direction: column; align-items: center; gap: .15rem; min-height: 5.4rem; text-align: center; }
+.date-solution { font-family: var(--serif); font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; color: var(--accent-clair); font-variant-numeric: tabular-nums; }
+.date-ecart { max-width: 40rem; color: var(--ink-2); }
+#date-suite { position: relative; overflow: hidden; isolation: isolate; }
+#date-suite.btn-auto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, .35);
+  transform-origin: left;
+  animation: remplir var(--delai, 1.8s) linear forwards;
+  z-index: -1;
+}
+
+@media (max-width: 640px) {
+  .date-scene { justify-content: flex-start; gap: .9rem; }
+  .date-carte { padding: 1rem 1rem 1.1rem; }
+  .date-carte__resume { font-size: .92rem; }
+  .date-champ--mois select { width: 9.5rem; }
+  .date-ere { width: 100%; max-width: 17rem; }
+  .date-ere button { flex: 1; }
+}
+
+/* ---------- Fin : anneau de réussite et erreurs ---------- */
+.anneau {
+  --p: 0;
+  display: grid;
+  place-items: center;
+  width: 6.2rem;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, #1a130a 78%, transparent 79%),
+    conic-gradient(var(--accent-clair), var(--accent-2) calc(var(--p) * 1%), #2e2416 0);
+  font: 600 1.25rem var(--mono);
+  color: var(--ink);
+}
+#screen-date-fin .config { width: min(40rem, 100%); }
+#screen-date-fin h1 { margin-top: .4rem; }
+#screen-date-fin .fin__score { margin-top: .3rem; font-size: 2.6rem; }
+.fin-erreurs { margin-top: .8rem; text-align: left; }
+.fin-erreurs .config__titre { margin: 0 0 .45rem; text-align: center; }
+.fin-erreurs__liste { display: flex; flex-direction: column; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.erreur {
+  display: flex;
+  flex-direction: column;
+  padding: .35rem .75rem;
+  border: 1px solid rgba(248, 113, 113, .3);
+  border-left: 3px solid #f87171;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .03);
+}
+.erreur__titre { font-family: var(--serif); font-weight: 700; }
+.erreur__dates { font-size: .85rem; color: var(--ink-2); }
+#date-fin-plus { display: block; margin: .3rem auto 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .date-champ input, .date-champ select { transition: none; }
+  .date-bascule__interrupteur, .date-bascule__interrupteur::after, .date-config .puce__icone { transition: none; }
+  #date-suite.btn-auto::after { animation: none !important; }
+}

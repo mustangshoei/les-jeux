@@ -8,40 +8,75 @@
   <!-- Commun à tous les jeux (dossier ../COMMUN) : sélecteur « Changer de jeu ». S'il manque, le jeu marche sans. -->
   <link rel="stylesheet" href="../COMMUN/jeux.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/compte.css">
   <link rel="stylesheet" href="css/chronologie.css">
+  <link rel="stylesheet" href="css/date.css">
   <!-- Police des titres, commune à tout le site : à changer dans ../COMMUN/police.css (en dernier) -->
   <link rel="stylesheet" href="../COMMUN/police.css">
 </head>
 <body data-ecran="screen-menu">
 <noscript>Cette application nécessite JavaScript.</noscript>
 
+<!-- ===================== COMPTE ET CHANGEMENT DE JEU ===================== -->
+<!-- Compte (en haut à gauche) : bouton et menu déroulant, sur le modèle du menu « Jeux » (à droite) ; js/compte.js -->
+<div class="acct-coin">
+  <button type="button" class="acct-btn" id="acctBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="acctMenu"></button>
+  <div class="acct-menu" id="acctMenu" role="dialog" aria-labelledby="acctTitle" hidden>
+    <p class="acct-menu__titre" id="acctTitle">Compte</p>
+    <!-- rempli par js/compte.js : connexion / création de compte, ou gestion du compte connecté -->
+    <div id="acctBody"></div>
+    <p class="acct-menu__note" id="acctHelp"></p>
+  </div>
+</div>
 <!-- Changer de jeu (en haut à droite) : rempli par ../COMMUN/jeux.js -->
 <div class="jeux-coin" data-jeux-selecteur="histehory"></div>
 
-<!-- Bouton de compte (en haut à gauche) et fenêtre du compte : js/compte.js -->
-<button id="compte-bouton" type="button" class="compte-bouton" aria-haspopup="dialog"></button>
+<!-- ===================== ACCUEIL : le menu « Chroniques » (js/menu.js) ===================== -->
+<section id="screen-menu" class="screen menu">
+  <p class="menu-edition" aria-hidden="true">Chroniques · histoire du monde</p>
 
-<dialog id="compte-dialogue" class="dialogue" aria-labelledby="compte-titre">
-  <div class="dialogue-tete">
-    <h2 id="compte-titre">Compte</h2>
-    <button type="button" class="dialogue-fermer" data-fermer aria-label="Fermer">✕</button>
+  <div class="menu-hero">
+    <div class="menu-intro">
+      <p class="surtitre">Quiz · Frises · Portraits</p>
+      <h1 class="menu-titre">Histehory<br><span>Quizz</span></h1>
+      <p class="menu-sous-titre">Apprenez l'histoire en jouant, de la préhistoire à nos jours.</p>
+      <nav id="menuChapitres" class="chapitres" aria-label="Chapitres"></nav>
+    </div>
+
+    <!-- la planche du chapitre : un dessin au trait, avec quelques repères (js/menu.js) -->
+    <figure class="menu-atlas">
+      <div id="menuPlanche" class="planche-cadre"></div>
+      <!-- cadran : l'année du jour au centre, l'aiguille sur le mois (js/menu.js) -->
+      <svg class="cadran" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="44" class="cadran-cercle"/>
+        <path class="cadran-graduation" d="M50 8v6M50 86v6M8 50h6M86 50h6M71 13.6l-3 5.2M29 86.4l3-5.2M86.4 29l-5.2 3M13.6 71l5.2-3M86.4 71l-5.2-3M13.6 29l5.2 3M71 86.4l-3-5.2M29 13.6l3 5.2"/>
+        <line id="cadranAiguille" class="cadran-aiguille" x1="50" y1="50" x2="50" y2="20"/>
+        <circle cx="50" cy="50" r="3.5" class="cadran-centre"/>
+        <text id="cadranAnnee" x="50" y="68" class="cadran-annee"></text>
+      </svg>
+      <figcaption id="menuLegende" class="menu-legende"></figcaption>
+    </figure>
   </div>
-  <p id="compte-aide" class="dialogue-aide"></p>
-  <!-- Rempli par js/compte.js : connexion / création de compte, ou gestion du compte connecté -->
-  <div id="compte-corps"></div>
-</dialog>
 
-<!-- ===================== ACCUEIL ===================== -->
-<section id="screen-menu" class="screen page">
-  <header class="hero">
-    <div class="logo" aria-hidden="true">📜</div>
-    <h1>Histehory Quizz</h1>
-    <p>Apprenez l'histoire en vous amusant.</p>
-  </header>
+  <!-- le chapitre choisi et ses cartes -->
+  <section class="chapitre" aria-labelledby="menuChapitreTitre">
+    <div class="chapitre-tete">
+      <div>
+        <p id="menuChapitreNum" class="surtitre">Chapitre 01</p>
+        <h2 id="menuChapitreTitre">—</h2>
+        <p id="menuChapitreDesc" class="chapitre-desc"></p>
+      </div>
+      <p id="menuChapitreCompte" class="chapitre-compte"></p>
+    </div>
+    <div id="menuCartes" class="cartes" aria-live="polite"></div>
+  </section>
 
-  <h2 class="accueil-titre">Modes de jeu</h2>
-  <!-- Une carte par mode de jeu : remplies par js/menu.js -->
-  <div id="menu-modes" class="cards" role="group" aria-label="Modes de jeu"></div>
+  <footer class="menu-pied">
+    <span>Portraits : Wikimedia Commons (voir img/CREDITS.md) · Polices : Bricolage Grotesque, IBM Plex Mono (OFL)</span>
+    <!-- version du jeu (lue dans ../COMMUN/jeux.js) : js/menu.js -->
+    <span id="menuVersion"></span>
+  </footer>
 </section>
 
 <!-- Écrans des modes de jeu : des <section class="screen hidden"> par mode -->
@@ -181,6 +216,129 @@
   </div>
 </section>
 
+<!-- ===================== TROUVER LA DATE (js/modes/date.js) ===================== -->
+<section id="screen-date-config" class="screen page page--centre hidden">
+  <div class="config date-config">
+    <header class="date-config__tete">
+      <span class="date-config__icone" aria-hidden="true">📅</span>
+      <h1>Trouver la date</h1>
+    </header>
+    <!-- Grille 2 × 2 : les titres s'alignent ligne à ligne (façon | période, nombre | difficulté et thématique).
+         Les trois filtres sont construits par js/modes/date.js dans date-filtre-<id>. -->
+    <div class="date-config__grille">
+      <div class="date-bloc">
+        <div class="chrono-groupe__tete"><h2 class="config__titre">Façon de jouer</h2></div>
+        <div id="date-facons" class="date-facons" role="group" aria-label="Façon de jouer"></div>
+      </div>
+      <div id="date-filtre-epoque" class="date-bloc"></div>
+      <div class="date-bloc">
+        <div class="chrono-groupe__tete"><h2 class="config__titre">Nombre d'événements</h2></div>
+        <!-- Un nombre de 1 à 50 : − et +, curseur, raccourcis ; dessous, ce que donnent les filtres -->
+        <div class="nombre date-nombre">
+          <div class="nombre__ligne">
+            <button type="button" class="nombre__pas" data-pas="-1" aria-label="Un événement de moins">−</button>
+            <label class="nombre__valeur">
+              <input id="date-nombre" class="nombre__champ" type="number" min="1" max="50" step="1" value="10" inputmode="numeric" aria-label="Nombre d'événements">
+              <span id="date-unite">événements</span>
+            </label>
+            <button type="button" class="nombre__pas" data-pas="1" aria-label="Un événement de plus">+</button>
+          </div>
+          <div class="nombre__curseur">
+            <span>1</span>
+            <input id="date-curseur" class="nombre__glissiere" type="range" min="1" max="50" step="1" value="10" aria-label="Nombre d'événements (curseur)">
+            <span>50</span>
+          </div>
+          <div id="date-raccourcis" class="nombre__raccourcis" role="group" aria-label="Nombres rapides"></div>
+          <p id="date-etat" class="chrono-etat date-etat" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="date-bloc date-bloc--filtres">
+        <div id="date-filtre-difficulte"></div>
+        <div id="date-filtre-domaine"></div>
+      </div>
+    </div>
+    <div class="config__actions">
+      <button type="button" class="btn btn-soft" data-action="menu">← Accueil</button>
+      <button type="button" id="date-commencer" class="btn btn-primary">Commencer →</button>
+    </div>
+  </div>
+</section>
+
+<section id="screen-date-jeu" class="screen jeu-ecran hidden">
+  <div class="jeu-barre">
+    <button type="button" id="date-quitter" class="btn-link">✕ Quitter</button>
+    <span id="date-progression" class="jeu-barre__info"></span>
+    <span class="jeu-barre__droite">
+      <span id="date-serie" class="jeu-barre__serie hidden"></span>
+      <span id="date-score" class="jeu-barre__score"></span>
+    </span>
+  </div>
+  <div class="jeu-progres"><div id="date-barre"></div></div>
+  <div class="date-scene">
+    <!-- L'événement : thème, région, intitulé, résumé -->
+    <article class="date-carte">
+      <p class="date-carte__tete"><span id="date-theme" class="date-theme"></span><span id="date-region" class="date-region"></span></p>
+      <h1 id="date-evenement" class="date-carte__titre"></h1>
+      <p id="date-resume" class="date-carte__resume"></p>
+    </article>
+    <!-- La saisie : jour et mois (date exacte seulement), année et ère -->
+    <div class="date-saisie">
+      <p class="date-consigne"><span id="date-consigne"></span> <span id="date-note" class="date-note invisible"></span></p>
+      <div class="date-champs">
+        <label id="date-champ-jour" class="date-champ date-champ--jour"><span class="date-champ__nom">Jour</span>
+          <input id="date-jour" type="text" inputmode="numeric" maxlength="2" autocomplete="off" enterkeyhint="next" placeholder="jj"></label>
+        <label id="date-champ-mois" class="date-champ date-champ--mois"><span class="date-champ__nom">Mois</span>
+          <select id="date-mois">
+            <option value="">—</option>
+            <option value="1">janvier</option><option value="2">février</option><option value="3">mars</option>
+            <option value="4">avril</option><option value="5">mai</option><option value="6">juin</option>
+            <option value="7">juillet</option><option value="8">août</option><option value="9">septembre</option>
+            <option value="10">octobre</option><option value="11">novembre</option><option value="12">décembre</option>
+          </select></label>
+        <label id="date-champ-annee" class="date-champ date-champ--annee"><span class="date-champ__nom">Année</span>
+          <input id="date-annee" type="text" inputmode="numeric" maxlength="6" autocomplete="off" enterkeyhint="done" placeholder="aaaa"></label>
+        <div id="date-ere" class="date-ere" role="group" aria-label="Ère">
+          <button type="button" data-ere="apr" aria-pressed="true">apr. J.-C.</button>
+          <button type="button" data-ere="av" aria-pressed="false">av. J.-C.</button>
+        </div>
+      </div>
+      <p id="date-aide" class="aide-jeu" aria-live="polite"></p>
+    </div>
+    <!-- Après la réponse : verdict, bonne date, écart -->
+    <div id="date-correction" class="date-correction invisible" aria-live="polite">
+      <p id="date-verdict" class="verdict"></p>
+      <p id="date-solution" class="date-solution"></p>
+      <p id="date-ecart" class="date-ecart"></p>
+    </div>
+  </div>
+  <div class="jeu-pied">
+    <button type="button" id="date-valider" class="btn btn-primary">Valider</button>
+    <button type="button" id="date-suite" class="btn btn-primary hidden">Suivant →</button>
+  </div>
+</section>
+
+<section id="screen-date-fin" class="screen page page--centre hidden">
+  <div class="config fin">
+    <div id="date-fin-anneau" class="anneau" aria-hidden="true"><span id="date-fin-pourcent"></span></div>
+    <h1>Partie terminée</h1>
+    <p id="date-fin-score" class="fin__score"></p>
+    <p id="date-fin-message" class="fin__message"></p>
+    <p id="date-fin-detail" class="fin__detail"></p>
+    <!-- Les erreurs : les 3 dernières, les autres derrière « Voir les N autres » -->
+    <div id="date-fin-erreurs" class="fin-erreurs hidden">
+      <h2 id="date-fin-erreurs-titre" class="config__titre"></h2>
+      <ul id="date-fin-liste" class="fin-erreurs__liste"></ul>
+      <button type="button" id="date-fin-plus" class="btn-link hidden"></button>
+    </div>
+    <div class="config__actions">
+      <button type="button" class="btn btn-soft" data-action="menu">← Accueil</button>
+      <button type="button" id="date-reglages" class="btn btn-soft">Réglages</button>
+      <button type="button" id="date-revoir" class="btn btn-soft hidden">Revoir mes erreurs</button>
+      <button type="button" id="date-rejouer" class="btn btn-primary">Rejouer</button>
+    </div>
+  </div>
+</section>
+
 <!-- 0. Commun à tous les jeux (dossier ../COMMUN) : comptes communs, liste des jeux et sélecteur.
         Facultatifs : s'ils manquent, Histehory Quizz se joue en invité, sans sélecteur. -->
 <script src="../COMMUN/comptes.js"></script>
@@ -197,6 +355,7 @@
 <script src="js/donnees/portraits.js"></script>
 <script src="js/modes/premier.js"></script>
 <script src="js/modes/chronologie.js"></script>
+<script src="js/modes/date.js"></script>
 
 <!-- 3. Accueil (en dernier : il affiche les modes chargés ci-dessus) -->
 <script src="js/menu.js"></script>

@@ -6,12 +6,13 @@ dans le `CLAUDE.md` de la racine ; la documentation pour un humain est dans `REA
 ## Carte d'identité
 
 - L'histoire : personnages, dates, citations, chronologies. **Nom provisoire.**
-- id `histehory`. Version dans `README.md` et dans `../COMMUN/jeux.js`. **Fermé** (`bloque: true`) : la
-  tuile est visible mais inerte ; on l'ouvre à la main (`index.html`) pour développer. L'ouvrir au public
-  est une décision de Théo.
-- Deux modes jouables, **« Qui est venu en premier ? »** et **« Chronologie »** ; cinq autres annoncés (grisés).
-- Thème sombre seulement : brun très sombre, couleurs dominantes **jaune et orange** (`css/style.css`,
-  inspiré de GéoNohyne).
+- id `histehory`. Version dans `README.md` et dans `../COMMUN/jeux.js`. **Ouvert au public** (depuis la
+  2.0.0) ; ses totaux sont déclarés (`totaux` dans `../COMMUN/jeux.js`) et comptent sur l'accueil.
+- Trois modes jouables, **« Qui est venu en premier ? »**, **« Chronologie »** et **« Trouver la date »** ; quatre
+  autres annoncés (grisés).
+- Thème « Chroniques », sombre seulement : brun d'archives, **ambre** (actions, sélection) et **orange**
+  (consignes), fond de papier réglé fixe ; polices locales Bricolage Grotesque et IBM Plex Mono (`css/polices/`).
+  Même construction que les autres jeux : menu « atlas », menu de compte déroulant.
 - **Identifiants et commentaires en français.** Espaces de noms : `Histehory` (noyau : `registerMode`,
   `trouver`, `ouvrir`, `afficher`), `HISTEHORY` (données : `PERSONNES`, `PORTRAITS`, `DATES`, `REGIONS`,
   `DOMAINES`, `EPOQUES`, `DIFFICULTES`), `HistProfils` (statistiques).
@@ -20,20 +21,22 @@ dans le `CLAUDE.md` de la racine ; la documentation pour un humain est dans `REA
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | toutes les `<section class="screen">` : accueil, puis, par mode, configuration / jeu / fin |
+| `index.html` | toutes les `<section class="screen">` : le menu (`screen-menu`), puis, par mode, configuration / jeu / fin ; le coin du compte (`.acct-coin`) et le coin « Jeux » |
 | `js/core.js` | petit noyau : enregistrement des modes, `afficher(idSection)`, `data-action="menu"` |
-| `js/menu.js` | **le catalogue** (`MENU` : les 7 modes, dans l'ordre) ; une carte s'active quand son mode est enregistré ; chargé en dernier |
-| `js/modes/<mode>.js` | **un fichier par mode** (aujourd'hui : `premier.js`, `chronologie.js`) |
-| `css/style.css`, `css/chronologie.css` | apparence commune ; un mode à l'écran riche peut avoir sa propre feuille (chargée après `style.css`) |
+| `js/menu.js` | **le menu « atlas » et son catalogue** : `CHAPITRES` (3), `MENU` (les 7 modes, avec leur chapitre ; les modes jouables d'abord), `PICTOS`, `TEINTES`, `PLANCHES` (dessins SVG ; le chapitre des figures reprend trois portraits de `img/`). Une carte s'active quand son mode est enregistré ; chargé en dernier |
+| `js/modes/<mode>.js` | **un fichier par mode** (aujourd'hui : `premier.js`, `chronologie.js`, `date.js`) |
+| `css/style.css` | polices, couleurs (variables), fond, boutons, écrans de configuration / partie / fin des modes, **filtres en cases** de la préphase (`.puce`, `.chrono-groupe`, `.chrono-etat` : partagés par « Chronologie » et « Trouver la date ») |
+| `css/menu.css`, `css/compte.css` | le menu « atlas » (repris de Natehure) ; le bouton et le menu déroulant du compte |
+| `css/chronologie.css`, `css/date.css` | un mode à l'écran riche a sa propre feuille, chargée après les autres |
 | `js/donnees/personnes.js` | 573 personnes (décédées), table `DIFFICULTE` (1 à 5, 3 par défaut) |
-| `js/donnees/dates.js` | 939 événements datés, triés par date, répartis sur toutes les époques et les six régions (Europe : environ les deux tiers) ; difficulté de 1 à 5 : 23 / 68 / 256 / 345 / 247. Chargé par `index.html`, utilisé par « Chronologie » (et prévu pour « Trouver la date ») |
+| `js/donnees/dates.js` | 939 événements datés, triés par date, répartis sur toutes les époques et les six régions (Europe : environ les deux tiers) ; difficulté de 1 à 5 : 23 / 68 / 256 / 345 / 247. Chargé par `index.html`, utilisé par « Chronologie » et « Trouver la date » |
 | `js/donnees/portraits.js` | id → image : **généré** par `outils/portraits/f5_portraits.py`, ne pas l'éditer à la main |
-| `js/profils.js` / `js/compte.js` | statistiques (invité ou compte) / bouton et fenêtre du compte |
+| `js/profils.js` / `js/compte.js` | statistiques (invité ou compte) / bouton et menu déroulant du compte (repris de Natehure, avec renommer, mot de passe, suppression et reprise des statistiques de l'invité) |
 | `img/personnes/`, `img/generiques/`, `img/CREDITS.md` | portraits (générés, ~30 Ko chacun), images génériques, crédits (généré) |
 | `outils/portraits/` | fabrique des portraits en Python (mode d'emploi : son `README.md`) |
 
-Le menu d'Histehory est encore une **simple grille de cartes**, pas le menu « atlas » de GéoNohyne et
-d'Anotehomy : si on le refait, demande d'abord à Théo si des chapitres sont souhaités.
+Les noms des trois chapitres (Le fil du temps, Les grandes figures, L'épreuve de l'historien) sont une
+proposition de Claude (Théo n'avait pas d'idée de noms) : à changer dans `CHAPITRES` s'il en trouve d'autres.
 
 ## Ajouter un mode
 
@@ -61,7 +64,12 @@ d'Anotehomy (`js/game/matcher.js`, `js/game/lexique-*.js`) : jamais de chargemen
 - `REGIONS` et `DOMAINES` sont les mêmes clés pour les personnes et les dates.
 - **Un intitulé d'événement ne donne jamais sa date** : ni année, ni mois, ni jour, ni calendrier révolutionnaire
   (« Abolition des privilèges », pas « Nuit du 4 août » ; « Armistice franco-allemand de Rethondes », pas « Armistice
-  du 22 juin »). Même règle pour le résumé. Les noms propres légitimes restent (« 1984 », « Manifeste des 343 »).
+  du 22 juin »). Même règle pour le résumé (ni fête ni saison : « le jour de Noël », « un hiver glacial »). Les noms propres
+  légitimes restent (« 1984 », « Manifeste des 343 »).
+- **Un intitulé désigne un seul événement** : si l'histoire en a connu plusieurs du même genre, on le précise
+  (« Première Coupe du monde de football remportée par la France », « Traité de Paris reconnaissant
+  l'indépendance des États-Unis », « Première élection de François Mitterrand »). Avant d'ajouter un événement,
+  cherche dans `dates.js` s'il existe déjà un titre voisin.
 - Le résumé ne contient jamais le nom de la personne (il pourra servir d'indice).
 - L'id d'une personne sert aux portraits et pourra servir aux statistiques : ne plus le changer.
 
@@ -97,6 +105,30 @@ d'Anotehomy (`js/game/matcher.js`, `js/game/lexique-*.js`) : jamais de chargemen
 - Après validation : date, ✓ ou « ✗ n° k » (la place qu'il aurait dû prendre), résumé, et une échelle des
   5 dates à leur vraie distance (points numérotés d'après la vraie place).
 
+## « Trouver la date » (`js/modes/date.js`, `css/date.css`) : ce qui est à retenir
+
+- Une question = un événement de `HISTEHORY.DATES` : thème (`DOMAINES`) en pastille, région, intitulé,
+  résumé. Deux façons (`FACONS`) : `annee` ou `exacte` ; `auJour(e, facon)` dit si l'on demande jour et
+  mois (date exacte, événement daté au jour, **pas approximatif**), sinon l'année seule.
+- **Juste ou faux** (choix de Théo, pas de points partiels). Date approximative : jugée sur l'année, à
+  `marge(e)` près = max(10, 10 % de (2000 − année)) arrondi à la dizaine (choix de Théo : « ±10 % de
+  l'âge, au moins 10 ans ») ; la consigne l'annonce. Écart en années sans année 0 (`ecartAns`).
+- **Saisie** (choix de Théo : champs à taper) : jour (texte numérique), mois (`<select>`), année
+  (chiffres seulement ; « - » bascule l'ère), ère en deux boutons. Entrée valide ou mène au premier champ
+  vide ; année 0 et jour impossible refusés avec un message.
+- Préphase (modèle dessiné par Théo) : **grille 2 × 2 dont les titres s'alignent ligne à ligne** (façon |
+  période, nombre | difficulté et thématique ; une colonne sur téléphone). Façon en deux grandes cartes ;
+  nombre 1 à `MAX` = 50 dans un encadré (− / +, curseur rempli par `--rempli`, raccourcis, puis l'état) ;
+  les filtres de « Chronologie » (même code, recopié), construits dans `date-filtre-<id>` : périodes en
+  cartes avec emoji (`ICONES_EPOQUE`), thématiques avec emoji (`ICONES_DOMAINE`), coche sur les cases
+  rondes cochées. **Rien ne bouge quand les nombres changent** (demande de Théo) : compteurs de largeur fixe,
+  et difficulté / thématiques en **lignes justifiées** (`lignes` du filtre, `LIGNES_DOMAINE` : 5 lignes de
+  3 + 2 regroupées par sens ; une nouvelle thématique doit y être placée), libres sur téléphone ; interrupteur « Tout / Aucun » à trois positions (`data-etat` : tout, partiel, aucun).
+  Tout le style est restreint à `.date-config` (ne touche pas « Chronologie »). Tient en 1280 × 720.
+  Réglages retenus (`histehory.date.reglages`).
+- Fin : anneau, erreurs (3 visibles, « Voir les N autres »), « Revoir mes erreurs » (`demarrer(liste)`,
+  partie enregistrée avec « révision » dans le titre).
+
 ## Portraits
 
 - Médaillons de 256 px en traits blancs (« taille-douce »), tirés de l'image Wikidata de chaque personne
@@ -108,11 +140,7 @@ d'Anotehomy (`js/game/matcher.js`, `js/game/lexique-*.js`) : jamais de chargemen
 
 ## Plans
 
-- Les cinq modes annoncés. Les données de « Trouver la date » existent (`dates.js`) ; il faudra des
-  citations pour « Qui a dit ça ? ».
+- Les quatre modes annoncés ; il faudra des citations pour « Qui a dit ça ? ».
 - « Chronologie » : variantes possibles à discuter avec Théo (période en années libres, dynasties ou
   successions de souverains, 6 à 8 blocs, score par ordre relatif).
-- Déclarer `totaux` dans la ligne `histehory` de `../COMMUN/jeux.js` (`{ cle: 'totaux', parties:
-  'parties', bonnes: 'bonnes', questions: 'questions', temps: 'tempsMs', ms: true }`, d'après
-  `js/profils.js`) pour que le bouton « Statistiques » de l'accueil le compte : à faire avec Théo.
 - Pas encore d'écran de statistiques dans le jeu, ni de classements.
